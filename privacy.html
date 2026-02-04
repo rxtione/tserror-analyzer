@@ -15,39 +15,162 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>개인정보처리방침 - TypeScript 오류 분석기</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-card: rgba(255, 255, 255, 0.03);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --text-primary: #f0f0f5;
+            --text-secondary: #8b8b9e;
+            --text-muted: #5a5a6e;
+            --accent-blue: #3b82f6;
+            --accent-purple: #8b5cf6;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            font-family: 'Malgun Gothic', 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
             min-height: 100vh;
-            padding: 20px;
+            line-height: 1.7;
         }
-        .container { max-width: 800px; margin: 0 auto; }
-        .panel {
-            background: white;
-            border-radius: 12px;
-            padding: 30px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100vh;
+            background:
+                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(59, 130, 246, 0.15), transparent),
+                radial-gradient(ellipse 60% 40% at 80% 60%, rgba(139, 92, 246, 0.1), transparent);
+            pointer-events: none;
+            z-index: -1;
         }
-        h1 { color: #1a73e8; margin-bottom: 20px; font-size: 24px; }
-        h2 { color: #333; margin: 25px 0 15px; font-size: 18px; }
-        p { color: #555; line-height: 1.8; margin-bottom: 15px; }
-        ul { padding-left: 20px; color: #555; line-height: 1.8; margin-bottom: 15px; }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
         .back-link {
-            display: inline-block;
-            margin-bottom: 20px;
-            color: #1a73e8;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
             text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 32px;
+            padding: 10px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            transition: all 0.2s ease;
         }
-        .back-link:hover { text-decoration: underline; }
-        .update-date { color: #888; font-size: 13px; margin-top: 30px; }
+
+        .back-link:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 40px;
+            backdrop-filter: blur(20px);
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 32px;
+        }
+
+        h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 32px 0 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h2::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: linear-gradient(180deg, var(--accent-blue), var(--accent-purple));
+            border-radius: 2px;
+        }
+
+        p {
+            color: var(--text-secondary);
+            font-size: 15px;
+            margin-bottom: 16px;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 16px;
+        }
+
+        ul li {
+            color: var(--text-secondary);
+            font-size: 15px;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        ul li:last-child {
+            border-bottom: none;
+        }
+
+        ul li::before {
+            content: '•';
+            color: var(--accent-blue);
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .update-date {
+            color: var(--text-muted);
+            font-size: 13px;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        @media (max-width: 640px) {
+            .container { padding: 24px 16px; }
+            .card { padding: 24px; }
+            h1 { font-size: 26px; }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="panel">
-            <a href="index.html" class="back-link">← 메인으로 돌아가기</a>
+        <a href="index.html" class="back-link">← 메인으로 돌아가기</a>
+
+        <div class="card">
             <h1>개인정보처리방침</h1>
 
             <h2>1. 수집하는 개인정보</h2>
@@ -57,7 +180,7 @@
             <p>본 웹사이트는 다음과 같은 목적으로 쿠키를 사용할 수 있습니다:</p>
             <ul>
                 <li>웹사이트 이용 통계 분석 (Google Analytics)</li>
-                <li>광고 서비스 제공 (Google AdSense 등)</li>
+                <li>광고 서비스 제공 (Ezoic 등)</li>
             </ul>
             <p>사용자는 브라우저 설정을 통해 쿠키 사용을 거부할 수 있습니다.</p>
 
@@ -66,7 +189,7 @@
             <ul>
                 <li>GitHub Pages (호스팅)</li>
                 <li>Google Analytics (방문 통계)</li>
-                <li>광고 네트워크 (수익화)</li>
+                <li>Ezoic (광고 네트워크)</li>
             </ul>
             <p>각 서비스의 개인정보처리방침은 해당 서비스 제공자의 웹사이트에서 확인하실 수 있습니다.</p>
 

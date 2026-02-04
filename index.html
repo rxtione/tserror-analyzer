@@ -20,314 +20,659 @@
     <meta property="og:title" content="TypeScript 오류 분석기">
     <meta property="og:description" content="복잡한 TypeScript 타입 오류를 쉽게 분석하고 해결하세요">
     <meta property="og:type" content="website">
-    <link rel="canonical" href="https://yourusername.github.io/ts-error-analyzer/">
+    <link rel="canonical" href="https://tserror-analyzer.me/">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-card: rgba(255, 255, 255, 0.03);
+            --bg-card-hover: rgba(255, 255, 255, 0.05);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --text-primary: #f0f0f5;
+            --text-secondary: #8b8b9e;
+            --text-muted: #5a5a6e;
+            --accent-blue: #3b82f6;
+            --accent-blue-glow: rgba(59, 130, 246, 0.3);
+            --accent-purple: #8b5cf6;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --accent-orange: #f59e0b;
+            --code-bg: #1a1a24;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            font-family: 'Malgun Gothic', 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
             min-height: 100vh;
-            padding: 20px;
+            line-height: 1.6;
         }
-        .container { max-width: 1200px; margin: 0 auto; }
-        h1 { color: white; text-align: center; margin-bottom: 10px; font-size: 28px; }
-        .subtitle { color: #b8d4ff; text-align: center; margin-bottom: 20px; font-size: 13px; }
-        .ad-container {
-            background: rgba(255,255,255,0.1);
-            border-radius: 8px;
-            padding: 10px;
-            margin-bottom: 20px;
+
+        /* 배경 그라데이션 효과 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100vh;
+            background:
+                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(59, 130, 246, 0.15), transparent),
+                radial-gradient(ellipse 60% 40% at 80% 60%, rgba(139, 92, 246, 0.1), transparent);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* 헤더 영역 */
+        .header {
             text-align: center;
-            min-height: 90px;
+            margin-bottom: 48px;
         }
-        .ad-container.horizontal { min-height: 90px; }
-        .ad-container.sidebar { min-height: 250px; }
-        .ad-placeholder {
-            color: rgba(255,255,255,0.5);
-            font-size: 12px;
-            line-height: 90px;
-        }
-        .main-layout {
-            display: grid;
-            grid-template-columns: 1fr 300px;
-            gap: 20px;
-        }
-        @media (max-width: 900px) {
-            .main-layout { grid-template-columns: 1fr; }
-            .sidebar { display: none; }
-        }
-        .sidebar {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-        .panel {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-        }
-        .panel-header {
-            display: flex;
-            justify-content: space-between;
+
+        .logo {
+            display: inline-flex;
             align-items: center;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #e8f0fe;
+            gap: 12px;
+            margin-bottom: 16px;
         }
-        .panel-title { font-size: 15px; font-weight: 600; color: #1a73e8; }
-        textarea {
-            width: 100%;
-            height: 180px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            padding: 12px;
-            font-family: 'Consolas', 'Monaco', monospace;
-            font-size: 11px;
-            resize: vertical;
-        }
-        textarea:focus { outline: none; border-color: #1a73e8; }
-        .btn-group { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
-        button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            font-family: 'Malgun Gothic', sans-serif;
-            transition: all 0.2s;
-        }
-        .btn-primary { background: linear-gradient(135deg, #1a73e8, #1557b0); color: white; }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(26,115,232,0.4); }
-        .btn-secondary { background: #f1f3f4; color: #5f6368; }
-        .btn-secondary:hover { background: #e8e8e8; }
-        .result-section { display: none; }
-        .result-section.active { display: block; }
-        .summary-box {
-            background: #fff3e0;
-            border: 2px solid #ff9800;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-        .summary-title { font-size: 16px; font-weight: bold; color: #e65100; margin-bottom: 15px; }
-        .problem-card {
-            background: #ffebee;
-            border-left: 4px solid #f44336;
-            border-radius: 0 8px 8px 0;
-            padding: 15px;
-            margin-bottom: 12px;
-        }
-        .problem-number {
-            display: inline-block;
-            background: #f44336;
-            color: white;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            text-align: center;
-            line-height: 24px;
-            font-size: 12px;
-            font-weight: bold;
-            margin-right: 10px;
-        }
-        .problem-title { font-weight: 600; color: #c62828; display: inline; }
-        .problem-path {
-            margin-top: 10px;
-            padding: 8px 12px;
-            background: #fff;
-            border-radius: 4px;
-            font-family: 'Consolas', monospace;
-            font-size: 12px;
-            color: #7b1fa2;
-        }
-        .problem-detail { margin-top: 15px; }
-        .type-comparison {
-            display: grid;
-            grid-template-columns: 1fr 40px 1fr;
-            gap: 10px;
-            align-items: stretch;
-        }
-        .type-column { min-width: 0; }
-        .type-arrow-center {
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 24px;
-            color: #9e9e9e;
+            box-shadow: 0 8px 32px var(--accent-blue-glow);
         }
-        .type-box {
-            padding: 12px;
-            border-radius: 6px;
-            font-family: 'Consolas', monospace;
-            font-size: 12px;
-            word-break: break-all;
-            white-space: pre-wrap;
-            line-height: 1.6;
+
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
-        .type-box.wrong {
-            background: #fff5f5;
-            border: 2px solid #ef9a9a;
-            color: #333;
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 16px;
+            font-weight: 400;
+            max-width: 500px;
+            margin: 0 auto;
         }
-        .type-box.correct {
-            background: #f5fff5;
-            border: 2px solid #a5d6a7;
-            color: #333;
+
+        /* 광고 컨테이너 */
+        .ad-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 32px;
+            text-align: center;
+            min-height: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .type-box .error-highlight {
-            background: #ff5252;
-            color: white;
-            padding: 2px 4px;
-            border-radius: 3px;
-            font-weight: bold;
+
+        .ad-container.sidebar { min-height: 250px; }
+
+        /* 메인 레이아웃 */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 280px;
+            gap: 32px;
         }
-        .type-box .correct-highlight {
-            background: #4caf50;
-            color: white;
-            padding: 2px 4px;
-            border-radius: 3px;
-            font-weight: bold;
+
+        @media (max-width: 968px) {
+            .main-layout { grid-template-columns: 1fr; }
+            .sidebar { display: none; }
+            .container { padding: 24px 16px; }
+            h1 { font-size: 26px; }
         }
-        .type-label {
-            font-size: 10px;
-            color: #757575;
-            margin-bottom: 3px;
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
         }
-        .solution-box {
-            background: #e8f5e9;
-            border: 2px solid #4caf50;
-            border-radius: 8px;
-            padding: 15px;
-            margin-top: 15px;
+
+        /* 카드 스타일 */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            backdrop-filter: blur(20px);
+            transition: all 0.3s ease;
         }
-        .solution-title { font-weight: 600; color: #2e7d32; margin-bottom: 10px; }
-        .solution-code {
-            background: #1e1e1e;
-            color: #d4d4d4;
-            padding: 12px;
-            border-radius: 6px;
-            font-family: 'Consolas', monospace;
-            font-size: 12px;
-            overflow-x: auto;
-            margin-top: 8px;
+
+        .card:hover {
+            border-color: rgba(255, 255, 255, 0.12);
+            background: var(--bg-card-hover);
         }
-        .solution-code .keyword { color: #569cd6; }
-        .solution-code .comment { color: #6a9955; }
-        .error-trace {
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-title::before {
+            content: '';
+            width: 4px;
+            height: 16px;
+            background: linear-gradient(180deg, var(--accent-blue), var(--accent-purple));
+            border-radius: 2px;
+        }
+
+        /* 텍스트 에어리어 */
+        textarea {
+            width: 100%;
+            height: 200px;
+            background: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            color: var(--text-primary);
+            resize: vertical;
+            transition: all 0.3s ease;
+        }
+
+        textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px var(--accent-blue-glow);
+        }
+
+        /* 버튼 그룹 */
+        .btn-group {
+            display: flex;
+            gap: 12px;
             margin-top: 20px;
-            border: 1px solid #e0e0e0;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            color: white;
+            box-shadow: 0 4px 16px var(--accent-blue-glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px var(--accent-blue-glow);
+        }
+
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-card-hover);
+            color: var(--text-primary);
+        }
+
+        .copy-btn {
+            padding: 8px 16px;
+            font-size: 12px;
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--accent-blue);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .copy-btn:hover {
+            background: rgba(59, 130, 246, 0.2);
+        }
+
+        /* 결과 섹션 */
+        .result-section { display: none; }
+        .result-section.active { display: block; }
+
+        /* 경고 박스 */
+        .warning-box {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .warning-icon {
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .warning-text {
+            color: var(--accent-orange);
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* 요약 박스 */
+        .summary-box {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .summary-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* 문제 카드 */
+        .problem-card {
+            background: rgba(239, 68, 68, 0.05);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .problem-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .problem-number {
+            width: 28px;
+            height: 28px;
+            background: var(--accent-red);
+            color: white;
             border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .problem-title {
+            font-weight: 600;
+            color: var(--accent-red);
+            font-size: 15px;
+        }
+
+        .problem-path {
+            background: var(--code-bg);
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: var(--accent-purple);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .problem-path::before {
+            content: '📍';
+        }
+
+        /* 타입 비교 */
+        .type-comparison {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 16px;
+            align-items: stretch;
+        }
+
+        @media (max-width: 640px) {
+            .type-comparison {
+                grid-template-columns: 1fr;
+            }
+            .type-arrow { transform: rotate(90deg); }
+        }
+
+        .type-column { min-width: 0; }
+
+        .type-label {
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .type-label.wrong { color: var(--accent-red); }
+        .type-label.correct { color: var(--accent-green); }
+
+        .type-box {
+            padding: 16px;
+            border-radius: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            word-break: break-all;
+            min-height: 80px;
+        }
+
+        .type-box.wrong {
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: var(--text-primary);
+        }
+
+        .type-box.correct {
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            color: var(--text-primary);
+        }
+
+        .type-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: var(--text-muted);
+            padding-top: 28px;
+        }
+
+        .error-highlight {
+            background: var(--accent-red);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .correct-highlight {
+            background: var(--accent-green);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        /* 해결 방법 박스 */
+        .solution-box {
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 24px;
+        }
+
+        .solution-title {
+            font-weight: 700;
+            color: var(--accent-green);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .solution-text {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .solution-code {
+            background: var(--code-bg);
+            border-radius: 10px;
+            padding: 16px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            line-height: 1.8;
+            overflow-x: auto;
+        }
+
+        .solution-code .comment { color: #6b7280; }
+        .solution-code .keyword { color: var(--accent-blue); }
+
+        /* 오류 추적 */
+        .error-trace {
+            margin-top: 24px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
             overflow: hidden;
         }
+
         .error-trace-header {
-            background: #f5f5f5;
-            padding: 12px 15px;
+            background: var(--bg-secondary);
+            padding: 14px 20px;
             cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
             font-weight: 600;
-            color: #616161;
+            font-size: 14px;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
         }
-        .error-trace-header:hover { background: #eeeeee; }
+
+        .error-trace-header:hover {
+            background: var(--bg-card-hover);
+            color: var(--text-primary);
+        }
+
         .error-trace-content {
             display: none;
-            padding: 15px;
-            background: #fafafa;
+            padding: 16px;
+            background: var(--code-bg);
             max-height: 300px;
             overflow-y: auto;
         }
+
         .error-trace-content.open { display: block; }
+
         .trace-line {
-            font-family: 'Consolas', monospace;
+            font-family: 'JetBrains Mono', monospace;
             font-size: 11px;
-            padding: 4px 0;
-            border-bottom: 1px solid #eee;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-secondary);
         }
+
         .trace-line:last-child { border-bottom: none; }
-        .trace-indent { color: #bdbdbd; }
-        .copy-btn {
-            padding: 4px 10px;
-            font-size: 11px;
-            background: #e3f2fd;
-            color: #1565c0;
-            border-radius: 4px;
-        }
-        .array-warning {
-            background: #fff8e1;
-            border: 2px solid #ffc107;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
-        }
-        .array-warning-icon { font-size: 24px; margin-right: 10px; }
-        .array-warning-text { color: #f57f17; font-weight: 600; }
-        .footer {
-            text-align: center;
-            color: rgba(255,255,255,0.6);
-            font-size: 12px;
-            margin-top: 30px;
+        .trace-indent { color: var(--text-muted); }
+
+        /* 사이드바 패널 */
+        .info-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
             padding: 20px;
         }
-        .footer a { color: rgba(255,255,255,0.8); }
-        .info-panel {
-            background: white;
-            border-radius: 12px;
-            padding: 15px;
+
+        .info-panel h3 {
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-panel ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .info-panel li {
+            color: var(--text-secondary);
+            font-size: 13px;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-panel li:last-child { border-bottom: none; }
+
+        .info-panel li::before {
+            content: '→';
+            color: var(--accent-blue);
+            font-weight: 600;
+        }
+
+        /* 푸터 */
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 48px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .footer p {
+            color: var(--text-muted);
             font-size: 13px;
         }
-        .info-panel h3 {
-            color: #1a73e8;
-            font-size: 14px;
-            margin-bottom: 10px;
+
+        .footer-links {
+            margin-top: 12px;
+            display: flex;
+            justify-content: center;
+            gap: 24px;
         }
-        .info-panel ul {
-            padding-left: 20px;
-            color: #555;
+
+        .footer a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 13px;
+            transition: color 0.2s ease;
         }
-        .info-panel li { margin-bottom: 5px; }
+
+        .footer a:hover {
+            color: var(--accent-blue);
+        }
+
+        /* 스크롤바 스타일링 */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>TypeScript 오류 분석기</h1>
-        <p class="subtitle">복잡한 타입 오류를 분석하여 어떤 필드가 문제인지 명확하게 알려드립니다</p>
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon">TS</div>
+                <h1>TypeScript 오류 분석기</h1>
+            </div>
+            <p class="subtitle">복잡한 타입 오류를 분석하여 어떤 필드가 문제인지 명확하게 알려드립니다</p>
+        </header>
 
-        <div class="ad-container horizontal" id="topAd"></div>
+        <div class="ad-container" id="topAd"></div>
 
         <div class="main-layout">
             <main>
-                <div class="panel">
-                    <div class="panel-header">
-                        <span class="panel-title">TypeScript 오류 메시지 입력</span>
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">오류 메시지 입력</span>
                     </div>
-                    <textarea id="errorInput" placeholder="TypeScript 오류 메시지를 붙여넣으세요..."></textarea>
+                    <textarea id="errorInput" placeholder="TypeScript 오류 메시지를 여기에 붙여넣으세요...
+
+예시:
+Type '{ name: string; }' is not assignable to type '{ name: string; }[]'."></textarea>
                     <div class="btn-group">
-                        <button class="btn-primary" onclick="analyzeError()">오류 분석</button>
+                        <button class="btn-primary" onclick="analyzeError()">
+                            <span>🔍</span> 오류 분석
+                        </button>
                         <button class="btn-secondary" onclick="clearAll()">초기화</button>
                         <button class="btn-secondary" onclick="loadSample()">예시 불러오기</button>
                     </div>
                 </div>
 
-                <div id="resultSection" class="result-section panel">
-                    <div class="panel-header">
-                        <span class="panel-title">분석 결과</span>
-                        <button class="copy-btn" onclick="copyResult()">복사</button>
+                <div id="resultSection" class="result-section card">
+                    <div class="card-header">
+                        <span class="card-title">분석 결과</span>
+                        <button class="copy-btn" onclick="copyResult()">📋 복사</button>
                     </div>
                     <div id="resultContent"></div>
                 </div>
 
-                <div class="ad-container horizontal" id="bottomAd" style="display:none;"></div>
+                <div class="ad-container" id="bottomAd" style="display:none;"></div>
             </main>
 
             <aside class="sidebar">
                 <div class="ad-container sidebar" id="sideAd"></div>
 
                 <div class="info-panel">
-                    <h3>이런 오류를 분석해요</h3>
+                    <h3>🎯 분석 가능한 오류</h3>
                     <ul>
                         <li>배열/객체 타입 불일치</li>
                         <li>속성 누락 오류</li>
@@ -337,7 +682,7 @@
                 </div>
 
                 <div class="info-panel">
-                    <h3>사용 방법</h3>
+                    <h3>📖 사용 방법</h3>
                     <ul>
                         <li>TypeScript 오류를 복사</li>
                         <li>입력창에 붙여넣기</li>
@@ -350,11 +695,11 @@
 
         <footer class="footer">
             <p>© 2024 TypeScript 오류 분석기</p>
-            <p style="margin-top:10px;">
-                <a href="about.html">소개</a> ·
-                <a href="privacy.html">개인정보처리방침</a> ·
+            <div class="footer-links">
+                <a href="about.html">소개</a>
+                <a href="privacy.html">개인정보처리방침</a>
                 <a href="terms.html">이용약관</a>
-            </p>
+            </div>
         </footer>
     </div>
 
@@ -367,7 +712,7 @@
             }
             var result = parseTypeScriptError(input);
             displayResult(result);
-            document.getElementById('bottomAd').style.display = 'block';
+            document.getElementById('bottomAd').style.display = 'flex';
         }
 
         function parseTypeScriptError(errorText) {
@@ -578,8 +923,8 @@
         }
 
         function getTypeSummary(type) {
-            if (type.includes('[]')) return '배열 (Array)';
-            if (type.startsWith('{')) return '객체 (Object)';
+            if (type.includes('[]')) return '배열';
+            if (type.startsWith('{')) return '객체';
             if (type === 'string') return '문자열';
             if (type === 'number') return '숫자';
             if (type === 'boolean') return '불리언';
@@ -590,9 +935,9 @@
             var html = '';
 
             if (result.isArrayObjectMismatch) {
-                html += '<div class="array-warning">';
-                html += '<span class="array-warning-icon">⚠️</span>';
-                html += '<span class="array-warning-text">객체(Object)를 배열(Array)이 필요한 곳에 전달했습니다!</span>';
+                html += '<div class="warning-box">';
+                html += '<span class="warning-icon">⚠️</span>';
+                html += '<span class="warning-text">객체(Object)를 배열(Array)이 필요한 곳에 전달했습니다!</span>';
                 html += '</div>';
             }
 
@@ -601,43 +946,42 @@
 
             result.problems.forEach(function(problem, idx) {
                 html += '<div class="problem-card">';
+                html += '<div class="problem-header">';
                 html += '<span class="problem-number">' + (idx + 1) + '</span>';
 
                 if (problem.type === 'missing') {
                     html += '<span class="problem-title">누락된 속성</span>';
-                    if (problem.path.length > 0) {
-                        html += '<div class="problem-path">📍 위치: ' + problem.path.join(' → ') + '</div>';
-                    }
-                    html += '<div class="problem-detail">';
-                    html += '<div class="type-box wrong">필요한 속성: ' + problem.missingProps.join(', ') + '</div>';
                     html += '</div>';
+                    if (problem.path.length > 0) {
+                        html += '<div class="problem-path">' + problem.path.join(' → ') + '</div>';
+                    }
+                    html += '<div class="type-box wrong">필요한 속성: ' + problem.missingProps.join(', ') + '</div>';
                 } else {
                     if (problem.isArrayMismatch || (result.isArrayObjectMismatch && problem.path.length > 0)) {
                         html += '<span class="problem-title">배열/객체 타입 불일치</span>';
                     } else {
                         html += '<span class="problem-title">타입 불일치</span>';
                     }
+                    html += '</div>';
 
                     if (problem.path.length > 0) {
-                        html += '<div class="problem-path">📍 위치: ' + problem.path.join(' → ') + '</div>';
+                        html += '<div class="problem-path">' + problem.path.join(' → ') + '</div>';
                     }
 
-                    html += '<div class="problem-detail">';
                     html += '<div class="type-comparison">';
 
                     html += '<div class="type-column">';
-                    html += '<div class="type-label">❌ 전달한 타입 <span style="color:#b71c1c;">(' + getTypeSummary(problem.sourceType) + ')</span></div>';
+                    html += '<div class="type-label wrong">❌ 전달한 타입 (' + getTypeSummary(problem.sourceType) + ')</div>';
                     html += '<div class="type-box wrong">' + highlightTypeDiff(problem.sourceType, problem.targetType, true) + '</div>';
                     html += '</div>';
 
-                    html += '<div class="type-arrow-center">→</div>';
+                    html += '<div class="type-arrow">→</div>';
 
                     html += '<div class="type-column">';
-                    html += '<div class="type-label">✅ 기대하는 타입 <span style="color:#1b5e20;">(' + getTypeSummary(problem.targetType) + ')</span></div>';
+                    html += '<div class="type-label correct">✅ 기대하는 타입 (' + getTypeSummary(problem.targetType) + ')</div>';
                     html += '<div class="type-box correct">' + highlightTypeDiff(problem.sourceType, problem.targetType, false) + '</div>';
                     html += '</div>';
 
-                    html += '</div>';
                     html += '</div>';
                 }
 
@@ -654,7 +998,7 @@
 
                 html += '<div class="solution-box">';
                 html += '<div class="solution-title">💡 해결 방법</div>';
-                html += '<p style="margin-bottom:10px;color:#2e7d32;">다음 속성들을 배열로 감싸주세요:</p>';
+                html += '<p class="solution-text">다음 속성들을 배열로 감싸주세요:</p>';
                 html += '<div class="solution-code">';
                 html += '<span class="comment">// 잘못된 코드</span>\n';
                 html += uniquePropNames.map(function(name) { return name + ': { <span class="keyword">...</span> }'; }).join('\n');
@@ -680,7 +1024,7 @@
             html += '</div></div>';
 
             document.getElementById('resultContent').innerHTML = html;
-            document.getElementById('resultSection').className = 'result-section panel active';
+            document.getElementById('resultSection').className = 'result-section card active';
         }
 
         function toggleTrace() {
@@ -703,7 +1047,7 @@
 
         function clearAll() {
             document.getElementById('errorInput').value = '';
-            document.getElementById('resultSection').className = 'result-section panel';
+            document.getElementById('resultSection').className = 'result-section card';
             document.getElementById('bottomAd').style.display = 'none';
         }
 
@@ -715,7 +1059,7 @@
         function copyResult() {
             var el = document.getElementById('resultContent');
             if (navigator.clipboard) {
-                navigator.clipboard.writeText(el.innerText).then(function() { alert('복사됨!'); });
+                navigator.clipboard.writeText(el.innerText).then(function() { alert('복사되었습니다!'); });
             }
         }
     </script>
