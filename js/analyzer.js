@@ -1,7 +1,7 @@
 // analyzer.js - TypeScript Error Analyzer Core Logic
 
 // Feedback API URL - Replace with your Google Apps Script URL
-var FEEDBACK_API_URL = 'https://script.google.com/macros/s/AKfycbwij6E_Mt3bu7-CUqF_aoS8Qg5fhnpV06alUmXGvL2cX82nHGppVbV3ZPDAfstio5ORvg/exec';  // Set your Google Apps Script URL here
+var FEEDBACK_API_URL = 'https://script.google.com/macros/s/AKfycbwErW17RCWI02ApYuxXDq4r0OFi6w0VF865JItQannIXRFgmD7lbiiR0BnbTkE68wmgfg/exec';  // Set your Google Apps Script URL here
 
 // Feedback submission
 var lastFailedError = '';
@@ -22,44 +22,17 @@ function submitFeedback() {
     btn.innerHTML = '<svg class="spinner" width="14" height="14" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" fill="none" stroke-dasharray="30 70"/></svg> ' + t('submitting');
     btn.disabled = true;
 
-    // Use URL params approach for better compatibility (avoids CORS/adblocker issues)
-    var params = new URLSearchParams();
-    params.append('errorMessage', lastFailedError);
-    params.append('language', currentLang);
-    params.append('userAgent', navigator.userAgent);
+    // Encode data for URL (limit length to avoid URL too long errors)
+    var errorData = encodeURIComponent(lastFailedError.substring(0, 1500));
+    var langData = encodeURIComponent(currentLang);
+    var uaData = encodeURIComponent(navigator.userAgent.substring(0, 150));
 
-    // Create hidden iframe for submission (most reliable method)
-    var iframe = document.createElement('iframe');
-    iframe.style.display = 'none';
-    iframe.name = 'feedbackFrame';
-    document.body.appendChild(iframe);
+    var url = FEEDBACK_API_URL + '?errorMessage=' + errorData + '&language=' + langData + '&userAgent=' + uaData;
 
-    var form = document.createElement('form');
-    form.method = 'POST';
-    form.action = FEEDBACK_API_URL;
-    form.target = 'feedbackFrame';
-
-    var fields = {
-        errorMessage: lastFailedError,
-        language: currentLang,
-        userAgent: navigator.userAgent
-    };
-
-    for (var key in fields) {
-        var input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = key;
-        input.value = fields[key];
-        form.appendChild(input);
-    }
-
-    document.body.appendChild(form);
-    form.submit();
-
-    // Clean up and show success
-    setTimeout(function() {
-        document.body.removeChild(form);
-        document.body.removeChild(iframe);
+    // Use Image beacon - most reliable, no CORS/Mixed Content issues
+    var img = new Image();
+    img.onload = img.onerror = function() {
+        // Request was sent (both load and error mean server received it)
         btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> ' + t('feedbackSent');
         btn.classList.add('success');
         setTimeout(function() {
@@ -67,7 +40,8 @@ function submitFeedback() {
             btn.disabled = false;
             btn.classList.remove('success');
         }, 3000);
-    }, 1000);
+    };
+    img.src = url;
 }
 
 // Hero section control

@@ -16,45 +16,35 @@
 2. 아래 코드를 복사해서 붙여넣기:
 
 ```javascript
-function doPost(e) {
+function doGet(e) {
   try {
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Feedback');
+    var data = e.parameter || {};
 
-    // Support both JSON and form data
-    var data;
-    if (e.postData && e.postData.contents) {
-      try {
-        data = JSON.parse(e.postData.contents);
-      } catch (jsonError) {
-        // Not JSON, try form parameters
-        data = e.parameter || {};
-      }
-    } else {
-      data = e.parameter || {};
+    // Only save if there's error message data
+    if (data.errorMessage) {
+      sheet.appendRow([
+        new Date().toISOString(),
+        decodeURIComponent(data.errorMessage || ''),
+        data.language || 'unknown',
+        decodeURIComponent(data.userAgent || '')
+      ]);
     }
 
-    sheet.appendRow([
-      new Date().toISOString(),
-      data.errorMessage || '',
-      data.language || 'unknown',
-      data.userAgent || ''
-    ]);
-
+    // Return 1x1 transparent pixel (for image beacon)
     return ContentService
-      .createTextOutput(JSON.stringify({ success: true }))
-      .setMimeType(ContentService.MimeType.JSON);
+      .createTextOutput('')
+      .setMimeType(ContentService.MimeType.TEXT);
 
   } catch (error) {
     return ContentService
-      .createTextOutput(JSON.stringify({ success: false, error: error.message }))
-      .setMimeType(ContentService.MimeType.JSON);
+      .createTextOutput('')
+      .setMimeType(ContentService.MimeType.TEXT);
   }
 }
 
-function doGet(e) {
-  return ContentService
-    .createTextOutput(JSON.stringify({ status: 'ok', message: 'Feedback API is running' }))
-    .setMimeType(ContentService.MimeType.JSON);
+function doPost(e) {
+  return doGet(e);
 }
 ```
 
@@ -67,7 +57,15 @@ function doGet(e) {
 6. **배포** 클릭
 7. **웹 앱 URL** 복사 (예: `https://script.google.com/macros/s/xxx.../exec`)
 
-## 3. 웹사이트에 URL 설정
+## 3. 기존 배포 업데이트 (이미 배포한 경우)
+
+1. Apps Script 편집기에서 코드 수정
+2. **배포 > 배포 관리** 클릭
+3. 연필 아이콘(수정) 클릭
+4. 버전: **새 버전** 선택
+5. **배포** 클릭
+
+## 4. 웹사이트에 URL 설정
 
 `js/analyzer.js` 파일에서 `FEEDBACK_API_URL` 값을 복사한 URL로 변경:
 
@@ -75,7 +73,7 @@ function doGet(e) {
 var FEEDBACK_API_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
 ```
 
-## 4. 테스트
+## 5. 테스트
 
 1. 웹사이트에서 분석 실패하는 오류 입력
 2. "이 오류 제보하기" 버튼 클릭
@@ -83,6 +81,6 @@ var FEEDBACK_API_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
 
 ## 보안 참고사항
 
-- Google Apps Script URL은 공개되지만, POST 요청만 받으므로 안전
-- 스프레드시트 자체는 비공개로 유지됨
+- Google Apps Script URL은 공개되지만, 스프레드시트는 비공개
 - 민감한 정보는 수집하지 않음 (오류 메시지만)
+- Image beacon 방식으로 CORS/Mixed Content 문제 없음
