@@ -1,14 +1,49 @@
 # TypeScript Error Analyzer - robots.txt
 # https://tserror-analyzer.me
 
+# Allow all search engines
 User-agent: *
 Allow: /
 
 # Sitemap location
 Sitemap: https://tserror-analyzer.me/sitemap.xml
 
-# Disallow admin/private paths (none currently)
-# Disallow: /admin/
-
-# Crawl-delay for polite crawling (optional)
+# Crawl-delay for polite crawling
 Crawl-delay: 1
+
+# Specific rules for major search engines
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Yandex
+Allow: /
+Crawl-delay: 2
+
+User-agent: Baiduspider
+Allow: /
+Crawl-delay: 2
+
+# Block AI/LLM crawlers that don't respect content
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+# Block aggressive crawlers
+User-agent: AhrefsBot
+Crawl-delay: 10
+
+User-agent: SemrushBot
+Crawl-delay: 10
