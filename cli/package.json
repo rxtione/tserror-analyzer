@@ -25,11 +25,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-username/ts-error-analyzer.git"
+    "url": "https://github.com/rxtione/tserror-analyzer.git"
   },
   "homepage": "https://tserror-analyzer.me",
   "bugs": {
-    "url": "https://github.com/your-username/ts-error-analyzer/issues"
+    "url": "https://github.com/rxtione/tserror-analyzer/issues"
   },
   "engines": {
     "node": ">=14.0.0"

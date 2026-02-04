@@ -71,7 +71,7 @@ ${chalk.yellow('Options:')}
   -w, --web               Open web version
 
 ${chalk.blue('Web:')} https://tserror-analyzer.me
-${chalk.blue('GitHub:')} https://github.com/your-username/ts-error-analyzer
+${chalk.blue('GitHub:')} https://github.com/rxtione/tserror-analyzer
 `);
 }
 

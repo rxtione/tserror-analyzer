@@ -164,7 +164,7 @@ Contributions are welcome! Here's how you can help:
 
 ```bash
 # Clone the repo
-git clone https://github.com/your-username/ts-error-analyzer.git
+git clone https://github.com/rxtione/tserror-analyzer.git
 
 # Open in browser
 open index.html
@@ -196,6 +196,6 @@ MIT © TypeScript Error Analyzer
 
 <p align="center">
   <a href="https://tserror-analyzer.me">🌐 Try it now</a> •
-  <a href="https://github.com/your-username/ts-error-analyzer/issues">🐛 Report Bug</a> •
+  <a href="https://github.com/rxtione/tserror-analyzer/issues">🐛 Report Bug</a> •
   <a href="https://twitter.com/intent/tweet?text=Check%20out%20TypeScript%20Error%20Analyzer!%20Finally%20understand%20those%20cryptic%20TS%20errors%20%F0%9F%8E%89&url=https://tserror-analyzer.me">🐦 Share on Twitter</a>
 </p>
