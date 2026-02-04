@@ -1,14 +1,44 @@
 // analyzer.js - TypeScript Error Analyzer Core Logic
 
+// Hero section control
+function scrollToAnalyzer() {
+    var container = document.getElementById('mainContainer');
+    container.scrollIntoView({ behavior: 'smooth' });
+}
+
+function collapseHero() {
+    var hero = document.getElementById('heroSection');
+    var header = document.getElementById('headerCompact');
+    hero.classList.add('collapsed');
+    header.classList.add('visible');
+}
+
+function expandHero() {
+    var hero = document.getElementById('heroSection');
+    var header = document.getElementById('headerCompact');
+    hero.classList.remove('collapsed');
+    header.classList.remove('visible');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
 function analyzeError() {
     var input = document.getElementById('errorInput').value.trim();
     if (!input) {
         alert(t('alertEmpty'));
         return;
     }
+
+    // Collapse hero section on analysis
+    collapseHero();
+
     var result = parseTypeScriptError(input);
     displayResult(result);
     document.getElementById('bottomAd').style.display = 'flex';
+
+    // Scroll to results
+    setTimeout(function() {
+        document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth' });
+    }, 100);
 }
 
 function parseTypeScriptError(errorText) {

@@ -98,8 +98,87 @@
         <button class="lang-btn" onclick="setLanguage('zh')" data-lang="zh">中文</button>
     </div>
 
-    <div class="container">
-        <header class="header">
+    <!-- Hero Section - Collapsible -->
+    <section class="hero" id="heroSection">
+        <div class="hero-bg">
+            <div class="hero-gradient"></div>
+            <div class="hero-grid"></div>
+            <div class="floating-icons">
+                <span class="float-icon" style="--delay: 0s; --x: 10%; --y: 20%;">{}</span>
+                <span class="float-icon" style="--delay: 1s; --x: 85%; --y: 15%;">[]</span>
+                <span class="float-icon" style="--delay: 2s; --x: 75%; --y: 70%;">&lt;T&gt;</span>
+                <span class="float-icon" style="--delay: 0.5s; --x: 20%; --y: 75%;">:?</span>
+                <span class="float-icon" style="--delay: 1.5s; --x: 50%; --y: 10%;">|</span>
+                <span class="float-icon" style="--delay: 2.5s; --x: 90%; --y: 50%;">=&gt;</span>
+            </div>
+        </div>
+
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="badge-icon">✨</span>
+                <span data-i18n="heroBadge">무료 개발자 도구</span>
+            </div>
+
+            <h1 class="hero-title">
+                <span class="hero-title-line" data-i18n="heroTitle1">TypeScript 오류,</span>
+                <span class="hero-title-line hero-highlight" data-i18n="heroTitle2">이제 쉽게 해결하세요</span>
+            </h1>
+
+            <p class="hero-desc" data-i18n="heroDesc">
+                "이 타입이 왜 안 맞지?" 더 이상 고민하지 마세요.<br>
+                복잡한 타입 오류를 붙여넣기만 하면, 정확히 어떤 필드가 문제인지 콕 집어 알려드립니다.
+            </p>
+
+            <div class="hero-features">
+                <div class="hero-feature">
+                    <span class="feature-icon">🎯</span>
+                    <span data-i18n="heroFeature1">정확한 오류 위치 추적</span>
+                </div>
+                <div class="hero-feature">
+                    <span class="feature-icon">⚡</span>
+                    <span data-i18n="heroFeature2">즉시 분석 결과</span>
+                </div>
+                <div class="hero-feature">
+                    <span class="feature-icon">💡</span>
+                    <span data-i18n="heroFeature3">해결 방법 제안</span>
+                </div>
+            </div>
+
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-number">8+</span>
+                    <span class="stat-label" data-i18n="heroStat1">지원 오류 타입</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <span class="stat-number">4</span>
+                    <span class="stat-label" data-i18n="heroStat2">지원 언어</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <span class="stat-number">100%</span>
+                    <span class="stat-label" data-i18n="heroStat3">무료</span>
+                </div>
+            </div>
+
+            <button class="hero-cta" onclick="scrollToAnalyzer()">
+                <span data-i18n="heroCta">지금 바로 분석하기</span>
+                <span class="cta-arrow">↓</span>
+            </button>
+        </div>
+    </section>
+
+    <!-- Compact Header (shown after analysis) -->
+    <header class="header-compact" id="headerCompact">
+        <div class="logo">
+            <div class="logo-icon">TS</div>
+            <h1 data-i18n="title">TypeScript 오류 분석기</h1>
+        </div>
+        <button class="expand-btn" onclick="expandHero()" data-i18n="expandHero">소개 보기</button>
+    </header>
+
+    <div class="container" id="mainContainer">
+        <header class="header" id="oldHeader" style="display: none;">
             <div class="logo">
                 <div class="logo-icon">TS</div>
                 <h1 data-i18n="title">TypeScript 오류 분석기</h1>

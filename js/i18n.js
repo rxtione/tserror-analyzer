@@ -1,6 +1,21 @@
 // i18n.js - Internationalization for TypeScript Error Analyzer
 const i18n = {
     ko: {
+        // Hero Section
+        heroBadge: '무료 개발자 도구',
+        heroTitle1: 'TypeScript 오류,',
+        heroTitle2: '이제 쉽게 해결하세요',
+        heroDesc: '"이 타입이 왜 안 맞지?" 더 이상 고민하지 마세요.<br>복잡한 타입 오류를 붙여넣기만 하면, 정확히 어떤 필드가 문제인지 콕 집어 알려드립니다.',
+        heroFeature1: '정확한 오류 위치 추적',
+        heroFeature2: '즉시 분석 결과',
+        heroFeature3: '해결 방법 제안',
+        heroStat1: '지원 오류 타입',
+        heroStat2: '지원 언어',
+        heroStat3: '무료',
+        heroCta: '지금 바로 분석하기',
+        expandHero: '소개 보기',
+
+        // Main
         title: 'TypeScript 오류 분석기',
         subtitle: '복잡한 타입 오류를 분석하여 어떤 필드가 문제인지 명확하게 알려드립니다',
         inputTitle: '오류 메시지 입력',
@@ -59,6 +74,21 @@ const i18n = {
         didYouMean: '혹시 이것을 의미하셨나요?'
     },
     en: {
+        // Hero Section
+        heroBadge: 'Free Developer Tool',
+        heroTitle1: 'TypeScript Errors,',
+        heroTitle2: 'Now Easy to Fix',
+        heroDesc: '"Why doesn\'t this type match?" Stop wondering.<br>Just paste your complex type error, and we\'ll pinpoint exactly which field is the problem.',
+        heroFeature1: 'Precise Error Location',
+        heroFeature2: 'Instant Analysis',
+        heroFeature3: 'Solution Suggestions',
+        heroStat1: 'Error Types',
+        heroStat2: 'Languages',
+        heroStat3: 'Free',
+        heroCta: 'Analyze Now',
+        expandHero: 'Show Intro',
+
+        // Main
         title: 'TypeScript Error Analyzer',
         subtitle: 'Analyze complex type errors and clearly identify which fields are problematic',
         inputTitle: 'Enter Error Message',
@@ -117,6 +147,21 @@ const i18n = {
         didYouMean: 'Did you mean?'
     },
     ja: {
+        // Hero Section
+        heroBadge: '無料開発者ツール',
+        heroTitle1: 'TypeScriptエラー、',
+        heroTitle2: 'もう簡単に解決',
+        heroDesc: '「なぜこの型が合わないの？」もう悩まないで。<br>複雑な型エラーを貼り付けるだけで、どのフィールドに問題があるか正確に教えます。',
+        heroFeature1: '正確なエラー位置追跡',
+        heroFeature2: '即座に分析結果',
+        heroFeature3: '解決方法を提案',
+        heroStat1: '対応エラータイプ',
+        heroStat2: '対応言語',
+        heroStat3: '無料',
+        heroCta: '今すぐ分析する',
+        expandHero: '紹介を見る',
+
+        // Main
         title: 'TypeScript エラー分析ツール',
         subtitle: '複雑な型エラーを分析し、どのフィールドに問題があるかを明確に示します',
         inputTitle: 'エラーメッセージを入力',
@@ -175,6 +220,21 @@ const i18n = {
         didYouMean: 'もしかして？'
     },
     zh: {
+        // Hero Section
+        heroBadge: '免费开发者工具',
+        heroTitle1: 'TypeScript 错误，',
+        heroTitle2: '现在轻松解决',
+        heroDesc: '"为什么这个类型不匹配？"别再纠结了。<br>只需粘贴复杂的类型错误，我们会准确告诉你哪个字段有问题。',
+        heroFeature1: '精准错误定位',
+        heroFeature2: '即时分析结果',
+        heroFeature3: '解决方案建议',
+        heroStat1: '支持错误类型',
+        heroStat2: '支持语言',
+        heroStat3: '免费',
+        heroCta: '立即分析',
+        expandHero: '查看介绍',
+
+        // Main
         title: 'TypeScript 错误分析器',
         subtitle: '分析复杂的类型错误，清楚地识别哪些字段有问题',
         inputTitle: '输入错误消息',
