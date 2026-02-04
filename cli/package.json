@@ -1,0 +1,46 @@
+{
+  "name": "ts-error-analyzer",
+  "version": "1.0.0",
+  "description": "CLI tool to analyze and explain TypeScript errors in human-readable format",
+  "main": "index.js",
+  "bin": {
+    "tsa": "./bin/tsa.js",
+    "ts-error-analyzer": "./bin/tsa.js"
+  },
+  "scripts": {
+    "test": "node test.js"
+  },
+  "keywords": [
+    "typescript",
+    "error",
+    "analyzer",
+    "debug",
+    "type-error",
+    "ts2322",
+    "ts2345",
+    "cli",
+    "developer-tools"
+  ],
+  "author": "TypeScript Error Analyzer",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/ts-error-analyzer.git"
+  },
+  "homepage": "https://tserror-analyzer.me",
+  "bugs": {
+    "url": "https://github.com/your-username/ts-error-analyzer/issues"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "files": [
+    "bin/",
+    "lib/",
+    "README.md"
+  ],
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "clipboardy": "^2.3.0"
+  }
+}
