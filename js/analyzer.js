@@ -186,6 +186,298 @@ function parseTypeScriptError(errorText) {
                 isArrayMismatch: argMatch[2].includes('[]') && !argMatch[1].includes('[]')
             });
         }
+
+        // TS2571: Object is of type 'unknown'
+        var unknownMatch = trimmed.match(/Object is of type ['"]unknown['"]/);
+        if (unknownMatch) {
+            problems.push({
+                path: currentPath.slice(),
+                type: 'unknownType'
+            });
+        }
+
+        // TS2532: Object is possibly 'undefined'
+        var possiblyUndefinedMatch = trimmed.match(/Object is possibly ['"]undefined['"]/);
+        if (possiblyUndefinedMatch) {
+            problems.push({
+                path: currentPath.slice(),
+                type: 'possiblyUndefined'
+            });
+        }
+
+        // TS2531: Object is possibly 'null'
+        var possiblyNullMatch = trimmed.match(/Object is possibly ['"]null['"]/);
+        if (possiblyNullMatch) {
+            problems.push({
+                path: currentPath.slice(),
+                type: 'possiblyNull'
+            });
+        }
+
+        // TS2533: Object is possibly 'null' or 'undefined'
+        var possiblyNullOrUndefinedMatch = trimmed.match(/Object is possibly ['"]null['"] or ['"]undefined['"]/);
+        if (possiblyNullOrUndefinedMatch) {
+            problems.push({
+                path: currentPath.slice(),
+                type: 'possiblyNullOrUndefined'
+            });
+        }
+
+        // TS2554: Expected X arguments, but got Y
+        var argCountMatch = trimmed.match(/Expected (\d+)(?:-(\d+))? arguments?, but got (\d+)/);
+        if (argCountMatch) {
+            problems.push({
+                path: currentPath.slice(),
+                type: 'argumentCount',
+                expectedMin: parseInt(argCountMatch[1]),
+                expectedMax: argCountMatch[2] ? parseInt(argCountMatch[2]) : parseInt(argCountMatch[1]),
+                got: parseInt(argCountMatch[3])
+            });
+        }
+
+        // TS2339: Property 'X' does not exist on type 'Y' (different from notExist - captures more context)
+        var propNotExistMatch = trimmed.match(/Property ['"]([^'"]+)['"] does not exist on type ['"]([^'"]+)['"]/);
+        if (propNotExistMatch && !notExistMatch) {
+            problems.push({
+                path: currentPath.slice(),
+                type: 'propertyNotExist',
+                propName: propNotExistMatch[1],
+                onType: propNotExistMatch[2]
+            });
+        }
+
+        // TS2349: This expression is not callable
+        var notCallableMatch = trimmed.match(/This expression is not callable/);
+        if (notCallableMatch) {
+            problems.push({
+                path: currentPath.slice(),
+                type: 'notCallable'
+            });
+        }
+
+        // TS2351: This expression is not constructable
+        var notConstructableMatch = trimmed.match(/This expression is not constructable/);
+        if (notConstructableMatch) {
+            problems.push({
+                path: currentPath.slice(),
+                type: 'notConstructable'
+            });
+        }
+
+        // TS2355: A function whose declared type is neither 'void' nor 'any' must return a value
+        var mustReturnMatch = trimmed.match(/A function whose declared type is neither ['"]void['"] nor ['"]any['"] must return a value/);
+        if (mustReturnMatch) {
+            problems.push({
+                path: currentPath.slice(),
+                type: 'mustReturn'
+            });
+        }
+
+        // TS2365: Operator 'X' cannot be applied to types 'Y' and 'Z'
+        var operatorMatch = trimmed.match(/Operator ['"]([^'"]+)['"] cannot be applied to types ['"]([^'"]+)['"] and ['"]([^'"]+)['"]/);
+        if (operatorMatch) {
+            problems.push({
+                path: currentPath.slice(),
+                type: 'operatorError',
+                operator: operatorMatch[1],
+                leftType: operatorMatch[2],
+                rightType: operatorMatch[3]
+            });
+        }
+
+        // TS2344: Type 'X' does not satisfy the constraint 'Y'
+        var constraintMatch = trimmed.match(/Type ['"]([^'"]+)['"] does not satisfy the constraint ['"]([^'"]+)['"]/);
+        if (constraintMatch) {
+            problems.push({
+                path: currentPath.slice(),
+                type: 'constraintError',
+                sourceType: constraintMatch[1],
+                constraint: constraintMatch[2]
+            });
+        }
+
+        // TS2352: Conversion of type 'X' to type 'Y' may be a mistake
+        var conversionMistakeMatch = trimmed.match(/Conversion of type ['"]([^'"]+)['"] to type ['"]([^'"]+)['"] may be a mistake/);
+        if (conversionMistakeMatch) {
+            problems.push({
+                path: currentPath.slice(),
+                type: 'conversionMistake',
+                sourceType: conversionMistakeMatch[1],
+                targetType: conversionMistakeMatch[2]
+            });
+        }
+
+        // TS2416: Property 'X' in type 'Y' is not assignable to the same property in base type 'Z'
+        var basePropertyMatch = trimmed.match(/Property ['"]([^'"]+)['"] in type ['"]([^'"]+)['"] is not assignable to the same property in base type ['"]([^'"]+)['"]/);
+        if (basePropertyMatch) {
+            problems.push({
+                path: currentPath.slice(),
+                type: 'basePropertyMismatch',
+                propName: basePropertyMatch[1],
+                childType: basePropertyMatch[2],
+                baseType: basePropertyMatch[3]
+            });
+        }
+
+        // TS2740: Type 'X' is missing the following properties from type 'Y': a, b, c
+        var missingPropsFromMatch = trimmed.match(/Type ['"]([^'"]+)['"] is missing the following properties from type ['"]([^'"]+)['"]:\s*(.+)/);
+        if (missingPropsFromMatch && !missingMatch) {
+            var propsList = missingPropsFromMatch[3].split(',').map(function(p) {
+                return p.trim().replace(/^and\s+/, '');
+            }).filter(function(p) { return p && !p.includes(' more'); });
+            problems.push({
+                path: currentPath.slice(),
+                type: 'missingPropsFrom',
+                sourceType: missingPropsFromMatch[1],
+                targetType: missingPropsFromMatch[2],
+                missingProps: propsList
+            });
+        }
+
+        // TS2367: This comparison appears to be unintentional
+        var unintentionalCompareMatch = trimmed.match(/This (?:condition|comparison) will always return ['"]([^'"]+)['"]|This comparison appears to be unintentional/);
+        if (unintentionalCompareMatch) {
+            problems.push({
+                path: currentPath.slice(),
+                type: 'unintentionalComparison',
+                result: unintentionalCompareMatch[1] || 'false'
+            });
+        }
+
+        // TS2454: Variable 'X' is used before being assigned
+        var usedBeforeAssignedMatch = trimmed.match(/Variable ['"]([^'"]+)['"] is used before being assigned/);
+        if (usedBeforeAssignedMatch) {
+            problems.push({
+                path: [],
+                type: 'usedBeforeAssigned',
+                varName: usedBeforeAssignedMatch[1]
+            });
+        }
+
+        // TS2564: Property 'X' has no initializer and is not definitely assigned
+        var noInitializerMatch = trimmed.match(/Property ['"]([^'"]+)['"] has no initializer and is not definitely assigned/);
+        if (noInitializerMatch) {
+            problems.push({
+                path: [],
+                type: 'noInitializer',
+                propName: noInitializerMatch[1]
+            });
+        }
+
+        // TS2322 with 'undefined' is not assignable
+        var undefinedAssignMatch = trimmed.match(/Type ['"]undefined['"] is not assignable to type ['"]([^'"]+)['"]/);
+        if (undefinedAssignMatch && !typeMatch) {
+            problems.push({
+                path: currentPath.slice(),
+                type: 'undefinedNotAssignable',
+                targetType: undefinedAssignMatch[1]
+            });
+        }
+
+        // TS2322 with 'null' is not assignable
+        var nullAssignMatch = trimmed.match(/Type ['"]null['"] is not assignable to type ['"]([^'"]+)['"]/);
+        if (nullAssignMatch && !typeMatch) {
+            problems.push({
+                path: currentPath.slice(),
+                type: 'nullNotAssignable',
+                targetType: nullAssignMatch[1]
+            });
+        }
+
+        // TS2314: Generic type 'X' requires Y type argument(s)
+        var genericArgsMatch = trimmed.match(/Generic type ['"]([^'"]+)['"] requires (\d+) type argument\(s\)/);
+        if (genericArgsMatch) {
+            problems.push({
+                path: currentPath.slice(),
+                type: 'genericArgsRequired',
+                genericType: genericArgsMatch[1],
+                requiredCount: parseInt(genericArgsMatch[2])
+            });
+        }
+
+        // TS2693: 'X' only refers to a type, but is being used as a value here
+        var typeAsValueMatch = trimmed.match(/['"]([^'"]+)['"] only refers to a type, but is being used as a value here/);
+        if (typeAsValueMatch) {
+            problems.push({
+                path: [],
+                type: 'typeAsValue',
+                typeName: typeAsValueMatch[1]
+            });
+        }
+
+        // TS2749: 'X' refers to a value, but is being used as a type here
+        var valueAsTypeMatch = trimmed.match(/['"]([^'"]+)['"] refers to a value, but is being used as a type here/);
+        if (valueAsTypeMatch) {
+            problems.push({
+                path: [],
+                type: 'valueAsType',
+                valueName: valueAsTypeMatch[1]
+            });
+        }
+
+        // TS1005: 'X' expected
+        var syntaxExpectedMatch = trimmed.match(/['"]([^'"]+)['"] expected/);
+        if (syntaxExpectedMatch) {
+            problems.push({
+                path: [],
+                type: 'syntaxExpected',
+                expected: syntaxExpectedMatch[1]
+            });
+        }
+
+        // TS2430: Interface 'X' incorrectly extends interface 'Y'
+        var interfaceExtendsMatch = trimmed.match(/Interface ['"]([^'"]+)['"] incorrectly extends interface ['"]([^'"]+)['"]/);
+        if (interfaceExtendsMatch) {
+            problems.push({
+                path: currentPath.slice(),
+                type: 'interfaceExtendError',
+                childInterface: interfaceExtendsMatch[1],
+                parentInterface: interfaceExtendsMatch[2]
+            });
+        }
+
+        // TS2420: Class 'X' incorrectly implements interface 'Y'
+        var classImplementsMatch = trimmed.match(/Class ['"]([^'"]+)['"] incorrectly implements interface ['"]([^'"]+)['"]/);
+        if (classImplementsMatch) {
+            problems.push({
+                path: currentPath.slice(),
+                type: 'classImplementError',
+                className: classImplementsMatch[1],
+                interfaceName: classImplementsMatch[2]
+            });
+        }
+
+        // TS7053: Element implicitly has an 'any' type because expression of type 'X' can't be used to index type 'Y'
+        var indexAccessMatch = trimmed.match(/Element implicitly has an ['"]any['"] type because expression of type ['"]([^'"]+)['"] can't be used to index type ['"]([^'"]+)['"]/);
+        if (indexAccessMatch) {
+            problems.push({
+                path: currentPath.slice(),
+                type: 'indexAccessError',
+                indexType: indexAccessMatch[1],
+                objectType: indexAccessMatch[2]
+            });
+        }
+
+        // TS2538: Type 'X' cannot be used as an index type
+        var indexTypeMatch = trimmed.match(/Type ['"]([^'"]+)['"] cannot be used as an index type/);
+        if (indexTypeMatch) {
+            problems.push({
+                path: currentPath.slice(),
+                type: 'invalidIndexType',
+                indexType: indexTypeMatch[1]
+            });
+        }
+
+        // TS2536: Type 'X' cannot be used to index type 'Y'
+        var cannotIndexMatch = trimmed.match(/Type ['"]([^'"]+)['"] cannot be used to index type ['"]([^'"]+)['"]/);
+        if (cannotIndexMatch) {
+            problems.push({
+                path: currentPath.slice(),
+                type: 'cannotIndex',
+                indexType: cannotIndexMatch[1],
+                objectType: cannotIndexMatch[2]
+            });
+        }
     }
 
     result.problems = deduplicateProblems(problems);
@@ -548,6 +840,14 @@ function getProblemClass(problem) {
     if (problem.type === 'cannotFindModule') return 'module';
     if (problem.type === 'cannotFindName') return 'notfound';
     if (problem.type === 'noOverload') return 'generic';
+    if (problem.type === 'possiblyUndefined' || problem.type === 'possiblyNull' || problem.type === 'possiblyNullOrUndefined') return 'nullable';
+    if (problem.type === 'unknownType') return 'unknown';
+    if (problem.type === 'argumentCount') return 'argument';
+    if (problem.type === 'notCallable' || problem.type === 'notConstructable') return 'callable';
+    if (problem.type === 'operatorError') return 'operator';
+    if (problem.type === 'constraintError') return 'constraint';
+    if (problem.type === 'interfaceExtendError' || problem.type === 'classImplementError') return 'inheritance';
+    if (problem.type === 'indexAccessError' || problem.type === 'invalidIndexType' || problem.type === 'cannotIndex') return 'index';
     if (problem.isGeneric) return 'generic';
     if (problem.isUnion) return 'union';
     return '';
@@ -555,11 +855,36 @@ function getProblemClass(problem) {
 
 function getProblemTitle(problem, result) {
     if (problem.type === 'missing') return t('missingProp');
-    if (problem.type === 'notExist') return t('missingProp');
+    if (problem.type === 'notExist' || problem.type === 'propertyNotExist') return t('missingProp');
     if (problem.type === 'cannotFindName') return t('notFoundError');
     if (problem.type === 'cannotFindModule') return t('moduleError');
     if (problem.type === 'noOverload') return t('overloadError');
     if (problem.type === 'implicitAny') return t('implicitAnyError');
+    if (problem.type === 'unknownType') return t('unknownTypeError');
+    if (problem.type === 'possiblyUndefined') return t('possiblyUndefinedError');
+    if (problem.type === 'possiblyNull') return t('possiblyNullError');
+    if (problem.type === 'possiblyNullOrUndefined') return t('possiblyNullOrUndefinedError');
+    if (problem.type === 'argumentCount') return t('argumentCountError');
+    if (problem.type === 'notCallable') return t('notCallableError');
+    if (problem.type === 'notConstructable') return t('notConstructableError');
+    if (problem.type === 'mustReturn') return t('mustReturnError');
+    if (problem.type === 'operatorError') return t('operatorError');
+    if (problem.type === 'constraintError') return t('constraintError');
+    if (problem.type === 'conversionMistake') return t('conversionMistakeError');
+    if (problem.type === 'basePropertyMismatch') return t('basePropertyError');
+    if (problem.type === 'missingPropsFrom') return t('missingProp');
+    if (problem.type === 'unintentionalComparison') return t('unintentionalComparisonError');
+    if (problem.type === 'usedBeforeAssigned') return t('usedBeforeAssignedError');
+    if (problem.type === 'noInitializer') return t('noInitializerError');
+    if (problem.type === 'undefinedNotAssignable') return t('undefinedNotAssignableError');
+    if (problem.type === 'nullNotAssignable') return t('nullNotAssignableError');
+    if (problem.type === 'genericArgsRequired') return t('genericArgsError');
+    if (problem.type === 'typeAsValue') return t('typeAsValueError');
+    if (problem.type === 'valueAsType') return t('valueAsTypeError');
+    if (problem.type === 'syntaxExpected') return t('syntaxError');
+    if (problem.type === 'interfaceExtendError') return t('interfaceExtendError');
+    if (problem.type === 'classImplementError') return t('classImplementError');
+    if (problem.type === 'indexAccessError' || problem.type === 'invalidIndexType' || problem.type === 'cannotIndex') return t('indexError');
     if (problem.isGeneric) return t('genericError');
     if (problem.isUnion) return t('unionError');
     if (problem.isLiteral) return t('literalError');
@@ -641,7 +966,190 @@ function displayResult(result) {
             html += '<span class="comment">' + t('correctCode') + '</span>\n';
             html += 'function fn(' + problem.paramName + '<span class="keyword">: string</span>) { ... }';
             html += '</div></div>';
-        } else {
+        } else if (problem.type === 'unknownType') {
+            html += '<div class="type-box wrong">' + t('unknownTypeDesc') + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<div class="solution-code">';
+            html += '<span class="comment">' + t('wrongCode') + '</span>\n';
+            html += 'const value: unknown = getData();\nvalue.someMethod(); <span class="comment">// Error!</span>\n\n';
+            html += '<span class="comment">' + t('correctCode') + '</span>\n';
+            html += '<span class="keyword">if</span> (<span class="keyword">typeof</span> value === "string") {\n  value.toUpperCase(); <span class="comment">// OK</span>\n}';
+            html += '</div></div>';
+        } else if (problem.type === 'possiblyUndefined') {
+            html += '<div class="type-box wrong">' + t('possiblyUndefinedDesc') + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<div class="solution-code">';
+            html += '<span class="comment">// Option 1: Optional chaining</span>\nobj?.property\n\n';
+            html += '<span class="comment">// Option 2: Nullish check</span>\n<span class="keyword">if</span> (obj !== undefined) { obj.property }\n\n';
+            html += '<span class="comment">// Option 3: Non-null assertion (use carefully)</span>\nobj!.property';
+            html += '</div></div>';
+        } else if (problem.type === 'possiblyNull') {
+            html += '<div class="type-box wrong">' + t('possiblyNullDesc') + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<div class="solution-code">';
+            html += '<span class="comment">// Option 1: Optional chaining</span>\nobj?.property\n\n';
+            html += '<span class="comment">// Option 2: Null check</span>\n<span class="keyword">if</span> (obj !== null) { obj.property }\n\n';
+            html += '<span class="comment">// Option 3: Nullish coalescing</span>\nconst value = obj ?? defaultValue;';
+            html += '</div></div>';
+        } else if (problem.type === 'possiblyNullOrUndefined') {
+            html += '<div class="type-box wrong">' + t('possiblyNullOrUndefinedDesc') + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<div class="solution-code">';
+            html += '<span class="comment">// Option 1: Optional chaining</span>\nobj?.property\n\n';
+            html += '<span class="comment">// Option 2: Nullish check</span>\n<span class="keyword">if</span> (obj != null) { obj.property }\n\n';
+            html += '<span class="comment">// Option 3: Nullish coalescing</span>\nconst value = obj ?? defaultValue;';
+            html += '</div></div>';
+        } else if (problem.type === 'argumentCount') {
+            html += '<div class="type-box wrong">' + t('expectedArgs') + ': ' + problem.expectedMin + (problem.expectedMax !== problem.expectedMin ? '-' + problem.expectedMax : '') + ', ' + t('gotArgs') + ': ' + problem.got + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<p class="solution-text">' + t('argumentCountSolution') + '</p>';
+            html += '</div>';
+        } else if (problem.type === 'notCallable') {
+            html += '<div class="type-box wrong">' + t('notCallableDesc') + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<p class="solution-text">' + t('notCallableSolution') + '</p>';
+            html += '</div>';
+        } else if (problem.type === 'notConstructable') {
+            html += '<div class="type-box wrong">' + t('notConstructableDesc') + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<p class="solution-text">' + t('notConstructableSolution') + '</p>';
+            html += '</div>';
+        } else if (problem.type === 'mustReturn') {
+            html += '<div class="type-box wrong">' + t('mustReturnDesc') + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<div class="solution-code">';
+            html += '<span class="comment">' + t('wrongCode') + '</span>\n';
+            html += '<span class="keyword">function</span> getValue(): string {\n  <span class="comment">// no return!</span>\n}\n\n';
+            html += '<span class="comment">' + t('correctCode') + '</span>\n';
+            html += '<span class="keyword">function</span> getValue(): string {\n  <span class="keyword">return</span> "value";\n}';
+            html += '</div></div>';
+        } else if (problem.type === 'operatorError') {
+            html += '<div class="type-box wrong">' + t('operatorErrorDesc').replace('{op}', problem.operator).replace('{left}', problem.leftType).replace('{right}', problem.rightType) + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<p class="solution-text">' + t('operatorSolution') + '</p>';
+            html += '</div>';
+        } else if (problem.type === 'constraintError') {
+            html += '<div class="type-box wrong">' + t('constraintErrorDesc').replace('{type}', problem.sourceType).replace('{constraint}', problem.constraint) + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<p class="solution-text">' + t('constraintSolution') + '</p>';
+            html += '</div>';
+        } else if (problem.type === 'conversionMistake') {
+            html += '<div class="type-box wrong">' + t('conversionMistakeDesc').replace('{from}', problem.sourceType).replace('{to}', problem.targetType) + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<div class="solution-code">';
+            html += '<span class="comment">// ' + t('useAsUnknown') + '</span>\n';
+            html += 'const result = value <span class="keyword">as unknown as</span> TargetType;';
+            html += '</div></div>';
+        } else if (problem.type === 'basePropertyMismatch') {
+            html += '<div class="type-box wrong">' + t('basePropertyDesc').replace('{prop}', problem.propName).replace('{child}', problem.childType).replace('{base}', problem.baseType) + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<p class="solution-text">' + t('basePropertySolution') + '</p>';
+            html += '</div>';
+        } else if (problem.type === 'missingPropsFrom') {
+            html += '<div class="type-box wrong">' + t('missingPropsFromDesc').replace('{source}', problem.sourceType).replace('{target}', problem.targetType) + '<br><br>' + t('requiredProps') + ': ' + problem.missingProps.join(', ') + '</div>';
+        } else if (problem.type === 'unintentionalComparison') {
+            html += '<div class="type-box wrong">' + t('unintentionalComparisonDesc').replace('{result}', problem.result) + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<p class="solution-text">' + t('unintentionalComparisonSolution') + '</p>';
+            html += '</div>';
+        } else if (problem.type === 'usedBeforeAssigned') {
+            html += '<div class="type-box wrong">' + t('usedBeforeAssignedDesc').replace('{var}', problem.varName) + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<div class="solution-code">';
+            html += '<span class="comment">' + t('wrongCode') + '</span>\n';
+            html += '<span class="keyword">let</span> ' + problem.varName + ';\nconsole.log(' + problem.varName + '); <span class="comment">// Error!</span>\n\n';
+            html += '<span class="comment">' + t('correctCode') + '</span>\n';
+            html += '<span class="keyword">let</span> ' + problem.varName + ' = initialValue;\nconsole.log(' + problem.varName + ');';
+            html += '</div></div>';
+        } else if (problem.type === 'noInitializer') {
+            html += '<div class="type-box wrong">' + t('noInitializerDesc').replace('{prop}', problem.propName) + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<div class="solution-code">';
+            html += '<span class="comment">// Option 1: Initialize in declaration</span>\n';
+            html += problem.propName + ': string = "";\n\n';
+            html += '<span class="comment">// Option 2: Initialize in constructor</span>\n';
+            html += '<span class="keyword">constructor</span>() { this.' + problem.propName + ' = ""; }\n\n';
+            html += '<span class="comment">// Option 3: Use definite assignment assertion</span>\n';
+            html += problem.propName + '!: string;';
+            html += '</div></div>';
+        } else if (problem.type === 'undefinedNotAssignable' || problem.type === 'nullNotAssignable') {
+            var nullOrUndefined = problem.type === 'undefinedNotAssignable' ? 'undefined' : 'null';
+            html += '<div class="type-box wrong">' + t('nullishNotAssignableDesc').replace('{nullish}', nullOrUndefined).replace('{target}', problem.targetType) + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<div class="solution-code">';
+            html += '<span class="comment">// Option 1: Provide a value</span>\nconst value: ' + problem.targetType + ' = actualValue;\n\n';
+            html += '<span class="comment">// Option 2: Make optional</span>\nconst value: ' + problem.targetType + ' | ' + nullOrUndefined + ' = ' + nullOrUndefined + ';\n\n';
+            html += '<span class="comment">// Option 3: Use nullish coalescing</span>\nconst value = possiblyNull ?? defaultValue;';
+            html += '</div></div>';
+        } else if (problem.type === 'genericArgsRequired') {
+            html += '<div class="type-box wrong">' + t('genericArgsDesc').replace('{type}', problem.genericType).replace('{count}', problem.requiredCount) + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<div class="solution-code">';
+            html += '<span class="comment">' + t('wrongCode') + '</span>\n';
+            html += 'const arr: Array; <span class="comment">// Missing type argument</span>\n\n';
+            html += '<span class="comment">' + t('correctCode') + '</span>\n';
+            html += 'const arr: Array<span class="keyword">&lt;string&gt;</span>;';
+            html += '</div></div>';
+        } else if (problem.type === 'typeAsValue') {
+            html += '<div class="type-box wrong">' + t('typeAsValueDesc').replace('{name}', problem.typeName) + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<div class="solution-code">';
+            html += '<span class="comment">' + t('wrongCode') + '</span>\n';
+            html += 'const x = ' + problem.typeName + '; <span class="comment">// Using type as value</span>\n\n';
+            html += '<span class="comment">' + t('correctCode') + '</span>\n';
+            html += '<span class="keyword">type</span> X = ' + problem.typeName + '; <span class="comment">// Use in type position</span>\n';
+            html += 'const x: ' + problem.typeName + ' = { ... };';
+            html += '</div></div>';
+        } else if (problem.type === 'valueAsType') {
+            html += '<div class="type-box wrong">' + t('valueAsTypeDesc').replace('{name}', problem.valueName) + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<div class="solution-code">';
+            html += '<span class="comment">' + t('wrongCode') + '</span>\n';
+            html += '<span class="keyword">const</span> myVar = "hello";\n<span class="keyword">type</span> X = myVar; <span class="comment">// Using value as type</span>\n\n';
+            html += '<span class="comment">' + t('correctCode') + '</span>\n';
+            html += '<span class="keyword">const</span> myVar = "hello";\n<span class="keyword">type</span> X = <span class="keyword">typeof</span> myVar; <span class="comment">// "string"</span>';
+            html += '</div></div>';
+        } else if (problem.type === 'syntaxExpected') {
+            html += '<div class="type-box wrong">' + t('syntaxExpectedDesc').replace('{expected}', problem.expected) + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<p class="solution-text">' + t('syntaxSolution').replace('{expected}', problem.expected) + '</p>';
+            html += '</div>';
+        } else if (problem.type === 'interfaceExtendError') {
+            html += '<div class="type-box wrong">' + t('interfaceExtendDesc').replace('{child}', problem.childInterface).replace('{parent}', problem.parentInterface) + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<p class="solution-text">' + t('interfaceExtendSolution') + '</p>';
+            html += '</div>';
+        } else if (problem.type === 'classImplementError') {
+            html += '<div class="type-box wrong">' + t('classImplementDesc').replace('{class}', problem.className).replace('{interface}', problem.interfaceName) + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<p class="solution-text">' + t('classImplementSolution') + '</p>';
+            html += '</div>';
+        } else if (problem.type === 'indexAccessError') {
+            html += '<div class="type-box wrong">' + t('indexAccessDesc').replace('{indexType}', problem.indexType).replace('{objectType}', problem.objectType) + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<div class="solution-code">';
+            html += '<span class="comment">// Option 1: Add index signature</span>\n';
+            html += '<span class="keyword">interface</span> MyType {\n  [key: string]: any;\n}\n\n';
+            html += '<span class="comment">// Option 2: Use Record type</span>\n';
+            html += '<span class="keyword">const</span> obj: Record&lt;string, ValueType&gt; = {};';
+            html += '</div></div>';
+        } else if (problem.type === 'invalidIndexType' || problem.type === 'cannotIndex') {
+            var indexType = problem.indexType;
+            var objectType = problem.objectType || 'object';
+            html += '<div class="type-box wrong">' + t('invalidIndexDesc').replace('{indexType}', indexType).replace('{objectType}', objectType) + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<p class="solution-text">' + t('invalidIndexSolution') + '</p>';
+            html += '</div>';
+        } else if (problem.type === 'propertyNotExist') {
+            html += '<div class="type-box wrong">Property "' + problem.propName + '" does not exist on type "' + problem.onType + '"';
+            if (problem.suggestion) {
+                html += '<br><br>' + t('didYouMean') + ' <span class="diff-correct">' + problem.suggestion + '</span>';
+            }
+            html += '</div>';
+            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<p class="solution-text">' + t('propertyNotExistSolution') + '</p>';
+            html += '</div>';
+        } else if (problem.sourceType && problem.targetType) {
             // Type comparison with aligned structure
             if (problem.path.length > 0) {
                 html += '<div class="problem-path">' + problem.path.join(' → ') + '</div>';

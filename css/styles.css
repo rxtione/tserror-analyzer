@@ -626,6 +626,46 @@ button {
     border: 1px solid rgba(239, 68, 68, 0.2);
 }
 
+.problem-card.nullable {
+    background: rgba(251, 191, 36, 0.05);
+    border: 1px solid rgba(251, 191, 36, 0.2);
+}
+
+.problem-card.unknown {
+    background: rgba(107, 114, 128, 0.05);
+    border: 1px solid rgba(107, 114, 128, 0.2);
+}
+
+.problem-card.argument {
+    background: rgba(236, 72, 153, 0.05);
+    border: 1px solid rgba(236, 72, 153, 0.2);
+}
+
+.problem-card.callable {
+    background: rgba(139, 92, 246, 0.05);
+    border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.problem-card.operator {
+    background: rgba(14, 165, 233, 0.05);
+    border: 1px solid rgba(14, 165, 233, 0.2);
+}
+
+.problem-card.constraint {
+    background: rgba(34, 197, 94, 0.05);
+    border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.problem-card.inheritance {
+    background: rgba(168, 85, 247, 0.05);
+    border: 1px solid rgba(168, 85, 247, 0.2);
+}
+
+.problem-card.index {
+    background: rgba(249, 115, 22, 0.05);
+    border: 1px solid rgba(249, 115, 22, 0.2);
+}
+
 .problem-header {
     display: flex;
     align-items: center;
