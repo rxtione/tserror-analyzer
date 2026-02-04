@@ -94,8 +94,19 @@ function parseTypeScriptError(errorText) {
             if (sourceType.includes(' | ') || targetType.includes(' | ')) {
                 problem.isUnion = true;
             }
+            // Detect literal types (string, number, boolean, template literals)
             if (/^["'].*["']$/.test(sourceType) || /^["'].*["']$/.test(targetType) ||
-                /^\d+$/.test(sourceType) || /^\d+$/.test(targetType)) {
+                /^\d+$/.test(sourceType) || /^\d+$/.test(targetType) ||
+                sourceType === 'true' || sourceType === 'false' ||
+                targetType === 'true' || targetType === 'false' ||
+                /^`.*`$/.test(sourceType) || /^`.*`$/.test(targetType) ||
+                /\$\{/.test(sourceType) || /\$\{/.test(targetType)) {
+                problem.isLiteral = true;
+            }
+
+            // Detect readonly/as const arrays
+            if (/^readonly\s*\[/.test(sourceType) || /^readonly\s*\[/.test(targetType)) {
+                problem.isReadonlyArray = true;
                 problem.isLiteral = true;
             }
 
@@ -848,6 +859,7 @@ function getProblemClass(problem) {
     if (problem.type === 'constraintError') return 'constraint';
     if (problem.type === 'interfaceExtendError' || problem.type === 'classImplementError') return 'inheritance';
     if (problem.type === 'indexAccessError' || problem.type === 'invalidIndexType' || problem.type === 'cannotIndex') return 'index';
+    if (problem.isLiteral) return 'literal';
     if (problem.isGeneric) return 'generic';
     if (problem.isUnion) return 'union';
     return '';
@@ -1148,6 +1160,61 @@ function displayResult(result) {
             html += '</div>';
             html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
             html += '<p class="solution-text">' + t('propertyNotExistSolution') + '</p>';
+            html += '</div>';
+        } else if (problem.isLiteral && problem.sourceType && problem.targetType) {
+            // Literal type mismatch - special UI
+            if (problem.path.length > 0) {
+                html += '<div class="problem-path">' + problem.path.join(' → ') + '</div>';
+            }
+
+            var isStringLiteral = /^["']/.test(problem.sourceType) || /^["']/.test(problem.targetType);
+            var isNumberLiteral = /^\d+$/.test(problem.sourceType) || /^\d+$/.test(problem.targetType);
+
+            html += '<div class="type-box wrong">' + t('literalErrorDesc') + '</div>';
+
+            html += '<div class="type-comparison">';
+
+            html += '<div class="type-column">';
+            html += '<div class="type-label wrong">❌ ' + t('providedType') + '</div>';
+            html += '<div class="type-box wrong"><pre class="type-pre"><span class="diff-error">' + escapeHtml(problem.sourceType) + '</span></pre></div>';
+            html += '</div>';
+
+            html += '<div class="type-arrow">→</div>';
+
+            html += '<div class="type-column">';
+            html += '<div class="type-label correct">✅ ' + t('expectedType') + '</div>';
+            html += '<div class="type-box correct"><pre class="type-pre"><span class="diff-correct">' + escapeHtml(problem.targetType) + '</span></pre></div>';
+            html += '</div>';
+
+            html += '</div>';
+
+            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            if (isStringLiteral) {
+                html += '<p class="solution-text">' + t('literalStringSolution') + '</p>';
+            } else if (isNumberLiteral) {
+                html += '<p class="solution-text">' + t('literalNumberSolution') + '</p>';
+            }
+            html += '<div class="solution-code">';
+            html += '<span class="comment">' + t('wrongCode') + '</span>\n';
+            if (isStringLiteral) {
+                html += '<span class="keyword">const</span> role = "user"; <span class="comment">// type: string</span>\n';
+                html += 'fn(role); <span class="comment">// Error: string ≠ "admin" | "user"</span>\n\n';
+            } else {
+                html += '<span class="keyword">const</span> value = 1; <span class="comment">// type: number</span>\n';
+                html += 'fn(value); <span class="comment">// Error: number ≠ 1 | 2 | 3</span>\n\n';
+            }
+            html += '<span class="comment">' + t('correctCode') + '</span>\n';
+            if (isStringLiteral) {
+                html += '<span class="keyword">const</span> role = "user" <span class="keyword">as const</span>; <span class="comment">// type: "user"</span>\n';
+                html += 'fn(role); <span class="comment">// OK!</span>\n\n';
+                html += '<span class="comment">// ' + t('literalAsConstHint') + '</span>\n';
+                html += '<span class="keyword">const</span> config = { role: "admin" } <span class="keyword">as const</span>;';
+            } else {
+                html += '<span class="keyword">const</span> value = 1 <span class="keyword">as const</span>; <span class="comment">// type: 1</span>\n';
+                html += 'fn(value); <span class="comment">// OK!</span>';
+            }
+            html += '</div>';
+            html += '<p class="solution-text" style="margin-top: 12px; font-size: 13px; color: #666;">💡 ' + t('literalWideningHint') + '</p>';
             html += '</div>';
         } else if (problem.sourceType && problem.targetType) {
             // Type comparison with aligned structure

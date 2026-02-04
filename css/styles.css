@@ -666,6 +666,11 @@ button {
     border: 1px solid rgba(249, 115, 22, 0.2);
 }
 
+.problem-card.literal {
+    background: rgba(168, 85, 247, 0.05);
+    border: 1px solid rgba(168, 85, 247, 0.2);
+}
+
 .problem-header {
     display: flex;
     align-items: center;
