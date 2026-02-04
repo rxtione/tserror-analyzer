@@ -14,626 +14,108 @@
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TypeScript 오류 분석기 - 타입 에러를 쉽게 이해하세요</title>
-    <meta name="description" content="복잡한 TypeScript 타입 오류를 분석하여 어떤 필드가 문제인지 명확하게 알려드립니다. 배열/객체 불일치, 타입 미스매치를 쉽게 해결하세요.">
-    <meta name="keywords" content="TypeScript, 타입스크립트, 오류 분석, type error, 타입 에러, 디버깅, debugging">
-    <meta property="og:title" content="TypeScript 오류 분석기">
-    <meta property="og:description" content="복잡한 TypeScript 타입 오류를 쉽게 분석하고 해결하세요">
+
+    <!-- SEO 최적화 -->
+    <title>TypeScript Error Analyzer - 타입 오류 분석기 | Debug TS Errors Easily</title>
+    <meta name="description" content="Free TypeScript error analyzer. Understand complex type errors instantly. Supports array/object mismatch, missing properties, union types, generics, and more. 무료 타입스크립트 오류 분석 도구.">
+    <meta name="keywords" content="TypeScript, error analyzer, type error, debugging, 타입스크립트, 오류 분석, 타입 에러, 디버깅, TS2322, TS2345, TS2304, TS2307, generic error, union type">
+    <meta name="author" content="TypeScript Error Analyzer">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
+    <meta property="og:url" content="https://tserror-analyzer.me/">
+    <meta property="og:title" content="TypeScript Error Analyzer - Debug Type Errors Easily">
+    <meta property="og:description" content="Free tool to analyze and understand complex TypeScript type errors. Get clear explanations and solutions.">
+    <meta property="og:image" content="https://tserror-analyzer.me/og-image.svg">
+    <meta property="og:locale" content="ko_KR">
+    <meta property="og:locale:alternate" content="en_US">
+    <meta property="og:locale:alternate" content="ja_JP">
+    <meta property="og:locale:alternate" content="zh_CN">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://tserror-analyzer.me/">
+    <meta name="twitter:title" content="TypeScript Error Analyzer">
+    <meta name="twitter:description" content="Free tool to analyze and understand complex TypeScript type errors.">
+    <meta name="twitter:image" content="https://tserror-analyzer.me/og-image.svg">
+
+    <!-- Canonical & Alternate Languages -->
     <link rel="canonical" href="https://tserror-analyzer.me/">
+    <link rel="alternate" hreflang="ko" href="https://tserror-analyzer.me/">
+    <link rel="alternate" hreflang="en" href="https://tserror-analyzer.me/?lang=en">
+    <link rel="alternate" hreflang="ja" href="https://tserror-analyzer.me/?lang=ja">
+    <link rel="alternate" hreflang="zh" href="https://tserror-analyzer.me/?lang=zh">
+    <link rel="alternate" hreflang="x-default" href="https://tserror-analyzer.me/">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="apple-touch-icon" href="favicon.svg">
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-primary: #0a0a0f;
-            --bg-secondary: #12121a;
-            --bg-card: rgba(255, 255, 255, 0.03);
-            --bg-card-hover: rgba(255, 255, 255, 0.05);
-            --border-color: rgba(255, 255, 255, 0.08);
-            --text-primary: #f0f0f5;
-            --text-secondary: #8b8b9e;
-            --text-muted: #5a5a6e;
-            --accent-blue: #3b82f6;
-            --accent-blue-glow: rgba(59, 130, 246, 0.3);
-            --accent-purple: #8b5cf6;
-            --accent-green: #10b981;
-            --accent-red: #ef4444;
-            --accent-orange: #f59e0b;
-            --code-bg: #1a1a24;
-        }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            min-height: 100vh;
-            line-height: 1.6;
-        }
-
-        /* 배경 그라데이션 효과 */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 100vh;
-            background:
-                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(59, 130, 246, 0.15), transparent),
-                radial-gradient(ellipse 60% 40% at 80% 60%, rgba(139, 92, 246, 0.1), transparent);
-            pointer-events: none;
-            z-index: -1;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 40px 24px;
-        }
-
-        /* 헤더 영역 */
-        .header {
-            text-align: center;
-            margin-bottom: 48px;
-        }
-
-        .logo {
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-
-        .logo-icon {
-            width: 48px;
-            height: 48px;
-            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            box-shadow: 0 8px 32px var(--accent-blue-glow);
-        }
-
-        h1 {
-            font-size: 32px;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .subtitle {
-            color: var(--text-secondary);
-            font-size: 16px;
-            font-weight: 400;
-            max-width: 500px;
-            margin: 0 auto;
-        }
-
-        /* 광고 컨테이너 */
-        .ad-container {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 32px;
-            text-align: center;
-            min-height: 90px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .ad-container.sidebar { min-height: 250px; }
-
-        /* 메인 레이아웃 */
-        .main-layout {
-            display: grid;
-            grid-template-columns: 1fr 280px;
-            gap: 32px;
-        }
-
-        @media (max-width: 968px) {
-            .main-layout { grid-template-columns: 1fr; }
-            .sidebar { display: none; }
-            .container { padding: 24px 16px; }
-            h1 { font-size: 26px; }
-        }
-
-        .sidebar {
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
-        }
-
-        /* 카드 스타일 */
-        .card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 24px;
-            margin-bottom: 24px;
-            backdrop-filter: blur(20px);
-            transition: all 0.3s ease;
-        }
-
-        .card:hover {
-            border-color: rgba(255, 255, 255, 0.12);
-            background: var(--bg-card-hover);
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .card-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .card-title::before {
-            content: '';
-            width: 4px;
-            height: 16px;
-            background: linear-gradient(180deg, var(--accent-blue), var(--accent-purple));
-            border-radius: 2px;
-        }
-
-        /* 텍스트 에어리어 */
-        textarea {
-            width: 100%;
-            height: 200px;
-            background: var(--code-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 16px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 13px;
-            color: var(--text-primary);
-            resize: vertical;
-            transition: all 0.3s ease;
-        }
-
-        textarea::placeholder {
-            color: var(--text-muted);
-        }
-
-        textarea:focus {
-            outline: none;
-            border-color: var(--accent-blue);
-            box-shadow: 0 0 0 3px var(--accent-blue-glow);
-        }
-
-        /* 버튼 그룹 */
-        .btn-group {
-            display: flex;
-            gap: 12px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-
-        button {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 600;
-            font-family: 'Inter', sans-serif;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
-            color: white;
-            box-shadow: 0 4px 16px var(--accent-blue-glow);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px var(--accent-blue-glow);
-        }
-
-        .btn-secondary {
-            background: var(--bg-secondary);
-            color: var(--text-secondary);
-            border: 1px solid var(--border-color);
-        }
-
-        .btn-secondary:hover {
-            background: var(--bg-card-hover);
-            color: var(--text-primary);
-        }
-
-        .copy-btn {
-            padding: 8px 16px;
-            font-size: 12px;
-            background: rgba(59, 130, 246, 0.1);
-            color: var(--accent-blue);
-            border: 1px solid rgba(59, 130, 246, 0.2);
-        }
-
-        .copy-btn:hover {
-            background: rgba(59, 130, 246, 0.2);
-        }
-
-        /* 결과 섹션 */
-        .result-section { display: none; }
-        .result-section.active { display: block; }
-
-        /* 경고 박스 */
-        .warning-box {
-            background: rgba(245, 158, 11, 0.1);
-            border: 1px solid rgba(245, 158, 11, 0.3);
-            border-radius: 12px;
-            padding: 16px 20px;
-            margin-bottom: 24px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .warning-icon {
-            font-size: 24px;
-            flex-shrink: 0;
-        }
-
-        .warning-text {
-            color: var(--accent-orange);
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        /* 요약 박스 */
-        .summary-box {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            border-radius: 16px;
-            padding: 24px;
-            margin-bottom: 24px;
-        }
-
-        .summary-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        /* 문제 카드 */
-        .problem-card {
-            background: rgba(239, 68, 68, 0.05);
-            border: 1px solid rgba(239, 68, 68, 0.2);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 16px;
-        }
-
-        .problem-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-
-        .problem-number {
-            width: 28px;
-            height: 28px;
-            background: var(--accent-red);
-            color: white;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 13px;
-            font-weight: 700;
-        }
-
-        .problem-title {
-            font-weight: 600;
-            color: var(--accent-red);
-            font-size: 15px;
-        }
-
-        .problem-path {
-            background: var(--code-bg);
-            border-radius: 8px;
-            padding: 12px 16px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 12px;
-            color: var(--accent-purple);
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .problem-path::before {
-            content: '📍';
-        }
-
-        /* 타입 비교 */
-        .type-comparison {
-            display: grid;
-            grid-template-columns: 1fr auto 1fr;
-            gap: 16px;
-            align-items: stretch;
-        }
-
-        @media (max-width: 640px) {
-            .type-comparison {
-                grid-template-columns: 1fr;
-            }
-            .type-arrow { transform: rotate(90deg); }
-        }
-
-        .type-column { min-width: 0; }
-
-        .type-label {
-            font-size: 12px;
-            font-weight: 600;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .type-label.wrong { color: var(--accent-red); }
-        .type-label.correct { color: var(--accent-green); }
-
-        .type-box {
-            padding: 16px;
-            border-radius: 10px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 12px;
-            line-height: 1.8;
-            white-space: pre-wrap;
-            word-break: break-all;
-            min-height: 80px;
-        }
-
-        .type-box.wrong {
-            background: rgba(239, 68, 68, 0.08);
-            border: 1px solid rgba(239, 68, 68, 0.2);
-            color: var(--text-primary);
-        }
-
-        .type-box.correct {
-            background: rgba(16, 185, 129, 0.08);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-            color: var(--text-primary);
-        }
-
-        .type-arrow {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            color: var(--text-muted);
-            padding-top: 28px;
-        }
-
-        .error-highlight {
-            background: var(--accent-red);
-            color: white;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-weight: 600;
-        }
-
-        .correct-highlight {
-            background: var(--accent-green);
-            color: white;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-weight: 600;
-        }
-
-        /* 해결 방법 박스 */
-        .solution-box {
-            background: rgba(16, 185, 129, 0.08);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: 24px;
-        }
-
-        .solution-title {
-            font-weight: 700;
-            color: var(--accent-green);
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .solution-text {
-            color: var(--text-secondary);
-            font-size: 14px;
-            margin-bottom: 16px;
-        }
-
-        .solution-code {
-            background: var(--code-bg);
-            border-radius: 10px;
-            padding: 16px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 13px;
-            line-height: 1.8;
-            overflow-x: auto;
-        }
-
-        .solution-code .comment { color: #6b7280; }
-        .solution-code .keyword { color: var(--accent-blue); }
-
-        /* 오류 추적 */
-        .error-trace {
-            margin-top: 24px;
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            overflow: hidden;
-        }
-
-        .error-trace-header {
-            background: var(--bg-secondary);
-            padding: 14px 20px;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: 600;
-            font-size: 14px;
-            color: var(--text-secondary);
-            transition: all 0.2s ease;
-        }
-
-        .error-trace-header:hover {
-            background: var(--bg-card-hover);
-            color: var(--text-primary);
-        }
-
-        .error-trace-content {
-            display: none;
-            padding: 16px;
-            background: var(--code-bg);
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .error-trace-content.open { display: block; }
-
-        .trace-line {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 11px;
-            padding: 6px 0;
-            border-bottom: 1px solid var(--border-color);
-            color: var(--text-secondary);
-        }
-
-        .trace-line:last-child { border-bottom: none; }
-        .trace-indent { color: var(--text-muted); }
-
-        /* 사이드바 패널 */
-        .info-panel {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 20px;
-        }
-
-        .info-panel h3 {
-            color: var(--text-primary);
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .info-panel ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .info-panel li {
-            color: var(--text-secondary);
-            font-size: 13px;
-            padding: 8px 0;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .info-panel li:last-child { border-bottom: none; }
-
-        .info-panel li::before {
-            content: '→';
-            color: var(--accent-blue);
-            font-weight: 600;
-        }
-
-        /* 푸터 */
-        .footer {
-            text-align: center;
-            padding: 40px 20px;
-            margin-top: 48px;
-            border-top: 1px solid var(--border-color);
-        }
-
-        .footer p {
-            color: var(--text-muted);
-            font-size: 13px;
-        }
-
-        .footer-links {
-            margin-top: 12px;
-            display: flex;
-            justify-content: center;
-            gap: 24px;
-        }
-
-        .footer a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 13px;
-            transition: color 0.2s ease;
-        }
-
-        .footer a:hover {
-            color: var(--accent-blue);
-        }
-
-        /* 스크롤바 스타일링 */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--bg-secondary);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--border-color);
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--text-muted);
-        }
-    </style>
+    <!-- Structured Data / JSON-LD -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "TypeScript Error Analyzer",
+        "alternateName": ["타입스크립트 오류 분석기", "TypeScript エラー分析ツール", "TypeScript 错误分析器"],
+        "url": "https://tserror-analyzer.me",
+        "description": "Free online tool to analyze and debug TypeScript type errors",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Any",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "featureList": [
+            "Array/Object type mismatch detection",
+            "Missing property analysis",
+            "Nested type error tracking",
+            "Union type problem detection",
+            "Generic type error analysis",
+            "Module not found detection",
+            "Multi-language support (Korean, English, Japanese, Chinese)"
+        ],
+        "inLanguage": ["ko", "en", "ja", "zh"]
+    }
+    </script>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
+    <!-- Language Switcher -->
+    <div class="lang-switcher">
+        <button class="lang-btn active" onclick="setLanguage('ko')" data-lang="ko">한국어</button>
+        <button class="lang-btn" onclick="setLanguage('en')" data-lang="en">EN</button>
+        <button class="lang-btn" onclick="setLanguage('ja')" data-lang="ja">日本語</button>
+        <button class="lang-btn" onclick="setLanguage('zh')" data-lang="zh">中文</button>
+    </div>
+
     <div class="container">
         <header class="header">
             <div class="logo">
                 <div class="logo-icon">TS</div>
-                <h1>TypeScript 오류 분석기</h1>
+                <h1 data-i18n="title">TypeScript 오류 분석기</h1>
             </div>
-            <p class="subtitle">복잡한 타입 오류를 분석하여 어떤 필드가 문제인지 명확하게 알려드립니다</p>
+            <p class="subtitle" data-i18n="subtitle">복잡한 타입 오류를 분석하여 어떤 필드가 문제인지 명확하게 알려드립니다</p>
+
+            <div class="supported-errors">
+                <span class="error-badge">TS2322</span>
+                <span class="error-badge">TS2345</span>
+                <span class="error-badge">TS2304</span>
+                <span class="error-badge">TS2307</span>
+                <span class="error-badge">TS2741</span>
+                <span class="error-badge">TS2769</span>
+                <span class="error-badge">Generic&lt;T&gt;</span>
+                <span class="error-badge">Union Types</span>
+            </div>
         </header>
 
         <div class="ad-container" id="topAd"></div>
@@ -642,25 +124,22 @@
             <main>
                 <div class="card">
                     <div class="card-header">
-                        <span class="card-title">오류 메시지 입력</span>
+                        <span class="card-title" data-i18n="inputTitle">오류 메시지 입력</span>
                     </div>
-                    <textarea id="errorInput" placeholder="TypeScript 오류 메시지를 여기에 붙여넣으세요...
-
-예시:
-Type '{ name: string; }' is not assignable to type '{ name: string; }[]'."></textarea>
+                    <textarea id="errorInput" data-i18n-placeholder="inputPlaceholder" placeholder="TypeScript 오류 메시지를 여기에 붙여넣으세요..."></textarea>
                     <div class="btn-group">
                         <button class="btn-primary" onclick="analyzeError()">
-                            <span>🔍</span> 오류 분석
+                            <span>🔍</span> <span data-i18n="analyzeBtn">오류 분석</span>
                         </button>
-                        <button class="btn-secondary" onclick="clearAll()">초기화</button>
-                        <button class="btn-secondary" onclick="loadSample()">예시 불러오기</button>
+                        <button class="btn-secondary" onclick="clearAll()" data-i18n="clearBtn">초기화</button>
+                        <button class="btn-secondary" onclick="loadSample()" data-i18n="sampleBtn">예시 불러오기</button>
                     </div>
                 </div>
 
                 <div id="resultSection" class="result-section card">
                     <div class="card-header">
-                        <span class="card-title">분석 결과</span>
-                        <button class="copy-btn" onclick="copyResult()">📋 복사</button>
+                        <span class="card-title" data-i18n="resultTitle">분석 결과</span>
+                        <button class="copy-btn" onclick="copyResult()">📋 <span data-i18n="copyBtn">복사</span></button>
                     </div>
                     <div id="resultContent"></div>
                 </div>
@@ -672,396 +151,47 @@ Type '{ name: string; }' is not assignable to type '{ name: string; }[]'."></tex
                 <div class="ad-container sidebar" id="sideAd"></div>
 
                 <div class="info-panel">
-                    <h3>🎯 분석 가능한 오류</h3>
+                    <h3 data-i18n="supportedTitle">🎯 분석 가능한 오류</h3>
                     <ul>
-                        <li>배열/객체 타입 불일치</li>
-                        <li>속성 누락 오류</li>
-                        <li>중첩된 타입 오류</li>
-                        <li>유니온 타입 문제</li>
+                        <li data-i18n="supported1">배열/객체 타입 불일치</li>
+                        <li data-i18n="supported2">속성 누락 오류</li>
+                        <li data-i18n="supported3">중첩된 타입 오류</li>
+                        <li data-i18n="supported4">유니온 타입 문제</li>
+                        <li data-i18n="supported5">제네릭 타입 오류</li>
+                        <li data-i18n="supported6">리터럴 타입 불일치</li>
+                        <li data-i18n="supported7">모듈 찾기 오류</li>
+                        <li data-i18n="supported8">변수/타입 미존재</li>
                     </ul>
                 </div>
 
                 <div class="info-panel">
-                    <h3>📖 사용 방법</h3>
+                    <h3 data-i18n="howToTitle">📖 사용 방법</h3>
                     <ul>
-                        <li>TypeScript 오류를 복사</li>
-                        <li>입력창에 붙여넣기</li>
-                        <li>분석 버튼 클릭</li>
-                        <li>문제점과 해결책 확인</li>
+                        <li data-i18n="howTo1">TypeScript 오류를 복사</li>
+                        <li data-i18n="howTo2">입력창에 붙여넣기</li>
+                        <li data-i18n="howTo3">분석 버튼 클릭</li>
+                        <li data-i18n="howTo4">문제점과 해결책 확인</li>
                     </ul>
                 </div>
             </aside>
         </div>
 
         <footer class="footer">
-            <p>© 2024 TypeScript 오류 분석기</p>
+            <p>© 2024 TypeScript Error Analyzer</p>
             <div class="footer-links">
-                <a href="about.html">소개</a>
-                <a href="privacy.html">개인정보처리방침</a>
-                <a href="terms.html">이용약관</a>
+                <a href="about.html" data-i18n="aboutLink">소개</a>
+                <a href="privacy.html" data-i18n="privacyLink">개인정보처리방침</a>
+                <a href="terms.html" data-i18n="termsLink">이용약관</a>
             </div>
         </footer>
     </div>
 
+    <!-- JavaScript -->
+    <script src="js/i18n.js"></script>
+    <script src="js/analyzer.js"></script>
     <script>
-        function analyzeError() {
-            var input = document.getElementById('errorInput').value.trim();
-            if (!input) {
-                alert('오류 메시지를 입력해주세요!');
-                return;
-            }
-            var result = parseTypeScriptError(input);
-            displayResult(result);
-            document.getElementById('bottomAd').style.display = 'flex';
-        }
-
-        function parseTypeScriptError(errorText) {
-            var result = {
-                problems: [],
-                isArrayObjectMismatch: false,
-                originalError: errorText
-            };
-
-            if (errorText.includes('length, pop, push, concat')) {
-                result.isArrayObjectMismatch = true;
-            }
-
-            var lines = errorText.split('\n');
-            var currentPath = [];
-            var problems = [];
-
-            for (var i = 0; i < lines.length; i++) {
-                var line = lines[i];
-                var trimmed = line.trim();
-
-                var propMatch = trimmed.match(/Types of property ['"]([^'"]+)['"] are incompatible/);
-                if (propMatch) {
-                    currentPath.push(propMatch[1]);
-                }
-
-                var typeMatch = trimmed.match(/Type ['"]([^'"]+)['"] is not assignable to type ['"]([^'"]+)['"]/);
-                if (typeMatch) {
-                    var sourceType = typeMatch[1];
-                    var targetType = typeMatch[2];
-                    var arrayMismatches = findArrayMismatchesInTypes(sourceType, targetType);
-
-                    if (arrayMismatches.length > 0) {
-                        arrayMismatches.forEach(function(mismatch) {
-                            problems.push({
-                                path: currentPath.concat([mismatch.propName]),
-                                sourceType: mismatch.sourceType,
-                                targetType: mismatch.targetType,
-                                isArrayMismatch: true
-                            });
-                        });
-                    } else {
-                        problems.push({
-                            path: currentPath.slice(),
-                            sourceType: sourceType,
-                            targetType: targetType,
-                            isArrayMismatch: targetType.includes('[]') && !sourceType.includes('[]')
-                        });
-                    }
-                }
-
-                var missingMatch = trimmed.match(/is missing the following properties[^:]*: ([^.]+)/);
-                if (missingMatch) {
-                    var props = missingMatch[1].split(',').map(function(p) { return p.trim(); });
-                    problems.push({
-                        path: currentPath.slice(),
-                        type: 'missing',
-                        missingProps: props
-                    });
-                }
-            }
-
-            result.problems = deduplicateProblems(problems);
-            return result;
-        }
-
-        function findArrayMismatchesInTypes(sourceType, targetType) {
-            var mismatches = [];
-            if (!sourceType.startsWith('{') || !targetType.startsWith('{')) {
-                return mismatches;
-            }
-
-            var sourceProps = parseObjectProps(sourceType);
-            var targetProps = parseObjectProps(targetType);
-
-            Object.keys(sourceProps).forEach(function(propName) {
-                if (targetProps[propName]) {
-                    var srcType = sourceProps[propName];
-                    var tgtType = targetProps[propName];
-                    if (tgtType.includes('[]') && !srcType.includes('[]')) {
-                        mismatches.push({
-                            propName: propName,
-                            sourceType: srcType,
-                            targetType: tgtType
-                        });
-                    }
-                }
-            });
-
-            return mismatches;
-        }
-
-        function parseObjectProps(typeStr) {
-            var props = {};
-            var inner = typeStr.trim();
-            if (inner.startsWith('{')) inner = inner.slice(1);
-            if (inner.endsWith('}')) inner = inner.slice(0, -1);
-
-            var depth = 0;
-            var current = '';
-            var propName = '';
-            var inPropName = true;
-
-            for (var i = 0; i < inner.length; i++) {
-                var char = inner[i];
-                if (char === '{' || char === '[' || char === '(') depth++;
-                else if (char === '}' || char === ']' || char === ')') depth--;
-
-                if (depth === 0 && char === ':' && inPropName) {
-                    propName = current.trim().replace('?', '');
-                    current = '';
-                    inPropName = false;
-                } else if (depth === 0 && char === ';') {
-                    if (propName) props[propName] = current.trim();
-                    current = '';
-                    propName = '';
-                    inPropName = true;
-                } else {
-                    current += char;
-                }
-            }
-
-            if (propName && current.trim()) {
-                props[propName] = current.trim();
-            }
-            return props;
-        }
-
-        function deduplicateProblems(problems) {
-            var seen = {};
-            return problems.filter(function(p) {
-                var key = p.path.join('.') + '|' + (p.type || 'type');
-                if (seen[key]) return false;
-                seen[key] = true;
-                return true;
-            });
-        }
-
-        function formatType(type) {
-            var result = '';
-            var depth = 0;
-
-            for (var i = 0; i < type.length; i++) {
-                var char = type[i];
-                var nextChar = type[i + 1];
-
-                if (char === '{') {
-                    depth++;
-                    result += '{\n' + '  '.repeat(depth);
-                } else if (char === '}') {
-                    depth--;
-                    result += '\n' + '  '.repeat(depth) + '}';
-                } else if (char === ';' && depth > 0) {
-                    result += ';\n' + '  '.repeat(depth);
-                } else if (char === '[' && nextChar === ']') {
-                    result += '[]';
-                    i++;
-                } else if (char === ' ' && result.endsWith('\n' + '  '.repeat(depth))) {
-                    continue;
-                } else {
-                    result += char;
-                }
-            }
-
-            return result.replace(/\n\s*\n/g, '\n').replace(/\{\s+\}/g, '{}').replace(/\[\s+\]/g, '[]').trim();
-        }
-
-        function highlightTypeDiff(sourceType, targetType, isSource) {
-            var type = isSource ? sourceType : targetType;
-            var formatted = formatType(type);
-            var sourceProps = parseObjectProps(sourceType);
-            var targetProps = parseObjectProps(targetType);
-
-            var arrayMismatchProps = [];
-            Object.keys(targetProps).forEach(function(propName) {
-                var srcType = sourceProps[propName] || '';
-                var tgtType = targetProps[propName] || '';
-                if (tgtType.includes('[]') && !srcType.includes('[]')) {
-                    arrayMismatchProps.push(propName);
-                }
-            });
-
-            var html = escapeHtml(formatted);
-
-            if (isSource) {
-                arrayMismatchProps.forEach(function(propName) {
-                    var regex = new RegExp('(' + escapeRegex(propName) + '\\??:\\s*)([^;\\n]+)', 'g');
-                    html = html.replace(regex, function(match, prefix, value) {
-                        if (!value.includes('[]')) {
-                            return prefix + '<span class="error-highlight">' + value + '</span>';
-                        }
-                        return match;
-                    });
-                });
-
-                if (targetType.endsWith('[]') && !sourceType.endsWith('[]')) {
-                    html = '<span class="error-highlight">' + html + '</span>';
-                }
-            } else {
-                html = html.replace(/\[\]/g, '<span class="correct-highlight">[]</span>');
-            }
-
-            return html;
-        }
-
-        function escapeRegex(str) {
-            return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        }
-
-        function getTypeSummary(type) {
-            if (type.includes('[]')) return '배열';
-            if (type.startsWith('{')) return '객체';
-            if (type === 'string') return '문자열';
-            if (type === 'number') return '숫자';
-            if (type === 'boolean') return '불리언';
-            return type;
-        }
-
-        function displayResult(result) {
-            var html = '';
-
-            if (result.isArrayObjectMismatch) {
-                html += '<div class="warning-box">';
-                html += '<span class="warning-icon">⚠️</span>';
-                html += '<span class="warning-text">객체(Object)를 배열(Array)이 필요한 곳에 전달했습니다!</span>';
-                html += '</div>';
-            }
-
-            html += '<div class="summary-box">';
-            html += '<div class="summary-title">🔍 발견된 문제: ' + result.problems.length + '개</div>';
-
-            result.problems.forEach(function(problem, idx) {
-                html += '<div class="problem-card">';
-                html += '<div class="problem-header">';
-                html += '<span class="problem-number">' + (idx + 1) + '</span>';
-
-                if (problem.type === 'missing') {
-                    html += '<span class="problem-title">누락된 속성</span>';
-                    html += '</div>';
-                    if (problem.path.length > 0) {
-                        html += '<div class="problem-path">' + problem.path.join(' → ') + '</div>';
-                    }
-                    html += '<div class="type-box wrong">필요한 속성: ' + problem.missingProps.join(', ') + '</div>';
-                } else {
-                    if (problem.isArrayMismatch || (result.isArrayObjectMismatch && problem.path.length > 0)) {
-                        html += '<span class="problem-title">배열/객체 타입 불일치</span>';
-                    } else {
-                        html += '<span class="problem-title">타입 불일치</span>';
-                    }
-                    html += '</div>';
-
-                    if (problem.path.length > 0) {
-                        html += '<div class="problem-path">' + problem.path.join(' → ') + '</div>';
-                    }
-
-                    html += '<div class="type-comparison">';
-
-                    html += '<div class="type-column">';
-                    html += '<div class="type-label wrong">❌ 전달한 타입 (' + getTypeSummary(problem.sourceType) + ')</div>';
-                    html += '<div class="type-box wrong">' + highlightTypeDiff(problem.sourceType, problem.targetType, true) + '</div>';
-                    html += '</div>';
-
-                    html += '<div class="type-arrow">→</div>';
-
-                    html += '<div class="type-column">';
-                    html += '<div class="type-label correct">✅ 기대하는 타입 (' + getTypeSummary(problem.targetType) + ')</div>';
-                    html += '<div class="type-box correct">' + highlightTypeDiff(problem.sourceType, problem.targetType, false) + '</div>';
-                    html += '</div>';
-
-                    html += '</div>';
-                }
-
-                html += '</div>';
-            });
-
-            html += '</div>';
-
-            var arrayProblems = result.problems.filter(function(p) { return p.isArrayMismatch; });
-            if (result.isArrayObjectMismatch || arrayProblems.length > 0) {
-                var propNames = arrayProblems.map(function(p) { return p.path[p.path.length - 1]; }).filter(Boolean);
-                var uniquePropNames = propNames.filter(function(v, i, a) { return a.indexOf(v) === i; });
-                if (uniquePropNames.length === 0) uniquePropNames.push('data');
-
-                html += '<div class="solution-box">';
-                html += '<div class="solution-title">💡 해결 방법</div>';
-                html += '<p class="solution-text">다음 속성들을 배열로 감싸주세요:</p>';
-                html += '<div class="solution-code">';
-                html += '<span class="comment">// 잘못된 코드</span>\n';
-                html += uniquePropNames.map(function(name) { return name + ': { <span class="keyword">...</span> }'; }).join('\n');
-                html += '\n\n<span class="comment">// 올바른 코드</span>\n';
-                html += uniquePropNames.map(function(name) { return name + ': [{ <span class="keyword">...</span> }]'; }).join('\n');
-                html += '</div></div>';
-            }
-
-            html += '<div class="error-trace">';
-            html += '<div class="error-trace-header" onclick="toggleTrace()">';
-            html += '<span>📜 전체 오류 메시지 보기</span>';
-            html += '<span id="traceArrow">▼</span>';
-            html += '</div>';
-            html += '<div class="error-trace-content" id="traceContent">';
-
-            var lines = result.originalError.split('\n');
-            lines.forEach(function(line) {
-                var indent = (line.match(/^(\s*)/) || ['', ''])[1].length;
-                var indentStr = '<span class="trace-indent">' + '│ '.repeat(Math.floor(indent / 2)) + '</span>';
-                html += '<div class="trace-line">' + indentStr + escapeHtml(line.trim()) + '</div>';
-            });
-
-            html += '</div></div>';
-
-            document.getElementById('resultContent').innerHTML = html;
-            document.getElementById('resultSection').className = 'result-section card active';
-        }
-
-        function toggleTrace() {
-            var content = document.getElementById('traceContent');
-            var arrow = document.getElementById('traceArrow');
-            if (content.classList.contains('open')) {
-                content.classList.remove('open');
-                arrow.textContent = '▼';
-            } else {
-                content.classList.add('open');
-                arrow.textContent = '▲';
-            }
-        }
-
-        function escapeHtml(text) {
-            var div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        function clearAll() {
-            document.getElementById('errorInput').value = '';
-            document.getElementById('resultSection').className = 'result-section card';
-            document.getElementById('bottomAd').style.display = 'none';
-        }
-
-        function loadSample() {
-            var sample = "Argument of type '{ generalInfo: { dsaleOutfirmName: string; bzpersonRegNo: string; }; bondProcure: { dsaleOutfirmNo: string; }[]; factoryEdit?: { deleteRequest: { dsaleOutfirmNo: string; }; insertRequest?: { dsaleOutfirmNo: string; } | undefined; } | undefined; }' is not assignable to parameter of type '{ generalInfo?: { dsaleOutfirmName: string; } | undefined; bondProcure?: { dsaleOutfirmNo: string; }[] | undefined; factoryEdit?: { insertRequest?: { dsaleOutfirmNo: string; }[] | undefined; deleteRequest?: { dsaleOutfirmNo: string; }[] | undefined; } | undefined; }'.\n  Types of property 'factoryEdit' are incompatible.\n    Type '{ deleteRequest: { dsaleOutfirmNo: string; }; insertRequest?: { dsaleOutfirmNo: string; } | undefined; }' is not assignable to type '{ insertRequest?: { dsaleOutfirmNo: string; }[] | undefined; deleteRequest?: { dsaleOutfirmNo: string; }[] | undefined; }'.\n      Types of property 'insertRequest' are incompatible.\n        Type '{ dsaleOutfirmNo: string; } | undefined' is not assignable to type '{ dsaleOutfirmNo: string; }[] | undefined'.\n          Type '{ dsaleOutfirmNo: string; }' is not assignable to type '{ dsaleOutfirmNo: string; }[]'.\n            Type '{ dsaleOutfirmNo: string; }' is missing the following properties from type '{ dsaleOutfirmNo: string; }[]': length, pop, push, concat, and 35 more.";
-            document.getElementById('errorInput').value = sample;
-        }
-
-        function copyResult() {
-            var el = document.getElementById('resultContent');
-            if (navigator.clipboard) {
-                navigator.clipboard.writeText(el.innerText).then(function() { alert('복사되었습니다!'); });
-            }
-        }
+        // Initialize language
+        setLanguage(currentLang);
     </script>
 </body>
 </html>

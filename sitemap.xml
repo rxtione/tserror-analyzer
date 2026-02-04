@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+  <!-- Main page with language alternates -->
+  <url>
+    <loc>https://tserror-analyzer.me/</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://tserror-analyzer.me/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://tserror-analyzer.me/?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://tserror-analyzer.me/?lang=ja"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://tserror-analyzer.me/?lang=zh"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tserror-analyzer.me/"/>
+    <lastmod>2024-12-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- About page -->
+  <url>
+    <loc>https://tserror-analyzer.me/about.html</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://tserror-analyzer.me/about.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://tserror-analyzer.me/about.html?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://tserror-analyzer.me/about.html?lang=ja"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://tserror-analyzer.me/about.html?lang=zh"/>
+    <lastmod>2024-12-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Privacy page -->
+  <url>
+    <loc>https://tserror-analyzer.me/privacy.html</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://tserror-analyzer.me/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://tserror-analyzer.me/privacy.html?lang=en"/>
+    <lastmod>2024-12-01</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <!-- Terms page -->
+  <url>
+    <loc>https://tserror-analyzer.me/terms.html</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://tserror-analyzer.me/terms.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://tserror-analyzer.me/terms.html?lang=en"/>
+    <lastmod>2024-12-01</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+</urlset>

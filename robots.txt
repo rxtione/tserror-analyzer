@@ -1,0 +1,14 @@
+# TypeScript Error Analyzer - robots.txt
+# https://tserror-analyzer.me
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://tserror-analyzer.me/sitemap.xml
+
+# Disallow admin/private paths (none currently)
+# Disallow: /admin/
+
+# Crawl-delay for polite crawling (optional)
+Crawl-delay: 1
