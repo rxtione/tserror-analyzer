@@ -114,3 +114,7 @@ smartadserver.com, 4503, DIRECT, 060d053dcf45cbf3
 pubmatic.com, 156439, RESELLER, 5d62403b186f2ace
 rubiconproject.com, 16114, RESELLER, 0bfd66d529a55807
 openx.com, 537149888, RESELLER, 6a698e2ec38604c6
+# 21202
+ezoic.ai, 9d531eedb1711ccf0e79efa33de9fe33, DIRECT
+onetag.com, 5d49f482552c9b6, RESELLER
+rubiconproject.com, 19396, RESELLER, 0bfd66d529a55807
