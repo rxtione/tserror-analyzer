@@ -1,5 +1,55 @@
 // analyzer.js - TypeScript Error Analyzer Core Logic
 
+// Feedback API URL - Replace with your Google Apps Script URL
+var FEEDBACK_API_URL = 'https://script.google.com/macros/s/AKfycbwij6E_Mt3bu7-CUqF_aoS8Qg5fhnpV06alUmXGvL2cX82nHGppVbV3ZPDAfstio5ORvg/exec';  // Set your Google Apps Script URL here
+
+// Feedback submission
+var lastFailedError = '';
+
+function submitFeedback() {
+    if (!FEEDBACK_API_URL) {
+        alert(t('feedbackNotConfigured'));
+        return;
+    }
+
+    if (!lastFailedError) {
+        alert(t('noErrorToReport'));
+        return;
+    }
+
+    var btn = document.getElementById('feedbackBtn');
+    var originalText = btn.innerHTML;
+    btn.innerHTML = '<svg class="spinner" width="14" height="14" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" fill="none" stroke-dasharray="30 70"/></svg> ' + t('submitting');
+    btn.disabled = true;
+
+    fetch(FEEDBACK_API_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            errorMessage: lastFailedError,
+            language: currentLang,
+            userAgent: navigator.userAgent
+        })
+    })
+    .then(function() {
+        btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> ' + t('feedbackSent');
+        btn.classList.add('success');
+        setTimeout(function() {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+            btn.classList.remove('success');
+        }, 3000);
+    })
+    .catch(function() {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+        alert(t('feedbackFailed'));
+    });
+}
+
 // Hero section control
 function scrollToAnalyzer() {
     var container = document.getElementById('mainContainer');
@@ -906,6 +956,32 @@ function getProblemTitle(problem, result) {
 
 function displayResult(result) {
     var html = '';
+    var input = document.getElementById('errorInput').value.trim();
+
+    // Check if no problems found - show feedback option
+    if (result.problems.length === 0) {
+        lastFailedError = input;
+        html += '<div class="feedback-box">';
+        html += '<div class="feedback-icon">';
+        html += '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>';
+        html += '</div>';
+        html += '<div class="feedback-title">' + t('noProblemsFound') + '</div>';
+        html += '<p class="feedback-desc">' + t('feedbackDesc') + '</p>';
+        if (FEEDBACK_API_URL) {
+            html += '<button id="feedbackBtn" class="feedback-btn" onclick="submitFeedback()">';
+            html += '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg> ';
+            html += t('submitFeedback');
+            html += '</button>';
+        }
+        html += '</div>';
+
+        document.getElementById('resultContent').innerHTML = html;
+        document.getElementById('resultSection').className = 'result-section card active';
+        return;
+    }
+
+    // Clear last failed error since we found problems
+    lastFailedError = '';
 
     if (result.isArrayObjectMismatch) {
         html += '<div class="warning-box">';

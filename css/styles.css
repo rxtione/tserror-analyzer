@@ -321,6 +321,7 @@ body::before {
     backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--border-color);
     padding: 16px 24px;
+    padding-right: 220px; /* Space for language switcher */
     justify-content: space-between;
     align-items: center;
 }
@@ -447,6 +448,24 @@ h1 {
     .container { padding: 24px 16px; }
     h1 { font-size: 26px; }
     .lang-switcher { top: 10px; right: 10px; }
+    .header-compact { padding-right: 180px; }
+}
+
+@media (max-width: 480px) {
+    .header-compact {
+        padding-right: 24px;
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+    }
+    .expand-btn {
+        align-self: flex-start;
+    }
+    .lang-switcher {
+        top: auto;
+        bottom: 20px;
+        right: 20px;
+    }
 }
 
 .sidebar {
@@ -1037,6 +1056,72 @@ button {
 }
 
 .footer a:hover { color: var(--accent-blue); }
+
+/* Feedback Box */
+.feedback-box {
+    text-align: center;
+    padding: 48px 24px;
+}
+
+.feedback-icon {
+    margin-bottom: 20px;
+    color: var(--text-muted);
+}
+
+.feedback-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+}
+
+.feedback-desc {
+    color: var(--text-secondary);
+    font-size: 14px;
+    margin-bottom: 24px;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.feedback-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.feedback-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(139, 92, 246, 0.4);
+}
+
+.feedback-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.feedback-btn.success {
+    background: var(--accent-green);
+}
+
+.feedback-btn .spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
 
 /* Scrollbar */
 ::-webkit-scrollbar { width: 8px; height: 8px; }
