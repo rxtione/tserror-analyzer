@@ -22,19 +22,44 @@ function submitFeedback() {
     btn.innerHTML = '<svg class="spinner" width="14" height="14" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" fill="none" stroke-dasharray="30 70"/></svg> ' + t('submitting');
     btn.disabled = true;
 
-    fetch(FEEDBACK_API_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            errorMessage: lastFailedError,
-            language: currentLang,
-            userAgent: navigator.userAgent
-        })
-    })
-    .then(function() {
+    // Use URL params approach for better compatibility (avoids CORS/adblocker issues)
+    var params = new URLSearchParams();
+    params.append('errorMessage', lastFailedError);
+    params.append('language', currentLang);
+    params.append('userAgent', navigator.userAgent);
+
+    // Create hidden iframe for submission (most reliable method)
+    var iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.name = 'feedbackFrame';
+    document.body.appendChild(iframe);
+
+    var form = document.createElement('form');
+    form.method = 'POST';
+    form.action = FEEDBACK_API_URL;
+    form.target = 'feedbackFrame';
+
+    var fields = {
+        errorMessage: lastFailedError,
+        language: currentLang,
+        userAgent: navigator.userAgent
+    };
+
+    for (var key in fields) {
+        var input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key;
+        input.value = fields[key];
+        form.appendChild(input);
+    }
+
+    document.body.appendChild(form);
+    form.submit();
+
+    // Clean up and show success
+    setTimeout(function() {
+        document.body.removeChild(form);
+        document.body.removeChild(iframe);
         btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> ' + t('feedbackSent');
         btn.classList.add('success');
         setTimeout(function() {
@@ -42,12 +67,7 @@ function submitFeedback() {
             btn.disabled = false;
             btn.classList.remove('success');
         }, 3000);
-    })
-    .catch(function() {
-        btn.innerHTML = originalText;
-        btn.disabled = false;
-        alert(t('feedbackFailed'));
-    });
+    }, 1000);
 }
 
 // Hero section control

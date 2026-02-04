@@ -19,7 +19,19 @@
 function doPost(e) {
   try {
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Feedback');
-    var data = JSON.parse(e.postData.contents);
+
+    // Support both JSON and form data
+    var data;
+    if (e.postData && e.postData.contents) {
+      try {
+        data = JSON.parse(e.postData.contents);
+      } catch (jsonError) {
+        // Not JSON, try form parameters
+        data = e.parameter || {};
+      }
+    } else {
+      data = e.parameter || {};
+    }
 
     sheet.appendRow([
       new Date().toISOString(),
