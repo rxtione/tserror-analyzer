@@ -1,0 +1,46 @@
+name: Update ads.txt
+
+on:
+  schedule:
+    # 매일 새벽 3시 (UTC 기준, 한국시간 12시)에 실행
+    - cron: '0 3 * * *'
+  workflow_dispatch: # 수동 실행 가능
+
+jobs:
+  update-ads-txt:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Fetch latest ads.txt from Ezoic
+        run: |
+          curl -sL "https://srv.adstxtmanager.com/83013/tserror-analyzer.me" -o ads.txt.new
+
+          # 파일이 비어있지 않은지 확인
+          if [ -s ads.txt.new ]; then
+            mv ads.txt.new ads.txt
+            echo "ads.txt updated successfully"
+          else
+            echo "Failed to fetch ads.txt or file is empty, keeping existing file"
+            rm -f ads.txt.new
+          fi
+
+      - name: Check for changes
+        id: check_changes
+        run: |
+          if git diff --quiet ads.txt; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit and push if changed
+        if: steps.check_changes.outputs.changed == 'true'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add ads.txt
+          git commit -m "chore: auto-update ads.txt from Ezoic"
+          git push
