@@ -1,7 +1,7 @@
 // analyzer.js - TypeScript Error Analyzer Core Logic
 
 // Feedback API URL - Replace with your Google Apps Script URL
-var FEEDBACK_API_URL = 'https://script.google.com/macros/s/AKfycbwErW17RCWI02ApYuxXDq4r0OFi6w0VF865JItQannIXRFgmD7lbiiR0BnbTkE68wmgfg/exec';  // Set your Google Apps Script URL here
+var FEEDBACK_API_URL = 'https://script.google.com/macros/s/AKfycbx_7ERFEGsv-VENekvvSQZ2UJxIDExPLEblsePNkJjy_yzeo_FfzyIjqgg51OInezWWeA/exec';  // Set your Google Apps Script URL here
 
 // Feedback submission
 var lastFailedError = '';
