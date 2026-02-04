@@ -321,9 +321,8 @@ body::before {
     backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--border-color);
     padding: 16px 24px;
-    padding-right: 220px; /* Space for language switcher */
-    justify-content: space-between;
     align-items: center;
+    gap: 16px;
 }
 
 .header-compact.visible {
@@ -448,23 +447,15 @@ h1 {
     .container { padding: 24px 16px; }
     h1 { font-size: 26px; }
     .lang-switcher { top: 10px; right: 10px; }
-    .header-compact { padding-right: 180px; }
 }
 
 @media (max-width: 480px) {
-    .header-compact {
-        padding-right: 24px;
-        flex-direction: column;
-        gap: 12px;
-        align-items: flex-start;
+    .header-compact .logo h1 {
+        font-size: 16px;
     }
     .expand-btn {
-        align-self: flex-start;
-    }
-    .lang-switcher {
-        top: auto;
-        bottom: 20px;
-        right: 20px;
+        padding: 6px 12px;
+        font-size: 12px;
     }
 }
 
