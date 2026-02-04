@@ -268,7 +268,11 @@
 
         <div class="hero-content">
             <div class="hero-badge">
-                <span class="badge-icon">✨</span>
+                <svg class="badge-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                    <path d="M2 17l10 5 10-5"/>
+                    <path d="M2 12l10 5 10-5"/>
+                </svg>
                 <span data-i18n="heroBadge">무료 개발자 도구</span>
             </div>
 
@@ -284,15 +288,25 @@
 
             <div class="hero-features">
                 <div class="hero-feature">
-                    <span class="feature-icon">🎯</span>
+                    <svg class="feature-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <circle cx="12" cy="12" r="6"/>
+                        <circle cx="12" cy="12" r="2"/>
+                    </svg>
                     <span data-i18n="heroFeature1">정확한 오류 위치 추적</span>
                 </div>
                 <div class="hero-feature">
-                    <span class="feature-icon">⚡</span>
+                    <svg class="feature-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                    </svg>
                     <span data-i18n="heroFeature2">즉시 분석 결과</span>
                 </div>
                 <div class="hero-feature">
-                    <span class="feature-icon">💡</span>
+                    <svg class="feature-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 18h6"/>
+                        <path d="M10 22h4"/>
+                        <path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/>
+                    </svg>
                     <span data-i18n="heroFeature3">해결 방법 제안</span>
                 </div>
             </div>
@@ -316,7 +330,9 @@
 
             <button class="hero-cta" onclick="scrollToAnalyzer()">
                 <span data-i18n="heroCta">지금 바로 분석하기</span>
-                <span class="cta-arrow">↓</span>
+                <svg class="cta-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M12 5v14M19 12l-7 7-7-7"/>
+                </svg>
             </button>
         </div>
     </section>
@@ -361,7 +377,8 @@
                     <textarea id="errorInput" data-i18n-placeholder="inputPlaceholder" placeholder="TypeScript 오류 메시지를 여기에 붙여넣으세요..."></textarea>
                     <div class="btn-group">
                         <button class="btn-primary" onclick="analyzeError()">
-                            <span>🔍</span> <span data-i18n="analyzeBtn">오류 분석</span>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                            <span data-i18n="analyzeBtn">오류 분석</span>
                         </button>
                         <button class="btn-secondary" onclick="clearAll()" data-i18n="clearBtn">초기화</button>
                         <button class="btn-secondary" onclick="loadSample()" data-i18n="sampleBtn">예시 불러오기</button>
@@ -371,7 +388,7 @@
                 <div id="resultSection" class="result-section card">
                     <div class="card-header">
                         <span class="card-title" data-i18n="resultTitle">분석 결과</span>
-                        <button class="copy-btn" onclick="copyResult()">📋 <span data-i18n="copyBtn">복사</span></button>
+                        <button class="copy-btn" onclick="copyResult()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> <span data-i18n="copyBtn">복사</span></button>
                     </div>
                     <div id="resultContent"></div>
                 </div>
@@ -383,7 +400,7 @@
                 <div class="ad-container sidebar" id="sideAd"></div>
 
                 <div class="info-panel">
-                    <h3 data-i18n="supportedTitle">🎯 분석 가능한 오류</h3>
+                    <h3><svg class="panel-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg> <span data-i18n="supportedTitle">분석 가능한 오류</span></h3>
                     <ul>
                         <li data-i18n="supported1">배열/객체 타입 불일치</li>
                         <li data-i18n="supported2">속성 누락 오류</li>
@@ -397,7 +414,7 @@
                 </div>
 
                 <div class="info-panel">
-                    <h3 data-i18n="howToTitle">📖 사용 방법</h3>
+                    <h3><svg class="panel-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> <span data-i18n="howToTitle">사용 방법</span></h3>
                     <ul>
                         <li data-i18n="howTo1">TypeScript 오류를 복사</li>
                         <li data-i18n="howTo2">입력창에 붙여넣기</li>

@@ -164,6 +164,11 @@ body::before {
 
 .badge-icon {
     animation: sparkle 2s ease-in-out infinite;
+    flex-shrink: 0;
+}
+
+.badge-icon svg {
+    display: block;
 }
 
 @keyframes sparkle {
@@ -224,7 +229,16 @@ body::before {
 }
 
 .feature-icon {
-    font-size: 20px;
+    flex-shrink: 0;
+    color: var(--accent-blue);
+}
+
+.hero-feature:nth-child(2) .feature-icon {
+    color: var(--accent-orange);
+}
+
+.hero-feature:nth-child(3) .feature-icon {
+    color: var(--accent-green);
 }
 
 .hero-stats {
@@ -284,6 +298,7 @@ body::before {
 
 .cta-arrow {
     animation: bounce 1.5s ease-in-out infinite;
+    flex-shrink: 0;
 }
 
 @keyframes bounce {
@@ -965,6 +980,11 @@ button {
     display: flex;
     align-items: center;
     gap: 8px;
+}
+
+.panel-icon {
+    color: var(--accent-blue);
+    flex-shrink: 0;
 }
 
 .info-panel ul {
