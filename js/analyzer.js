@@ -20,7 +20,6 @@ function parseTypeScriptError(errorText) {
         errorCodes: []
     };
 
-    // Detect all error codes
     var errorCodeMatches = errorText.match(/TS\d{4}/g);
     if (errorCodeMatches) {
         result.errorCodes = [...new Set(errorCodeMatches)];
@@ -39,13 +38,11 @@ function parseTypeScriptError(errorText) {
         var line = lines[i];
         var trimmed = line.trim();
 
-        // Property incompatible
         var propMatch = trimmed.match(/Types of property ['"]([^'"]+)['"] are incompatible/);
         if (propMatch) {
             currentPath.push(propMatch[1]);
         }
 
-        // Type assignment error
         var typeMatch = trimmed.match(/Type ['"]([^'"]+)['"] is not assignable to type ['"]([^'"]+)['"]/);
         if (typeMatch) {
             var sourceType = typeMatch[1];
@@ -61,23 +58,17 @@ function parseTypeScriptError(errorText) {
                 isLiteral: false
             };
 
-            // Detect generic types
             if (sourceType.includes('<') || targetType.includes('<')) {
                 problem.isGeneric = true;
             }
-
-            // Detect union types
             if (sourceType.includes(' | ') || targetType.includes(' | ')) {
                 problem.isUnion = true;
             }
-
-            // Detect literal types
             if (/^["'].*["']$/.test(sourceType) || /^["'].*["']$/.test(targetType) ||
                 /^\d+$/.test(sourceType) || /^\d+$/.test(targetType)) {
                 problem.isLiteral = true;
             }
 
-            // Detect array mismatches
             var arrayMismatches = findArrayMismatchesInTypes(sourceType, targetType);
             if (arrayMismatches.length > 0) {
                 arrayMismatches.forEach(function(mismatch) {
@@ -94,7 +85,6 @@ function parseTypeScriptError(errorText) {
             }
         }
 
-        // Missing properties
         var missingMatch = trimmed.match(/is missing the following properties[^:]*: ([^.]+)/);
         if (missingMatch) {
             var props = missingMatch[1].split(',').map(function(p) { return p.trim(); });
@@ -105,7 +95,6 @@ function parseTypeScriptError(errorText) {
             });
         }
 
-        // Property does not exist
         var notExistMatch = trimmed.match(/Property ['"]([^'"]+)['"] does not exist on type ['"]([^'"]+)['"]/);
         if (notExistMatch) {
             problems.push({
@@ -116,7 +105,6 @@ function parseTypeScriptError(errorText) {
             });
         }
 
-        // TS2304: Cannot find name
         var cannotFindNameMatch = trimmed.match(/Cannot find name ['"]([^'"]+)['"]/);
         if (cannotFindNameMatch) {
             problems.push({
@@ -126,7 +114,6 @@ function parseTypeScriptError(errorText) {
             });
         }
 
-        // TS2307: Cannot find module
         var cannotFindModuleMatch = trimmed.match(/Cannot find module ['"]([^'"]+)['"]/);
         if (cannotFindModuleMatch) {
             problems.push({
@@ -136,14 +123,12 @@ function parseTypeScriptError(errorText) {
             });
         }
 
-        // TS2551: Did you mean (typo suggestion)
         var didYouMeanMatch = trimmed.match(/Did you mean ['"]([^'"]+)['"]\?/);
         if (didYouMeanMatch && problems.length > 0) {
             var lastProblem = problems[problems.length - 1];
             lastProblem.suggestion = didYouMeanMatch[1];
         }
 
-        // TS2769: No overload matches
         var noOverloadMatch = trimmed.match(/No overload matches this call/);
         if (noOverloadMatch) {
             problems.push({
@@ -152,7 +137,6 @@ function parseTypeScriptError(errorText) {
             });
         }
 
-        // TS7006: Parameter implicitly has 'any' type
         var implicitAnyMatch = trimmed.match(/Parameter ['"]([^'"]+)['"] implicitly has an ['"]any['"] type/);
         if (implicitAnyMatch) {
             problems.push({
@@ -162,7 +146,6 @@ function parseTypeScriptError(errorText) {
             });
         }
 
-        // Argument type error
         var argMatch = trimmed.match(/Argument of type ['"]([^'"]+)['"] is not assignable to parameter of type ['"]([^'"]+)['"]/);
         if (argMatch && !typeMatch) {
             problems.push({
@@ -251,75 +234,275 @@ function deduplicateProblems(problems) {
     });
 }
 
-function formatType(type) {
-    var result = '';
+// ========== NEW: Unified Type Comparison System ==========
+
+/**
+ * Parse a type string into a structured AST-like object
+ */
+function parseTypeToAST(typeStr) {
+    typeStr = typeStr.trim();
+
+    // Handle primitive types
+    if (!typeStr.startsWith('{') && !typeStr.startsWith('(')) {
+        return { type: 'primitive', value: typeStr };
+    }
+
+    // Handle object types
+    if (typeStr.startsWith('{')) {
+        return parseObjectToAST(typeStr);
+    }
+
+    return { type: 'primitive', value: typeStr };
+}
+
+function parseObjectToAST(typeStr) {
+    var result = { type: 'object', properties: {} };
+    var inner = typeStr.trim();
+
+    if (inner.startsWith('{')) inner = inner.slice(1);
+    if (inner.endsWith('}')) inner = inner.slice(0, -1);
+
     var depth = 0;
+    var current = '';
+    var propName = '';
+    var propOptional = false;
+    var inPropName = true;
 
-    for (var i = 0; i < type.length; i++) {
-        var char = type[i];
-        var nextChar = type[i + 1];
+    for (var i = 0; i < inner.length; i++) {
+        var char = inner[i];
 
-        if (char === '{') {
-            depth++;
-            result += '{\n' + '  '.repeat(depth);
-        } else if (char === '}') {
-            depth--;
-            result += '\n' + '  '.repeat(depth) + '}';
-        } else if (char === ';' && depth > 0) {
-            result += ';\n' + '  '.repeat(depth);
-        } else if (char === '[' && nextChar === ']') {
-            result += '[]';
-            i++;
-        } else if (char === ' ' && result.endsWith('\n' + '  '.repeat(depth))) {
-            continue;
+        if (char === '{' || char === '[' || char === '(' || char === '<') depth++;
+        else if (char === '}' || char === ']' || char === ')' || char === '>') depth--;
+
+        if (depth === 0 && char === ':' && inPropName) {
+            var rawPropName = current.trim();
+            propOptional = rawPropName.endsWith('?');
+            propName = rawPropName.replace('?', '');
+            current = '';
+            inPropName = false;
+        } else if (depth === 0 && char === ';') {
+            if (propName) {
+                result.properties[propName] = {
+                    name: propName,
+                    optional: propOptional,
+                    valueType: current.trim()
+                };
+            }
+            current = '';
+            propName = '';
+            propOptional = false;
+            inPropName = true;
         } else {
-            result += char;
+            current += char;
         }
     }
 
-    return result.replace(/\n\s*\n/g, '\n').replace(/\{\s+\}/g, '{}').replace(/\[\s+\]/g, '[]').trim();
+    // Handle last property (no trailing semicolon)
+    if (propName && current.trim()) {
+        result.properties[propName] = {
+            name: propName,
+            optional: propOptional,
+            valueType: current.trim()
+        };
+    }
+
+    return result;
 }
 
-function highlightTypeDiff(sourceType, targetType, isSource) {
-    var type = isSource ? sourceType : targetType;
-    var formatted = formatType(type);
-    var sourceProps = parseObjectProps(sourceType);
-    var targetProps = parseObjectProps(targetType);
+/**
+ * Get all property names from both source and target (union of keys)
+ */
+function getAllPropertyNames(sourceAST, targetAST) {
+    var names = {};
 
-    var arrayMismatchProps = [];
-    Object.keys(targetProps).forEach(function(propName) {
-        var srcType = sourceProps[propName] || '';
-        var tgtType = targetProps[propName] || '';
-        if (tgtType.includes('[]') && !srcType.includes('[]')) {
-            arrayMismatchProps.push(propName);
+    if (sourceAST.type === 'object' && sourceAST.properties) {
+        Object.keys(sourceAST.properties).forEach(function(k) { names[k] = true; });
+    }
+    if (targetAST.type === 'object' && targetAST.properties) {
+        Object.keys(targetAST.properties).forEach(function(k) { names[k] = true; });
+    }
+
+    return Object.keys(names);
+}
+
+/**
+ * Compare two types and identify differences
+ */
+function compareTypes(sourceType, targetType) {
+    var differences = [];
+
+    var sourceAST = parseTypeToAST(sourceType);
+    var targetAST = parseTypeToAST(targetType);
+
+    // Both are primitives - direct comparison
+    if (sourceAST.type === 'primitive' && targetAST.type === 'primitive') {
+        if (sourceAST.value !== targetAST.value) {
+            differences.push({
+                path: [],
+                sourceValue: sourceAST.value,
+                targetValue: targetAST.value
+            });
+        }
+        return differences;
+    }
+
+    // Both are objects
+    if (sourceAST.type === 'object' && targetAST.type === 'object') {
+        var allProps = getAllPropertyNames(sourceAST, targetAST);
+
+        allProps.forEach(function(propName) {
+            var sourceProp = sourceAST.properties[propName];
+            var targetProp = targetAST.properties[propName];
+
+            if (!sourceProp && targetProp) {
+                // Missing in source
+                differences.push({
+                    path: [propName],
+                    type: 'missing_in_source',
+                    targetValue: targetProp.valueType
+                });
+            } else if (sourceProp && !targetProp) {
+                // Extra in source
+                differences.push({
+                    path: [propName],
+                    type: 'extra_in_source',
+                    sourceValue: sourceProp.valueType
+                });
+            } else if (sourceProp && targetProp) {
+                // Compare values
+                if (normalizeType(sourceProp.valueType) !== normalizeType(targetProp.valueType)) {
+                    differences.push({
+                        path: [propName],
+                        type: 'value_mismatch',
+                        sourceValue: sourceProp.valueType,
+                        targetValue: targetProp.valueType
+                    });
+                }
+            }
+        });
+    }
+
+    // Type structure mismatch (object vs primitive)
+    if (sourceAST.type !== targetAST.type) {
+        differences.push({
+            path: [],
+            type: 'structure_mismatch',
+            sourceValue: sourceType,
+            targetValue: targetType
+        });
+    }
+
+    return differences;
+}
+
+function normalizeType(type) {
+    return type.replace(/\s+/g, ' ').trim();
+}
+
+/**
+ * Render both types with aligned structure and highlighted differences
+ */
+function renderAlignedTypeComparison(sourceType, targetType) {
+    var sourceAST = parseTypeToAST(sourceType);
+    var targetAST = parseTypeToAST(targetType);
+    var differences = compareTypes(sourceType, targetType);
+
+    // Build a map of differences by property name
+    var diffMap = {};
+    differences.forEach(function(diff) {
+        if (diff.path.length > 0) {
+            diffMap[diff.path[0]] = diff;
         }
     });
 
-    var html = escapeHtml(formatted);
+    // Get all properties in order
+    var allProps = getAllPropertyNames(sourceAST, targetAST);
 
-    if (isSource) {
-        arrayMismatchProps.forEach(function(propName) {
-            var regex = new RegExp('(' + escapeRegex(propName) + '\\??:\\s*)([^;\\n]+)', 'g');
-            html = html.replace(regex, function(match, prefix, value) {
-                if (!value.includes('[]')) {
-                    return prefix + '<span class="error-highlight">' + value + '</span>';
-                }
-                return match;
-            });
-        });
+    // If both are primitives
+    if (sourceAST.type === 'primitive' && targetAST.type === 'primitive') {
+        var sourceHtml = escapeHtml(sourceType);
+        var targetHtml = escapeHtml(targetType);
 
-        if (targetType.endsWith('[]') && !sourceType.endsWith('[]')) {
-            html = '<span class="error-highlight">' + html + '</span>';
+        if (sourceType !== targetType) {
+            sourceHtml = '<span class="diff-error">' + sourceHtml + '</span>';
+            targetHtml = '<span class="diff-correct">' + targetHtml + '</span>';
         }
-    } else {
-        html = html.replace(/\[\]/g, '<span class="correct-highlight">[]</span>');
+
+        return {
+            sourceHtml: sourceHtml,
+            targetHtml: targetHtml
+        };
     }
 
-    return html;
+    // Build aligned output for objects
+    var sourceLines = ['{'];
+    var targetLines = ['{'];
+
+    allProps.forEach(function(propName, idx) {
+        var sourceProp = sourceAST.properties ? sourceAST.properties[propName] : null;
+        var targetProp = targetAST.properties ? targetAST.properties[propName] : null;
+        var diff = diffMap[propName];
+        var isLast = idx === allProps.length - 1;
+        var semicolon = isLast ? '' : ';';
+
+        // Source side
+        if (sourceProp) {
+            var sourceOptional = sourceProp.optional ? '?' : '';
+            var sourceValue = sourceProp.valueType;
+            var sourceLine = '  ' + propName + sourceOptional + ': ';
+
+            if (diff && (diff.type === 'value_mismatch' || diff.type === 'extra_in_source')) {
+                sourceLine += '<span class="diff-error">' + escapeHtml(sourceValue) + '</span>';
+            } else {
+                sourceLine += escapeHtml(sourceValue);
+            }
+            sourceLine += semicolon;
+            sourceLines.push(sourceLine);
+        } else {
+            // Property missing in source - show placeholder
+            var targetOptional = targetProp.optional ? '?' : '';
+            var placeholderLine = '  <span class="diff-missing">' + propName + targetOptional + ': (missing)</span>' + semicolon;
+            sourceLines.push(placeholderLine);
+        }
+
+        // Target side
+        if (targetProp) {
+            var targetOptional2 = targetProp.optional ? '?' : '';
+            var targetValue = targetProp.valueType;
+            var targetLine = '  ' + propName + targetOptional2 + ': ';
+
+            if (diff && diff.type === 'value_mismatch') {
+                targetLine += '<span class="diff-correct">' + escapeHtml(targetValue) + '</span>';
+            } else if (diff && diff.type === 'missing_in_source') {
+                targetLine += '<span class="diff-correct">' + escapeHtml(targetValue) + '</span>';
+            } else {
+                targetLine += escapeHtml(targetValue);
+            }
+            targetLine += semicolon;
+            targetLines.push(targetLine);
+        } else {
+            // Property missing in target - show placeholder (extra property)
+            var sourceOptional2 = sourceProp.optional ? '?' : '';
+            var placeholderLine2 = '  <span class="diff-extra">' + propName + sourceOptional2 + ': (extra)</span>' + semicolon;
+            targetLines.push(placeholderLine2);
+        }
+    });
+
+    sourceLines.push('}');
+    targetLines.push('}');
+
+    return {
+        sourceHtml: sourceLines.join('\n'),
+        targetHtml: targetLines.join('\n')
+    };
 }
 
-function escapeRegex(str) {
-    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+// ========== END: Unified Type Comparison System ==========
+
+function escapeHtml(text) {
+    var div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
 }
 
 function getTypeSummary(type) {
@@ -389,13 +572,13 @@ function displayResult(result) {
         } else if (problem.type === 'notExist') {
             html += '<div class="type-box wrong">Property "' + problem.propName + '" does not exist on type "' + problem.onType + '"';
             if (problem.suggestion) {
-                html += '<br><br>' + t('didYouMean') + ' <span class="correct-highlight">' + problem.suggestion + '</span>';
+                html += '<br><br>' + t('didYouMean') + ' <span class="diff-correct">' + problem.suggestion + '</span>';
             }
             html += '</div>';
         } else if (problem.type === 'cannotFindName') {
             html += '<div class="type-box wrong">Cannot find name "' + problem.name + '"';
             if (problem.suggestion) {
-                html += '<br><br>' + t('didYouMean') + ' <span class="correct-highlight">' + problem.suggestion + '</span>';
+                html += '<br><br>' + t('didYouMean') + ' <span class="diff-correct">' + problem.suggestion + '</span>';
             }
             html += '</div>';
             html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
@@ -429,22 +612,25 @@ function displayResult(result) {
             html += 'function fn(' + problem.paramName + '<span class="keyword">: string</span>) { ... }';
             html += '</div></div>';
         } else {
+            // Type comparison with aligned structure
             if (problem.path.length > 0) {
                 html += '<div class="problem-path">' + problem.path.join(' → ') + '</div>';
             }
+
+            var comparison = renderAlignedTypeComparison(problem.sourceType, problem.targetType);
 
             html += '<div class="type-comparison">';
 
             html += '<div class="type-column">';
             html += '<div class="type-label wrong">❌ ' + t('providedType') + ' (' + getTypeSummary(problem.sourceType) + ')</div>';
-            html += '<div class="type-box wrong">' + highlightTypeDiff(problem.sourceType, problem.targetType, true) + '</div>';
+            html += '<div class="type-box wrong"><pre class="type-pre">' + comparison.sourceHtml + '</pre></div>';
             html += '</div>';
 
             html += '<div class="type-arrow">→</div>';
 
             html += '<div class="type-column">';
             html += '<div class="type-label correct">✅ ' + t('expectedType') + ' (' + getTypeSummary(problem.targetType) + ')</div>';
-            html += '<div class="type-box correct">' + highlightTypeDiff(problem.sourceType, problem.targetType, false) + '</div>';
+            html += '<div class="type-box correct"><pre class="type-pre">' + comparison.targetHtml + '</pre></div>';
             html += '</div>';
 
             html += '</div>';
@@ -504,12 +690,6 @@ function toggleTrace() {
         content.classList.add('open');
         arrow.textContent = '▲';
     }
-}
-
-function escapeHtml(text) {
-    var div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
 }
 
 function clearAll() {

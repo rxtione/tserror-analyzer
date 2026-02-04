@@ -497,6 +497,64 @@ button {
     font-weight: 600;
 }
 
+/* Aligned Type Comparison Diff Highlighting */
+.type-pre {
+    margin: 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    line-height: 1.8;
+    white-space: pre;
+}
+
+.diff-error {
+    background: var(--accent-red);
+    color: white;
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-weight: 500;
+}
+
+.diff-correct {
+    background: var(--accent-green);
+    color: white;
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-weight: 500;
+}
+
+.diff-missing {
+    color: var(--accent-orange);
+    font-style: italic;
+    opacity: 0.8;
+}
+
+.diff-extra {
+    color: var(--text-muted);
+    font-style: italic;
+    text-decoration: line-through;
+    opacity: 0.7;
+}
+
+.prop-name {
+    color: var(--accent-cyan);
+}
+
+.prop-colon {
+    color: var(--text-muted);
+}
+
+.type-value {
+    color: var(--text-primary);
+}
+
+.type-brace {
+    color: var(--text-secondary);
+}
+
+.type-bracket {
+    color: var(--accent-purple);
+}
+
 /* Solution Box */
 .solution-box {
     background: rgba(16, 185, 129, 0.08);
