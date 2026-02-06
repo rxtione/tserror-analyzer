@@ -114,18 +114,33 @@ function parseTypeScriptError(errorText) {
     }
 
     var lines = errorText.split('\n');
-    var currentPath = [];
     var problems = [];
     var isFirstTypeMatch = true;
+
+    // Track indentation levels to properly manage nested paths
+    var pathStack = []; // Stack of {indent, propName}
+    var lastIndent = 0;
 
     for (var i = 0; i < lines.length; i++) {
         var line = lines[i];
         var trimmed = line.trim();
 
+        // Calculate indentation level (number of leading spaces)
+        var indentMatch = line.match(/^(\s*)/);
+        var currentIndent = indentMatch ? indentMatch[1].length : 0;
+
+        // If indentation decreased, pop path stack accordingly
+        while (pathStack.length > 0 && currentIndent <= pathStack[pathStack.length - 1].indent) {
+            pathStack.pop();
+        }
+
         var propMatch = trimmed.match(/Types of property ['"]([^'"]+)['"] are incompatible/);
         if (propMatch) {
-            currentPath.push(propMatch[1]);
+            pathStack.push({ indent: currentIndent, propName: propMatch[1] });
         }
+
+        // Build current path from stack
+        var currentPath = pathStack.map(function(item) { return item.propName; });
 
         var typeMatch = trimmed.match(/Type ['"]([^'"]+)['"] is not assignable to type ['"]([^'"]+)['"]/);
         if (typeMatch) {
@@ -139,9 +154,13 @@ function parseTypeScriptError(errorText) {
                 isFirstTypeMatch = false;
             }
 
-            // Collect error path
+            // Collect error path (only unique paths)
             if (currentPath.length > 0) {
-                result.allErrorPaths.push(currentPath.slice());
+                var pathStr = currentPath.join('→');
+                var existingPaths = result.allErrorPaths.map(function(p) { return p.join('→'); });
+                if (existingPaths.indexOf(pathStr) === -1) {
+                    result.allErrorPaths.push(currentPath.slice());
+                }
             }
 
             var problem = {
@@ -883,19 +902,32 @@ function renderAlignedTypeComparison(sourceType, targetType) {
     // Get all properties in order
     var allProps = getAllPropertyNames(sourceAST, targetAST);
 
-    // If both are primitives or one has no properties - simple comparison with highlighting
-    if ((sourceAST.type === 'primitive' && targetAST.type === 'primitive') || allProps.length === 0) {
-        var sourceHtml = escapeHtml(sourceType);
-        var targetHtml = escapeHtml(targetType);
+    // Check if target is a simple type name (like 'User', 'Post[]') - not a full object definition
+    var targetIsTypeName = !targetType.startsWith('{') && !targetType.includes(':');
+    var sourceIsTypeName = !sourceType.startsWith('{') && !sourceType.includes(':');
 
+    // If target is just a type name, or both are primitives - simple comparison
+    if (targetIsTypeName || sourceIsTypeName || (sourceAST.type === 'primitive' && targetAST.type === 'primitive')) {
+        var sourceHtml = formatTypeForDisplay(sourceType);
+        var targetHtml = formatTypeForDisplay(targetType);
+
+        // Only highlight as different if they're actually different types
         if (normalizeType(sourceType) !== normalizeType(targetType)) {
-            sourceHtml = '<span class="diff-error">' + formatTypeForDisplay(sourceType) + '</span>';
-            targetHtml = '<span class="diff-correct">' + formatTypeForDisplay(targetType) + '</span>';
+            sourceHtml = '<span class="diff-error">' + sourceHtml + '</span>';
+            targetHtml = '<span class="diff-correct">' + targetHtml + '</span>';
         }
 
         return {
             sourceHtml: sourceHtml,
             targetHtml: targetHtml
+        };
+    }
+
+    // If no properties found in both, just show formatted types
+    if (allProps.length === 0) {
+        return {
+            sourceHtml: formatTypeForDisplay(sourceType),
+            targetHtml: formatTypeForDisplay(targetType)
         };
     }
 
@@ -944,10 +976,12 @@ function renderAlignedTypeComparison(sourceType, targetType) {
             }
             targetLine += '</span>';
             targetLines.push(targetLine);
-        } else {
-            // Property extra in source (not in target)
+        } else if (sourceProp) {
+            // Source has property but target doesn't - mirror the source property
+            // (Target type definition is incomplete or just a type name)
             var sourceOptional2 = sourceProp.optional ? '?' : '';
-            targetLines.push('<span class="type-line has-diff">  <span class="diff-extra">' + escapeHtml(propName) + sourceOptional2 + ': (not expected)</span></span>');
+            var sourceValue2 = sourceProp.valueType;
+            targetLines.push('<span class="type-line">  <span class="prop-name">' + escapeHtml(propName) + sourceOptional2 + '</span>: <span class="type-value">' + escapeHtml(sourceValue2) + '</span></span>');
         }
     });
 
