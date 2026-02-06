@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- SEO -->
+    <title>TS2307: Cannot find module - Complete Guide | TypeScript Error Analyzer</title>
+    <meta name="description" content="Fix TypeScript error TS2307: Cannot find module 'X' or its corresponding type declarations. Learn about module resolution, type definitions, and path aliases.">
+    <meta name="keywords" content="TS2307, TypeScript error, cannot find module, module not found, type declarations, TypeScript import">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://tserror-analyzer.me/guides/ts2307-module-not-found.html">
+    <meta property="og:title" content="TS2307: Cannot find module - Complete Guide">
+    <meta property="og:description" content="Learn how to fix TypeScript error TS2307 with practical examples.">
+    <meta property="og:image" content="https://tserror-analyzer.me/og-image.svg">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://tserror-analyzer.me/guides/ts2307-module-not-found.html">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "headline": "TS2307: Cannot find module - Complete Guide",
+        "description": "Fix TypeScript error TS2307: Cannot find module or its type declarations",
+        "author": {"@type": "Organization", "name": "TypeScript Error Analyzer"},
+        "publisher": {"@type": "Organization", "name": "TypeScript Error Analyzer", "url": "https://tserror-analyzer.me"},
+        "datePublished": "2024-01-15",
+        "dateModified": "2024-12-01"
+    }
+    </script>
+
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="./guide-styles.css">
+</head>
+<body>
+    <nav class="guide-nav">
+        <a href="../" class="logo">TS<span>Error</span> Analyzer</a>
+        <div class="nav-links">
+            <a href="../">Analyzer</a>
+            <a href="./index.html">Guides</a>
+            <a href="../about.html">About</a>
+        </div>
+    </nav>
+
+    <main class="guide-container">
+        <nav class="breadcrumb">
+            <a href="../">Home</a>
+            <span>›</span>
+            <a href="./index.html">Guides</a>
+            <span>›</span>
+            <span>TS2307</span>
+        </nav>
+
+        <header class="guide-header">
+            <span class="error-badge">TS2307</span>
+            <h1>Cannot find module 'X' or its corresponding type declarations</h1>
+            <div class="guide-meta">
+                <span>📚 Difficulty: Intermediate</span>
+                <span>⏱️ 7 min read</span>
+                <span>🔄 Updated: Dec 2024</span>
+            </div>
+        </header>
+
+        <article class="guide-content">
+            <h2>What is TS2307?</h2>
+            <p>
+                TS2307 occurs when TypeScript cannot locate a module you're trying to import. This can happen for several reasons: the package isn't installed, type definitions are missing, or the path is incorrect.
+            </p>
+
+            <div class="code-block">
+<pre><span class="comment">// Example of TS2307 error</span>
+<span class="keyword">import</span> axios <span class="keyword">from</span> <span class="string">'axios'</span>; <span class="error">// Error: Cannot find module 'axios'</span>
+
+<span class="keyword">import</span> { helper } <span class="keyword">from</span> <span class="string">'./utils/helper'</span>; <span class="error">// Error: Cannot find module './utils/helper'</span></pre>
+            </div>
+
+            <h2>Common Causes</h2>
+
+            <h3>1. Package Not Installed</h3>
+            <div class="code-block">
+<pre><span class="comment">// ❌ Package not in node_modules</span>
+<span class="keyword">import</span> lodash <span class="keyword">from</span> <span class="string">'lodash'</span>; <span class="error">// Error!</span>
+
+<span class="comment">// ✅ Install the package</span>
+<span class="comment">// npm install lodash</span>
+<span class="comment">// npm install --save-dev @types/lodash</span></pre>
+            </div>
+
+            <h3>2. Missing Type Definitions</h3>
+            <div class="code-block">
+<pre><span class="comment">// Package exists but has no built-in types</span>
+<span class="keyword">import</span> express <span class="keyword">from</span> <span class="string">'express'</span>; <span class="error">// Error: Could not find type declarations</span>
+
+<span class="comment">// ✅ Install types separately</span>
+<span class="comment">// npm install --save-dev @types/express</span></pre>
+            </div>
+
+            <h3>3. Incorrect Relative Path</h3>
+            <div class="code-block">
+<pre><span class="comment">// File structure:</span>
+<span class="comment">// src/</span>
+<span class="comment">//   components/</span>
+<span class="comment">//     Button.tsx</span>
+<span class="comment">//   utils/</span>
+<span class="comment">//     helper.ts</span>
+
+<span class="comment">// In Button.tsx:</span>
+<span class="comment">// ❌ Wrong path</span>
+<span class="keyword">import</span> { helper } <span class="keyword">from</span> <span class="string">'./helper'</span>; <span class="error">// Error!</span>
+
+<span class="comment">// ✅ Correct relative path</span>
+<span class="keyword">import</span> { helper } <span class="keyword">from</span> <span class="string">'../utils/helper'</span>;</pre>
+            </div>
+
+            <h3>4. Missing File Extension</h3>
+            <div class="code-block">
+<pre><span class="comment">// Some configurations require extensions</span>
+<span class="comment">// ❌ Might not work</span>
+<span class="keyword">import</span> { config } <span class="keyword">from</span> <span class="string">'./config'</span>;
+
+<span class="comment">// ✅ With extension (for ESM or specific configs)</span>
+<span class="keyword">import</span> { config } <span class="keyword">from</span> <span class="string">'./config.js'</span>;
+<span class="comment">// Note: Use .js even for .ts files in some ESM setups</span></pre>
+            </div>
+
+            <h3>5. Path Alias Not Configured</h3>
+            <div class="code-block">
+<pre><span class="comment">// ❌ Using alias without configuration</span>
+<span class="keyword">import</span> { Button } <span class="keyword">from</span> <span class="string">'@/components/Button'</span>; <span class="error">// Error!</span>
+
+<span class="comment">// ✅ Configure paths in tsconfig.json first</span></pre>
+            </div>
+
+            <h3>6. CSS/Asset Imports</h3>
+            <div class="code-block">
+<pre><span class="comment">// ❌ TypeScript doesn't understand non-JS imports by default</span>
+<span class="keyword">import</span> styles <span class="keyword">from</span> <span class="string">'./styles.css'</span>; <span class="error">// Error!</span>
+<span class="keyword">import</span> logo <span class="keyword">from</span> <span class="string">'./logo.png'</span>; <span class="error">// Error!</span></pre>
+            </div>
+
+            <h2>Solutions</h2>
+
+            <h3>1. Install the Package</h3>
+            <div class="code-block">
+<pre><span class="comment"># Install the package</span>
+npm install package-name
+
+<span class="comment"># If types are separate</span>
+npm install --save-dev @types/package-name</pre>
+            </div>
+
+            <h3>2. Configure Path Aliases</h3>
+            <div class="code-block">
+<pre><span class="comment">// tsconfig.json</span>
+{
+    <span class="string">"compilerOptions"</span>: {
+        <span class="string">"baseUrl"</span>: <span class="string">"."</span>,
+        <span class="string">"paths"</span>: {
+            <span class="string">"@/*"</span>: [<span class="string">"src/*"</span>],
+            <span class="string">"@components/*"</span>: [<span class="string">"src/components/*"</span>],
+            <span class="string">"@utils/*"</span>: [<span class="string">"src/utils/*"</span>]
+        }
+    }
+}
+
+<span class="comment">// Now you can use:</span>
+<span class="keyword">import</span> { Button } <span class="keyword">from</span> <span class="string">'@components/Button'</span>;</pre>
+            </div>
+
+            <h3>3. Create Type Declaration for Assets</h3>
+            <div class="code-block">
+<pre><span class="comment">// src/types/assets.d.ts</span>
+<span class="keyword">declare</span> <span class="keyword">module</span> <span class="string">'*.css'</span> {
+    <span class="keyword">const</span> content: { [className: <span class="type">string</span>]: <span class="type">string</span> };
+    <span class="keyword">export default</span> content;
+}
+
+<span class="keyword">declare</span> <span class="keyword">module</span> <span class="string">'*.png'</span> {
+    <span class="keyword">const</span> src: <span class="type">string</span>;
+    <span class="keyword">export default</span> src;
+}
+
+<span class="keyword">declare</span> <span class="keyword">module</span> <span class="string">'*.svg'</span> {
+    <span class="keyword">import</span> * <span class="keyword">as</span> React <span class="keyword">from</span> <span class="string">'react'</span>;
+    <span class="keyword">export const</span> ReactComponent: React.FC&lt;React.SVGProps&lt;SVGSVGElement&gt;&gt;;
+    <span class="keyword">const</span> src: <span class="type">string</span>;
+    <span class="keyword">export default</span> src;
+}</pre>
+            </div>
+
+            <h3>4. Create Type Declaration for Untyped Package</h3>
+            <div class="code-block">
+<pre><span class="comment">// src/types/untyped-package.d.ts</span>
+<span class="keyword">declare</span> <span class="keyword">module</span> <span class="string">'untyped-package'</span> {
+    <span class="keyword">export function</span> someFunction(param: <span class="type">string</span>): <span class="type">void</span>;
+    <span class="keyword">export interface</span> <span class="type">SomeInterface</span> {
+        prop: <span class="type">string</span>;
+    }
+    <span class="keyword">export default</span> <span class="keyword">class</span> <span class="type">MainClass</span> {
+        constructor(options: <span class="type">object</span>);
+    }
+}
+
+<span class="comment">// Or for quick fix (not recommended for production)</span>
+<span class="keyword">declare</span> <span class="keyword">module</span> <span class="string">'untyped-package'</span>;</pre>
+            </div>
+
+            <h3>5. Check Module Resolution</h3>
+            <div class="code-block">
+<pre><span class="comment">// tsconfig.json</span>
+{
+    <span class="string">"compilerOptions"</span>: {
+        <span class="comment">// For Node.js projects</span>
+        <span class="string">"moduleResolution"</span>: <span class="string">"node"</span>,
+
+        <span class="comment">// For modern bundlers (Vite, etc.)</span>
+        <span class="string">"moduleResolution"</span>: <span class="string">"bundler"</span>,
+
+        <span class="comment">// For Node.js 16+ with ESM</span>
+        <span class="string">"moduleResolution"</span>: <span class="string">"node16"</span>
+    }
+}</pre>
+            </div>
+
+            <div class="tip-box">
+                <h4>💡 Pro Tip</h4>
+                <p>Use <code>npm ls package-name</code> to verify if a package is actually installed, and check if it's in the correct location (dependencies vs devDependencies).</p>
+            </div>
+
+            <h2>Real-World Examples</h2>
+
+            <h3>React + TypeScript Setup</h3>
+            <div class="code-block">
+<pre><span class="comment">// Required packages for React TypeScript project</span>
+npm install react react-dom
+npm install --save-dev typescript @types/react @types/react-dom
+
+<span class="comment">// tsconfig.json</span>
+{
+    <span class="string">"compilerOptions"</span>: {
+        <span class="string">"jsx"</span>: <span class="string">"react-jsx"</span>,
+        <span class="string">"moduleResolution"</span>: <span class="string">"bundler"</span>,
+        <span class="string">"esModuleInterop"</span>: <span class="keyword">true</span>
+    }
+}</pre>
+            </div>
+
+            <h3>Next.js Path Aliases</h3>
+            <div class="code-block">
+<pre><span class="comment">// tsconfig.json for Next.js</span>
+{
+    <span class="string">"compilerOptions"</span>: {
+        <span class="string">"baseUrl"</span>: <span class="string">"."</span>,
+        <span class="string">"paths"</span>: {
+            <span class="string">"@/*"</span>: [<span class="string">"./*"</span>]
+        }
+    }
+}
+
+<span class="comment">// Usage</span>
+<span class="keyword">import</span> { Button } <span class="keyword">from</span> <span class="string">'@/components/Button'</span>;
+<span class="keyword">import</span> { api } <span class="keyword">from</span> <span class="string">'@/lib/api'</span>;</pre>
+            </div>
+
+            <h3>Monorepo Package Resolution</h3>
+            <div class="code-block">
+<pre><span class="comment">// In a monorepo, reference other packages</span>
+<span class="comment">// tsconfig.json</span>
+{
+    <span class="string">"compilerOptions"</span>: {
+        <span class="string">"paths"</span>: {
+            <span class="string">"@myorg/shared"</span>: [<span class="string">"../../packages/shared/src"</span>],
+            <span class="string">"@myorg/ui"</span>: [<span class="string">"../../packages/ui/src"</span>]
+        }
+    },
+    <span class="string">"references"</span>: [
+        { <span class="string">"path"</span>: <span class="string">"../../packages/shared"</span> },
+        { <span class="string">"path"</span>: <span class="string">"../../packages/ui"</span> }
+    ]
+}</pre>
+            </div>
+
+            <div class="tip-box warning">
+                <h4>⚠️ Common Gotcha</h4>
+                <p>After adding type definitions or modifying tsconfig.json, restart your TypeScript server. In VS Code, use Cmd/Ctrl + Shift + P → "TypeScript: Restart TS Server".</p>
+            </div>
+
+            <h2>Summary</h2>
+            <ul>
+                <li>TS2307 means TypeScript can't locate a module</li>
+                <li>Check if the package is installed (npm ls)</li>
+                <li>Install @types/* for packages without built-in types</li>
+                <li>Verify relative import paths are correct</li>
+                <li>Configure path aliases in tsconfig.json</li>
+                <li>Create .d.ts files for untyped packages or assets</li>
+                <li>Check moduleResolution setting matches your setup</li>
+            </ul>
+        </article>
+
+        <section class="cta-section">
+            <h3>Still Confused by Your Error?</h3>
+            <p>Paste your TypeScript error into our analyzer for instant, detailed explanations.</p>
+            <a href="../" class="cta-btn">Try Error Analyzer →</a>
+        </section>
+
+        <section class="related-guides">
+            <h3>Related Error Guides</h3>
+            <div class="related-list">
+                <a href="./ts2304-cannot-find-name.html" class="related-item">
+                    <span class="code">TS2304</span>
+                    <span class="title">Cannot find name 'X'</span>
+                </a>
+                <a href="./ts2322-type-not-assignable.html" class="related-item">
+                    <span class="code">TS2322</span>
+                    <span class="title">Type 'X' is not assignable to type 'Y'</span>
+                </a>
+                <a href="./ts2339-property-does-not-exist.html" class="related-item">
+                    <span class="code">TS2339</span>
+                    <span class="title">Property does not exist on type</span>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="guide-footer">
+        <p>© 2024 TypeScript Error Analyzer. <a href="../privacy.html">Privacy</a> · <a href="../terms.html">Terms</a></p>
+    </footer>
+</body>
+</html>

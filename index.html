@@ -1,17 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <!-- Ezoic Privacy Scripts (반드시 먼저 로드) -->
-    <script data-cfasync="false" src="https://cmp.gatekeeperconsent.com/min.js"></script>
-    <script data-cfasync="false" src="https://the.gatekeeperconsent.com/cmp.min.js"></script>
-
-    <!-- Ezoic Header Script -->
-    <script async src="//www.ezojs.com/ezoic/sa.min.js"></script>
-    <script>
-        window.ezstandalone = window.ezstandalone || {};
-        ezstandalone.cmd = ezstandalone.cmd || [];
-    </script>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -71,7 +60,7 @@
         "browserRequirements": "Requires JavaScript",
         "softwareVersion": "2.0",
         "datePublished": "2024-01-01",
-        "dateModified": "2024-12-01",
+        "dateModified": "2025-02-06",
         "offers": {
             "@type": "Offer",
             "price": "0",
@@ -155,78 +144,6 @@
     }
     </script>
 
-    <!-- Structured Data / JSON-LD - HowTo (검색 결과에 단계별 표시) -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "HowTo",
-        "name": "How to Debug TypeScript Errors",
-        "description": "Learn how to quickly understand and fix TypeScript type errors using the free TypeScript Error Analyzer tool.",
-        "totalTime": "PT1M",
-        "estimatedCost": {
-            "@type": "MonetaryAmount",
-            "currency": "USD",
-            "value": "0"
-        },
-        "tool": {
-            "@type": "HowToTool",
-            "name": "TypeScript Error Analyzer"
-        },
-        "step": [
-            {
-                "@type": "HowToStep",
-                "position": 1,
-                "name": "Copy the error message",
-                "text": "Copy the TypeScript error message from your IDE or terminal.",
-                "url": "https://tserror-analyzer.me/#step1"
-            },
-            {
-                "@type": "HowToStep",
-                "position": 2,
-                "name": "Paste into the analyzer",
-                "text": "Paste the error message into the input box on TypeScript Error Analyzer.",
-                "url": "https://tserror-analyzer.me/#step2"
-            },
-            {
-                "@type": "HowToStep",
-                "position": 3,
-                "name": "Click Analyze",
-                "text": "Click the 'Analyze Error' button to process your error.",
-                "url": "https://tserror-analyzer.me/#step3"
-            },
-            {
-                "@type": "HowToStep",
-                "position": 4,
-                "name": "Review the results",
-                "text": "Review the analysis to see exactly what's wrong and how to fix it.",
-                "url": "https://tserror-analyzer.me/#step4"
-            }
-        ]
-    }
-    </script>
-
-    <!-- Structured Data / JSON-LD - BreadcrumbList -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "BreadcrumbList",
-        "itemListElement": [
-            {
-                "@type": "ListItem",
-                "position": 1,
-                "name": "Home",
-                "item": "https://tserror-analyzer.me/"
-            },
-            {
-                "@type": "ListItem",
-                "position": 2,
-                "name": "TypeScript Error Analyzer",
-                "item": "https://tserror-analyzer.me/"
-            }
-        ]
-    }
-    </script>
-
     <!-- Structured Data / JSON-LD - Organization -->
     <script type="application/ld+json">
     {
@@ -239,201 +156,732 @@
     }
     </script>
 
-    <!-- CSS -->
-    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-card: rgba(255, 255, 255, 0.03);
+            --bg-card-hover: rgba(255, 255, 255, 0.05);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --text-primary: #f0f0f5;
+            --text-secondary: #8b8b9e;
+            --text-muted: #5a5a6e;
+            --accent-blue: #3b82f6;
+            --accent-blue-glow: rgba(59, 130, 246, 0.3);
+            --accent-purple: #8b5cf6;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --accent-orange: #f59e0b;
+            --accent-cyan: #06b6d4;
+            --code-bg: #1a1a24;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* ===== Header ===== */
+        .site-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 24px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            color: white;
+        }
+
+        .logo-text {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .logo-text span {
+            color: var(--accent-blue);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-blue);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .lang-switcher {
+            display: flex;
+            gap: 4px;
+        }
+
+        .lang-btn {
+            padding: 6px 10px;
+            border: 1px solid var(--border-color);
+            background: transparent;
+            color: var(--text-secondary);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .lang-btn:hover, .lang-btn.active {
+            background: var(--accent-blue);
+            color: white;
+            border-color: var(--accent-blue);
+        }
+
+        /* ===== Main Layout ===== */
+        .main-wrapper {
+            display: flex;
+            min-height: calc(100vh - 60px - 60px);
+        }
+
+        .tool-area {
+            flex: 1;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .sidebar-ad {
+            width: 300px;
+            min-width: 300px;
+            padding: 24px 16px;
+            border-left: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+        }
+
+        /* ===== Tool Section ===== */
+        .tool-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .tool-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tool-title svg {
+            color: var(--accent-blue);
+        }
+
+        .input-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .input-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+            background: rgba(255,255,255,0.02);
+        }
+
+        .input-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .error-badges {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .error-badge {
+            font-size: 11px;
+            padding: 3px 8px;
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--accent-red);
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 180px;
+            padding: 16px;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            resize: vertical;
+            outline: none;
+        }
+
+        textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 8px;
+            padding: 12px 16px;
+            border-top: 1px solid var(--border-color);
+            background: rgba(255,255,255,0.02);
+        }
+
+        .btn-primary {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            padding: 10px 16px;
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-card-hover);
+            color: var(--text-primary);
+        }
+
+        /* ===== Result Section ===== */
+        .result-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            display: none;
+        }
+
+        .result-section.show {
+            display: block;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+            background: rgba(255,255,255,0.02);
+        }
+
+        .result-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .copy-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: var(--bg-card-hover);
+            color: var(--text-primary);
+        }
+
+        #resultContent {
+            padding: 16px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        /* ===== Bottom Ad ===== */
+        .bottom-ad-section {
+            padding: 16px 24px;
+            border-top: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+        }
+
+        .ad-placeholder {
+            background: var(--bg-card);
+            border: 1px dashed var(--border-color);
+            border-radius: 8px;
+            height: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
+        .sidebar-ad .ad-placeholder {
+            height: 250px;
+            margin-bottom: 16px;
+        }
+
+        /* ===== Info Panels (Sidebar) ===== */
+        .info-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .info-panel h3 {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-panel h3 svg {
+            color: var(--accent-blue);
+        }
+
+        .info-panel ul {
+            list-style: none;
+        }
+
+        .info-panel li {
+            font-size: 12px;
+            color: var(--text-secondary);
+            padding: 6px 0;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-panel li:last-child {
+            border-bottom: none;
+        }
+
+        .info-panel li::before {
+            content: '•';
+            color: var(--accent-blue);
+        }
+
+        /* ===== Footer ===== */
+        .site-footer {
+            padding: 20px 24px;
+            border-top: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-left {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 13px;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-blue);
+        }
+
+        /* ===== Content Section (Below Fold) ===== */
+        .content-section {
+            padding: 48px 24px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .content-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .content-card h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .content-card h3 svg {
+            color: var(--accent-blue);
+        }
+
+        .content-card ul {
+            list-style: none;
+        }
+
+        .content-card li {
+            font-size: 14px;
+            color: var(--text-secondary);
+            padding: 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .content-card li::before {
+            content: '✓';
+            color: var(--accent-green);
+            font-weight: 600;
+        }
+
+        .step-number {
+            width: 24px;
+            height: 24px;
+            background: var(--accent-blue);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .content-card.how-to li::before {
+            display: none;
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 900px) {
+            .sidebar-ad {
+                display: none;
+            }
+
+            .main-wrapper {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .site-header {
+                flex-direction: column;
+                gap: 12px;
+                padding: 12px 16px;
+            }
+
+            .header-left {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .tool-area {
+                padding: 16px;
+            }
+
+            .error-badges {
+                display: none;
+            }
+
+            .site-footer {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+            }
+        }
+
+        /* Result Styles (from original) */
+        .problem-card {
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .problem-title {
+            color: var(--accent-red);
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .problem-detail {
+            color: var(--text-secondary);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .solution-card {
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 12px;
+        }
+
+        .solution-title {
+            color: var(--accent-green);
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .code-block {
+            background: var(--code-bg);
+            border-radius: 6px;
+            padding: 12px;
+            margin: 8px 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            overflow-x: auto;
+        }
+    </style>
 </head>
 <body>
-    <!-- Language Switcher -->
-    <div class="lang-switcher">
-        <button class="lang-btn active" onclick="setLanguage('ko')" data-lang="ko">한국어</button>
-        <button class="lang-btn" onclick="setLanguage('en')" data-lang="en">EN</button>
-        <button class="lang-btn" onclick="setLanguage('ja')" data-lang="ja">日本語</button>
-        <button class="lang-btn" onclick="setLanguage('zh')" data-lang="zh">中文</button>
-    </div>
-
-    <!-- Hero Section - Collapsible -->
-    <section class="hero" id="heroSection">
-        <div class="hero-bg">
-            <div class="hero-gradient"></div>
-            <div class="hero-grid"></div>
-            <div class="floating-icons">
-                <span class="float-icon" style="--delay: 0s; --x: 10%; --y: 20%;">{}</span>
-                <span class="float-icon" style="--delay: 1s; --x: 85%; --y: 15%;">[]</span>
-                <span class="float-icon" style="--delay: 2s; --x: 75%; --y: 70%;">&lt;T&gt;</span>
-                <span class="float-icon" style="--delay: 0.5s; --x: 20%; --y: 75%;">:?</span>
-                <span class="float-icon" style="--delay: 1.5s; --x: 50%; --y: 10%;">|</span>
-                <span class="float-icon" style="--delay: 2.5s; --x: 90%; --y: 50%;">=&gt;</span>
+    <!-- Header -->
+    <header class="site-header">
+        <div class="header-left">
+            <a href="/" class="logo">
+                <div class="logo-icon">TS</div>
+                <span class="logo-text">TS<span>Error</span> Analyzer</span>
+            </a>
+            <nav class="nav-links">
+                <a href="/" data-i18n="navAnalyzer">Analyzer</a>
+                <a href="guides/" data-i18n="guidesLink">Guides</a>
+                <a href="about.html" data-i18n="aboutLink">About</a>
+            </nav>
+        </div>
+        <div class="header-right">
+            <div class="lang-switcher">
+                <button class="lang-btn active" onclick="setLanguage('ko')" data-lang="ko">한국어</button>
+                <button class="lang-btn" onclick="setLanguage('en')" data-lang="en">EN</button>
+                <button class="lang-btn" onclick="setLanguage('ja')" data-lang="ja">日本語</button>
+                <button class="lang-btn" onclick="setLanguage('zh')" data-lang="zh">中文</button>
             </div>
         </div>
+    </header>
 
-        <div class="hero-content">
-            <div class="hero-badge">
-                <svg class="badge-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-                    <path d="M2 17l10 5 10-5"/>
-                    <path d="M2 12l10 5 10-5"/>
-                </svg>
-                <span data-i18n="heroBadge">무료 개발자 도구</span>
+    <!-- Main Content -->
+    <div class="main-wrapper">
+        <!-- Tool Area -->
+        <main class="tool-area">
+            <!-- Input Section -->
+            <section class="input-section">
+                <div class="input-header">
+                    <span class="input-title" data-i18n="inputTitle">오류 메시지 입력</span>
+                    <div class="error-badges">
+                        <span class="error-badge">TS2322</span>
+                        <span class="error-badge">TS2339</span>
+                        <span class="error-badge">TS2345</span>
+                        <span class="error-badge">TS2304</span>
+                        <span class="error-badge">TS2307</span>
+                        <span class="error-badge">+20 more</span>
+                    </div>
+                </div>
+                <textarea id="errorInput" data-i18n-placeholder="inputPlaceholder" placeholder="TypeScript 오류 메시지를 여기에 붙여넣으세요..."></textarea>
+                <div class="btn-group">
+                    <button class="btn-primary" onclick="analyzeError()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                        <span data-i18n="analyzeBtn">오류 분석</span>
+                    </button>
+                    <button class="btn-secondary" onclick="loadSample()" data-i18n="sampleBtn">예시 불러오기</button>
+                    <button class="btn-secondary" onclick="clearAll()" data-i18n="clearBtn">초기화</button>
+                </div>
+            </section>
+
+            <!-- Result Section -->
+            <section class="result-section" id="resultSection">
+                <div class="result-header">
+                    <span class="result-title" data-i18n="resultTitle">분석 결과</span>
+                    <button class="copy-btn" onclick="copyResult()">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                        <span data-i18n="copyBtn">복사</span>
+                    </button>
+                </div>
+                <div id="resultContent"></div>
+            </section>
+        </main>
+
+        <!-- Sidebar Ad -->
+        <aside class="sidebar-ad">
+            <!-- Ad Placeholder 1 -->
+            <div class="ad-placeholder" id="sideAd1">
+                Ad Space (300x250)
             </div>
 
-            <h1 class="hero-title">
-                <span class="hero-title-line" data-i18n="heroTitle1">TypeScript 오류,</span>
-                <span class="hero-title-line hero-highlight" data-i18n="heroTitle2">이제 쉽게 해결하세요</span>
-            </h1>
-
-            <p class="hero-desc" data-i18n="heroDesc">
-                "이 타입이 왜 안 맞지?" 더 이상 고민하지 마세요.<br>
-                복잡한 타입 오류를 붙여넣기만 하면, 정확히 어떤 필드가 문제인지 콕 집어 알려드립니다.
-            </p>
-
-            <div class="hero-features">
-                <div class="hero-feature">
-                    <svg class="feature-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"/>
-                        <circle cx="12" cy="12" r="6"/>
-                        <circle cx="12" cy="12" r="2"/>
-                    </svg>
-                    <span data-i18n="heroFeature1">정확한 오류 위치 추적</span>
-                </div>
-                <div class="hero-feature">
-                    <svg class="feature-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-                    </svg>
-                    <span data-i18n="heroFeature2">즉시 분석 결과</span>
-                </div>
-                <div class="hero-feature">
-                    <svg class="feature-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M9 18h6"/>
-                        <path d="M10 22h4"/>
-                        <path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/>
-                    </svg>
-                    <span data-i18n="heroFeature3">해결 방법 제안</span>
-                </div>
+            <!-- Info Panel -->
+            <div class="info-panel">
+                <h3>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                    <span data-i18n="supportedTitle">분석 가능한 오류</span>
+                </h3>
+                <ul>
+                    <li data-i18n="supported1">배열/객체 타입 불일치</li>
+                    <li data-i18n="supported2">속성 누락 오류</li>
+                    <li data-i18n="supported3">중첩된 타입 오류</li>
+                    <li data-i18n="supported4">유니온 타입 문제</li>
+                    <li data-i18n="supported5">제네릭 타입 오류</li>
+                    <li data-i18n="supported7">모듈 찾기 오류</li>
+                </ul>
             </div>
 
-            <div class="hero-stats">
-                <div class="stat-item">
-                    <span class="stat-number">25+</span>
-                    <span class="stat-label" data-i18n="heroStat1">지원 오류 타입</span>
-                </div>
-                <div class="stat-divider"></div>
-                <div class="stat-item">
-                    <span class="stat-number">4</span>
-                    <span class="stat-label" data-i18n="heroStat2">지원 언어</span>
-                </div>
-                <div class="stat-divider"></div>
-                <div class="stat-item">
-                    <span class="stat-number">100%</span>
-                    <span class="stat-label" data-i18n="heroStat3">무료</span>
-                </div>
+            <!-- Ad Placeholder 2 -->
+            <div class="ad-placeholder" id="sideAd2">
+                Ad Space (300x250)
             </div>
+        </aside>
+    </div>
 
-            <button class="hero-cta" onclick="scrollToAnalyzer()">
-                <span data-i18n="heroCta">지금 바로 분석하기</span>
-                <svg class="cta-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                    <path d="M12 5v14M19 12l-7 7-7-7"/>
-                </svg>
-            </button>
+    <!-- Bottom Ad Section -->
+    <section class="bottom-ad-section">
+        <div class="ad-placeholder" id="bottomAd">
+            Ad Space (728x90 Leaderboard)
         </div>
     </section>
 
-    <!-- Compact Header (shown after analysis) -->
-    <header class="header-compact" id="headerCompact">
-        <div class="logo">
-            <div class="logo-icon">TS</div>
-            <h1 data-i18n="title">TypeScript 오류 분석기</h1>
+    <!-- Content Section (SEO) -->
+    <section class="content-section">
+        <div class="content-grid">
+            <div class="content-card how-to">
+                <h3>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                    <span data-i18n="howToTitle">사용 방법</span>
+                </h3>
+                <ul>
+                    <li><span class="step-number">1</span> <span data-i18n="howTo1">TypeScript 오류를 복사</span></li>
+                    <li><span class="step-number">2</span> <span data-i18n="howTo2">입력창에 붙여넣기</span></li>
+                    <li><span class="step-number">3</span> <span data-i18n="howTo3">분석 버튼 클릭</span></li>
+                    <li><span class="step-number">4</span> <span data-i18n="howTo4">문제점과 해결책 확인</span></li>
+                </ul>
+            </div>
+
+            <div class="content-card">
+                <h3>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    <span data-i18n="featuresTitle">주요 기능</span>
+                </h3>
+                <ul>
+                    <li data-i18n="feature1">25+ 오류 타입 지원</li>
+                    <li data-i18n="feature2">4개 언어 지원</li>
+                    <li data-i18n="feature3">즉시 분석 결과</li>
+                    <li data-i18n="feature4">해결 방법 제안</li>
+                </ul>
+            </div>
         </div>
-        <button class="expand-btn" onclick="expandHero()" data-i18n="expandHero">소개 보기</button>
-    </header>
+    </section>
 
-    <div class="container" id="mainContainer">
-        <header class="header" id="oldHeader" style="display: none;">
-            <div class="logo">
-                <div class="logo-icon">TS</div>
-                <h1 data-i18n="title">TypeScript 오류 분석기</h1>
-            </div>
-            <p class="subtitle" data-i18n="subtitle">복잡한 타입 오류를 분석하여 어떤 필드가 문제인지 명확하게 알려드립니다</p>
-
-            <div class="supported-errors">
-                <span class="error-badge">TS2322</span>
-                <span class="error-badge">TS2345</span>
-                <span class="error-badge">TS2304</span>
-                <span class="error-badge">TS2307</span>
-                <span class="error-badge">TS2741</span>
-                <span class="error-badge">TS2769</span>
-                <span class="error-badge">Generic&lt;T&gt;</span>
-                <span class="error-badge">Union Types</span>
-            </div>
-        </header>
-
-        <div class="ad-container" id="topAd"></div>
-
-        <div class="main-layout">
-            <main>
-                <div class="card">
-                    <div class="card-header">
-                        <span class="card-title" data-i18n="inputTitle">오류 메시지 입력</span>
-                    </div>
-                    <textarea id="errorInput" data-i18n-placeholder="inputPlaceholder" placeholder="TypeScript 오류 메시지를 여기에 붙여넣으세요..."></textarea>
-                    <div class="btn-group">
-                        <button class="btn-primary" onclick="analyzeError()">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-                            <span data-i18n="analyzeBtn">오류 분석</span>
-                        </button>
-                        <button class="btn-secondary" onclick="clearAll()" data-i18n="clearBtn">초기화</button>
-                        <button class="btn-secondary" onclick="loadSample()" data-i18n="sampleBtn">예시 불러오기</button>
-                    </div>
-                </div>
-
-                <div id="resultSection" class="result-section card">
-                    <div class="card-header">
-                        <span class="card-title" data-i18n="resultTitle">분석 결과</span>
-                        <button class="copy-btn" onclick="copyResult()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> <span data-i18n="copyBtn">복사</span></button>
-                    </div>
-                    <div id="resultContent"></div>
-                </div>
-
-                <div class="ad-container" id="bottomAd" style="display:none;"></div>
-            </main>
-
-            <aside class="sidebar">
-                <div class="ad-container sidebar" id="sideAd"></div>
-
-                <div class="info-panel">
-                    <h3><svg class="panel-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg> <span data-i18n="supportedTitle">분석 가능한 오류</span></h3>
-                    <ul>
-                        <li data-i18n="supported1">배열/객체 타입 불일치</li>
-                        <li data-i18n="supported2">속성 누락 오류</li>
-                        <li data-i18n="supported3">중첩된 타입 오류</li>
-                        <li data-i18n="supported4">유니온 타입 문제</li>
-                        <li data-i18n="supported5">제네릭 타입 오류</li>
-                        <li data-i18n="supported6">리터럴 타입 불일치</li>
-                        <li data-i18n="supported7">모듈 찾기 오류</li>
-                        <li data-i18n="supported8">변수/타입 미존재</li>
-                    </ul>
-                </div>
-
-                <div class="info-panel">
-                    <h3><svg class="panel-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> <span data-i18n="howToTitle">사용 방법</span></h3>
-                    <ul>
-                        <li data-i18n="howTo1">TypeScript 오류를 복사</li>
-                        <li data-i18n="howTo2">입력창에 붙여넣기</li>
-                        <li data-i18n="howTo3">분석 버튼 클릭</li>
-                        <li data-i18n="howTo4">문제점과 해결책 확인</li>
-                    </ul>
-                </div>
-            </aside>
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-left">
+            © 2024 TypeScript Error Analyzer
         </div>
-
-        <footer class="footer">
-            <p>© 2024 TypeScript Error Analyzer</p>
-            <div class="footer-links">
-                <a href="about.html" data-i18n="aboutLink">소개</a>
-                <a href="privacy.html" data-i18n="privacyLink">개인정보처리방침</a>
-                <a href="terms.html" data-i18n="termsLink">이용약관</a>
-            </div>
-        </footer>
-    </div>
+        <div class="footer-links">
+            <a href="guides/" data-i18n="guidesLink">Error Guides</a>
+            <a href="about.html" data-i18n="aboutLink">소개</a>
+            <a href="privacy.html" data-i18n="privacyLink">개인정보처리방침</a>
+            <a href="terms.html" data-i18n="termsLink">이용약관</a>
+        </div>
+    </footer>
 
     <!-- JavaScript -->
     <script src="js/i18n.js"></script>
@@ -441,6 +889,20 @@
     <script>
         // Initialize language
         setLanguage(currentLang);
+
+        // Show result section when there's content
+        function showResult() {
+            document.getElementById('resultSection').classList.add('show');
+        }
+
+        // Original analyzeError function wrapper
+        const originalAnalyzeError = window.analyzeError;
+        window.analyzeError = function() {
+            if (originalAnalyzeError) {
+                originalAnalyzeError();
+            }
+            showResult();
+        };
     </script>
 </body>
 </html>

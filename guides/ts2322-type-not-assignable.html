@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- SEO -->
+    <title>TS2322: Type is not assignable - Complete Guide | TypeScript Error Analyzer</title>
+    <meta name="description" content="Learn how to fix TypeScript error TS2322: Type 'X' is not assignable to type 'Y'. Understand why this error occurs and see practical solutions with code examples.">
+    <meta name="keywords" content="TS2322, TypeScript error, type not assignable, type mismatch, TypeScript debugging, 타입스크립트 오류">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://tserror-analyzer.me/guides/ts2322-type-not-assignable.html">
+    <meta property="og:title" content="TS2322: Type is not assignable - Complete Guide">
+    <meta property="og:description" content="Learn how to fix TypeScript error TS2322 with practical examples and solutions.">
+    <meta property="og:image" content="https://tserror-analyzer.me/og-image.svg">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://tserror-analyzer.me/guides/ts2322-type-not-assignable.html">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "headline": "TS2322: Type is not assignable - Complete Guide",
+        "description": "Learn how to fix TypeScript error TS2322: Type 'X' is not assignable to type 'Y'",
+        "author": {
+            "@type": "Organization",
+            "name": "TypeScript Error Analyzer"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "TypeScript Error Analyzer",
+            "url": "https://tserror-analyzer.me"
+        },
+        "datePublished": "2024-01-15",
+        "dateModified": "2024-12-01",
+        "mainEntityOfPage": "https://tserror-analyzer.me/guides/ts2322-type-not-assignable.html"
+    }
+    </script>
+
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        /* Guide-specific styles */
+        .guide-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        .breadcrumb {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 32px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .breadcrumb a {
+            color: var(--accent-blue);
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .guide-header {
+            margin-bottom: 40px;
+        }
+
+        .error-badge {
+            display: inline-block;
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--accent-red);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .guide-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        .guide-meta {
+            display: flex;
+            gap: 24px;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .guide-content {
+            line-height: 1.8;
+        }
+
+        .guide-content h2 {
+            font-size: 1.5rem;
+            margin-top: 48px;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+        }
+
+        .guide-content h3 {
+            font-size: 1.25rem;
+            margin-top: 32px;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+        }
+
+        .guide-content p {
+            margin-bottom: 16px;
+            color: var(--text-secondary);
+        }
+
+        .guide-content ul, .guide-content ol {
+            margin-bottom: 16px;
+            padding-left: 24px;
+            color: var(--text-secondary);
+        }
+
+        .guide-content li {
+            margin-bottom: 8px;
+        }
+
+        .code-block {
+            background: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+
+        .code-block pre {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .code-block .comment { color: var(--text-muted); }
+        .code-block .keyword { color: var(--accent-purple); }
+        .code-block .string { color: var(--accent-green); }
+        .code-block .type { color: var(--accent-cyan); }
+        .code-block .error { color: var(--accent-red); }
+
+        .tip-box {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 4px solid var(--accent-blue);
+            padding: 16px 20px;
+            margin: 24px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .tip-box.warning {
+            background: rgba(245, 158, 11, 0.1);
+            border-left-color: var(--accent-orange);
+        }
+
+        .tip-box h4 {
+            color: var(--accent-blue);
+            margin-bottom: 8px;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        .tip-box.warning h4 {
+            color: var(--accent-orange);
+        }
+
+        .cta-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+            margin-top: 48px;
+            text-align: center;
+        }
+
+        .cta-section h3 {
+            margin-bottom: 12px;
+        }
+
+        .cta-section p {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .cta-btn {
+            display: inline-block;
+            background: var(--accent-blue);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .cta-btn:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+        }
+
+        .related-guides {
+            margin-top: 48px;
+            padding-top: 32px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .related-guides h3 {
+            margin-bottom: 20px;
+        }
+
+        .related-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .related-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .related-item:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--accent-blue);
+        }
+
+        .related-item .code {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent-red);
+            font-size: 14px;
+        }
+
+        .related-item .title {
+            color: var(--text-primary);
+        }
+
+        /* Navigation */
+        .guide-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .guide-nav .logo {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+
+        .guide-nav .logo span {
+            color: var(--accent-blue);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-blue);
+        }
+
+        /* Footer */
+        .guide-footer {
+            margin-top: 80px;
+            padding: 40px 24px;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .guide-footer a {
+            color: var(--accent-blue);
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <nav class="guide-nav">
+        <a href="../" class="logo">TS<span>Error</span> Analyzer</a>
+        <div class="nav-links">
+            <a href="../">Analyzer</a>
+            <a href="./index.html">Guides</a>
+            <a href="../about.html">About</a>
+        </div>
+    </nav>
+
+    <main class="guide-container">
+        <nav class="breadcrumb">
+            <a href="../">Home</a>
+            <span>›</span>
+            <a href="./index.html">Guides</a>
+            <span>›</span>
+            <span>TS2322</span>
+        </nav>
+
+        <header class="guide-header">
+            <span class="error-badge">TS2322</span>
+            <h1>Type 'X' is not assignable to type 'Y'</h1>
+            <div class="guide-meta">
+                <span>📚 Difficulty: Beginner</span>
+                <span>⏱️ 5 min read</span>
+                <span>🔄 Updated: Dec 2024</span>
+            </div>
+        </header>
+
+        <article class="guide-content">
+            <h2>What is TS2322?</h2>
+            <p>
+                TS2322 is one of the most common TypeScript errors. It occurs when you try to assign a value of one type to a variable or parameter that expects a different type. TypeScript's type system catches these mismatches at compile time, preventing potential runtime errors.
+            </p>
+
+            <div class="code-block">
+<pre><span class="comment">// Example of TS2322 error</span>
+<span class="keyword">let</span> age: <span class="type">number</span> = <span class="string">"25"</span>; <span class="error">// Error: Type 'string' is not assignable to type 'number'</span></pre>
+            </div>
+
+            <h2>Common Causes</h2>
+
+            <h3>1. Primitive Type Mismatch</h3>
+            <p>The most basic form of TS2322 occurs when you assign a value of the wrong primitive type:</p>
+
+            <div class="code-block">
+<pre><span class="comment">// ❌ Wrong</span>
+<span class="keyword">let</span> count: <span class="type">number</span> = <span class="string">"10"</span>;
+<span class="keyword">let</span> isActive: <span class="type">boolean</span> = <span class="string">"true"</span>;
+<span class="keyword">let</span> name: <span class="type">string</span> = 123;
+
+<span class="comment">// ✅ Correct</span>
+<span class="keyword">let</span> count: <span class="type">number</span> = 10;
+<span class="keyword">let</span> isActive: <span class="type">boolean</span> = <span class="keyword">true</span>;
+<span class="keyword">let</span> name: <span class="type">string</span> = <span class="string">"John"</span>;</pre>
+            </div>
+
+            <h3>2. Object Property Mismatch</h3>
+            <p>When object properties don't match the expected interface:</p>
+
+            <div class="code-block">
+<pre><span class="keyword">interface</span> <span class="type">User</span> {
+    id: <span class="type">number</span>;
+    name: <span class="type">string</span>;
+    email: <span class="type">string</span>;
+}
+
+<span class="comment">// ❌ Wrong - 'id' is string instead of number</span>
+<span class="keyword">const</span> user: <span class="type">User</span> = {
+    id: <span class="string">"123"</span>,  <span class="error">// Error!</span>
+    name: <span class="string">"John"</span>,
+    email: <span class="string">"john@example.com"</span>
+};
+
+<span class="comment">// ✅ Correct</span>
+<span class="keyword">const</span> user: <span class="type">User</span> = {
+    id: 123,
+    name: <span class="string">"John"</span>,
+    email: <span class="string">"john@example.com"</span>
+};</pre>
+            </div>
+
+            <h3>3. Array Type Mismatch</h3>
+            <p>When array element types don't match:</p>
+
+            <div class="code-block">
+<pre><span class="comment">// ❌ Wrong</span>
+<span class="keyword">const</span> numbers: <span class="type">number[]</span> = [1, 2, <span class="string">"3"</span>, 4]; <span class="error">// Error!</span>
+
+<span class="comment">// ✅ Correct</span>
+<span class="keyword">const</span> numbers: <span class="type">number[]</span> = [1, 2, 3, 4];
+<span class="comment">// Or if you need mixed types:</span>
+<span class="keyword">const</span> mixed: (<span class="type">number</span> | <span class="type">string</span>)[] = [1, 2, <span class="string">"3"</span>, 4];</pre>
+            </div>
+
+            <h3>4. Function Return Type Mismatch</h3>
+            <p>When a function returns a different type than declared:</p>
+
+            <div class="code-block">
+<pre><span class="comment">// ❌ Wrong</span>
+<span class="keyword">function</span> getAge(): <span class="type">number</span> {
+    <span class="keyword">return</span> <span class="string">"25"</span>; <span class="error">// Error!</span>
+}
+
+<span class="comment">// ✅ Correct</span>
+<span class="keyword">function</span> getAge(): <span class="type">number</span> {
+    <span class="keyword">return</span> 25;
+}</pre>
+            </div>
+
+            <h2>Solutions</h2>
+
+            <h3>1. Fix the Value</h3>
+            <p>The simplest solution is to provide a value of the correct type:</p>
+
+            <div class="code-block">
+<pre><span class="keyword">let</span> age: <span class="type">number</span> = 25; <span class="comment">// Use number, not string</span></pre>
+            </div>
+
+            <h3>2. Fix the Type Declaration</h3>
+            <p>If the value is correct, update the type declaration:</p>
+
+            <div class="code-block">
+<pre><span class="keyword">let</span> age: <span class="type">string</span> = <span class="string">"25"</span>; <span class="comment">// Change type to string</span>
+<span class="comment">// Or use union type</span>
+<span class="keyword">let</span> age: <span class="type">string</span> | <span class="type">number</span> = <span class="string">"25"</span>;</pre>
+            </div>
+
+            <h3>3. Type Conversion</h3>
+            <p>Convert the value to the expected type:</p>
+
+            <div class="code-block">
+<pre><span class="keyword">const</span> input = <span class="string">"25"</span>;
+<span class="keyword">let</span> age: <span class="type">number</span> = Number(input); <span class="comment">// Convert string to number</span>
+<span class="keyword">let</span> age: <span class="type">number</span> = parseInt(input, 10); <span class="comment">// Alternative</span></pre>
+            </div>
+
+            <h3>4. Type Assertion (Use with Caution)</h3>
+            <p>When you're certain about the type but TypeScript can't infer it:</p>
+
+            <div class="code-block">
+<pre><span class="keyword">const</span> value = JSON.parse(data) <span class="keyword">as</span> <span class="type">User</span>;
+<span class="comment">// Or</span>
+<span class="keyword">const</span> value = &lt;<span class="type">User</span>&gt;JSON.parse(data);</pre>
+            </div>
+
+            <div class="tip-box warning">
+                <h4>⚠️ Warning</h4>
+                <p>Type assertions bypass TypeScript's type checking. Use them only when you're absolutely sure about the type. Incorrect assertions can lead to runtime errors.</p>
+            </div>
+
+            <h2>Real-World Examples</h2>
+
+            <h3>API Response Handling</h3>
+            <div class="code-block">
+<pre><span class="keyword">interface</span> <span class="type">ApiResponse</span> {
+    data: <span class="type">User</span>;
+    status: <span class="type">number</span>;
+}
+
+<span class="comment">// ❌ Common mistake</span>
+<span class="keyword">const</span> response: <span class="type">ApiResponse</span> = <span class="keyword">await</span> fetch(<span class="string">'/api/user'</span>).then(r => r.json());
+<span class="comment">// fetch returns 'any' which might not match ApiResponse</span>
+
+<span class="comment">// ✅ Better approach with validation</span>
+<span class="keyword">const</span> rawData = <span class="keyword">await</span> fetch(<span class="string">'/api/user'</span>).then(r => r.json());
+<span class="keyword">const</span> response: <span class="type">ApiResponse</span> = {
+    data: rawData.data <span class="keyword">as</span> <span class="type">User</span>,
+    status: Number(rawData.status)
+};</pre>
+            </div>
+
+            <h3>React Props</h3>
+            <div class="code-block">
+<pre><span class="keyword">interface</span> <span class="type">ButtonProps</span> {
+    onClick: () => <span class="type">void</span>;
+    disabled: <span class="type">boolean</span>;
+}
+
+<span class="comment">// ❌ Wrong - passing string instead of boolean</span>
+&lt;Button onClick={handleClick} disabled=<span class="string">"true"</span> /&gt;
+
+<span class="comment">// ✅ Correct</span>
+&lt;Button onClick={handleClick} disabled={<span class="keyword">true</span>} /&gt;</pre>
+            </div>
+
+            <div class="tip-box">
+                <h4>💡 Pro Tip</h4>
+                <p>Use our <a href="../">TypeScript Error Analyzer</a> to paste your complex TS2322 errors and get instant, detailed explanations of exactly which field is causing the mismatch.</p>
+            </div>
+
+            <h2>Summary</h2>
+            <ul>
+                <li>TS2322 occurs when types don't match during assignment</li>
+                <li>Check both the value and the expected type carefully</li>
+                <li>Use type conversion when dealing with external data</li>
+                <li>Avoid type assertions unless absolutely necessary</li>
+                <li>Consider using union types for flexible values</li>
+            </ul>
+        </article>
+
+        <section class="cta-section">
+            <h3>Still Confused by Your Error?</h3>
+            <p>Paste your TypeScript error into our analyzer for instant, detailed explanations.</p>
+            <a href="../" class="cta-btn">Try Error Analyzer →</a>
+        </section>
+
+        <section class="related-guides">
+            <h3>Related Error Guides</h3>
+            <div class="related-list">
+                <a href="./ts2339-property-does-not-exist.html" class="related-item">
+                    <span class="code">TS2339</span>
+                    <span class="title">Property does not exist on type</span>
+                </a>
+                <a href="./ts2345-argument-type.html" class="related-item">
+                    <span class="code">TS2345</span>
+                    <span class="title">Argument of type 'X' is not assignable to parameter of type 'Y'</span>
+                </a>
+                <a href="./ts2304-cannot-find-name.html" class="related-item">
+                    <span class="code">TS2304</span>
+                    <span class="title">Cannot find name 'X'</span>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="guide-footer">
+        <p>© 2024 TypeScript Error Analyzer. <a href="../privacy.html">Privacy</a> · <a href="../terms.html">Terms</a></p>
+    </footer>
+</body>
+</html>

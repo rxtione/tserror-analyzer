@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- SEO -->
+    <title>TS2345: Argument type is not assignable to parameter - Guide | TypeScript Error Analyzer</title>
+    <meta name="description" content="Fix TypeScript error TS2345: Argument of type 'X' is not assignable to parameter of type 'Y'. Learn common causes and solutions with examples.">
+    <meta name="keywords" content="TS2345, TypeScript error, argument type, parameter type, function arguments, TypeScript debugging">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://tserror-analyzer.me/guides/ts2345-argument-type.html">
+    <meta property="og:title" content="TS2345: Argument type is not assignable to parameter - Guide">
+    <meta property="og:description" content="Learn how to fix TypeScript error TS2345 with practical examples.">
+    <meta property="og:image" content="https://tserror-analyzer.me/og-image.svg">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://tserror-analyzer.me/guides/ts2345-argument-type.html">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "headline": "TS2345: Argument type is not assignable to parameter - Guide",
+        "description": "Fix TypeScript error TS2345: Argument of type 'X' is not assignable to parameter of type 'Y'",
+        "author": {"@type": "Organization", "name": "TypeScript Error Analyzer"},
+        "publisher": {"@type": "Organization", "name": "TypeScript Error Analyzer", "url": "https://tserror-analyzer.me"},
+        "datePublished": "2024-01-15",
+        "dateModified": "2024-12-01"
+    }
+    </script>
+
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="./guide-styles.css">
+</head>
+<body>
+    <nav class="guide-nav">
+        <a href="../" class="logo">TS<span>Error</span> Analyzer</a>
+        <div class="nav-links">
+            <a href="../">Analyzer</a>
+            <a href="./index.html">Guides</a>
+            <a href="../about.html">About</a>
+        </div>
+    </nav>
+
+    <main class="guide-container">
+        <nav class="breadcrumb">
+            <a href="../">Home</a>
+            <span>›</span>
+            <a href="./index.html">Guides</a>
+            <span>›</span>
+            <span>TS2345</span>
+        </nav>
+
+        <header class="guide-header">
+            <span class="error-badge">TS2345</span>
+            <h1>Argument of type 'X' is not assignable to parameter of type 'Y'</h1>
+            <div class="guide-meta">
+                <span>📚 Difficulty: Intermediate</span>
+                <span>⏱️ 6 min read</span>
+                <span>🔄 Updated: Dec 2024</span>
+            </div>
+        </header>
+
+        <article class="guide-content">
+            <h2>What is TS2345?</h2>
+            <p>
+                TS2345 occurs when you call a function with an argument that doesn't match the expected parameter type. This error is similar to TS2322, but specifically applies to function calls.
+            </p>
+
+            <div class="code-block">
+<pre><span class="comment">// Example of TS2345 error</span>
+<span class="keyword">function</span> greet(name: <span class="type">string</span>): <span class="type">void</span> {
+    console.log(<span class="string">`Hello, ${name}!`</span>);
+}
+
+greet(123); <span class="error">// Error: Argument of type 'number' is not assignable to parameter of type 'string'</span></pre>
+            </div>
+
+            <h2>Common Causes</h2>
+
+            <h3>1. Wrong Primitive Type</h3>
+            <div class="code-block">
+<pre><span class="keyword">function</span> calculateAge(birthYear: <span class="type">number</span>): <span class="type">number</span> {
+    <span class="keyword">return</span> 2024 - birthYear;
+}
+
+<span class="comment">// ❌ Wrong - passing string instead of number</span>
+calculateAge(<span class="string">"1990"</span>); <span class="error">// Error!</span>
+
+<span class="comment">// ✅ Correct</span>
+calculateAge(1990);</pre>
+            </div>
+
+            <h3>2. Missing Properties in Object Argument</h3>
+            <div class="code-block">
+<pre><span class="keyword">interface</span> <span class="type">User</span> {
+    id: <span class="type">number</span>;
+    name: <span class="type">string</span>;
+    email: <span class="type">string</span>;
+}
+
+<span class="keyword">function</span> createUser(user: <span class="type">User</span>): <span class="type">void</span> {
+    console.log(user);
+}
+
+<span class="comment">// ❌ Missing 'email' property</span>
+createUser({ id: 1, name: <span class="string">"John"</span> }); <span class="error">// Error!</span>
+
+<span class="comment">// ✅ All properties included</span>
+createUser({ id: 1, name: <span class="string">"John"</span>, email: <span class="string">"john@example.com"</span> });</pre>
+            </div>
+
+            <h3>3. Null or Undefined Issues</h3>
+            <div class="code-block">
+<pre><span class="keyword">function</span> processName(name: <span class="type">string</span>): <span class="type">string</span> {
+    <span class="keyword">return</span> name.toUpperCase();
+}
+
+<span class="keyword">const</span> userName: <span class="type">string</span> | <span class="type">null</span> = getUserName();
+
+<span class="comment">// ❌ userName might be null</span>
+processName(userName); <span class="error">// Error!</span>
+
+<span class="comment">// ✅ Check for null first</span>
+<span class="keyword">if</span> (userName !== <span class="keyword">null</span>) {
+    processName(userName);
+}
+
+<span class="comment">// ✅ Or provide default</span>
+processName(userName ?? <span class="string">"Guest"</span>);</pre>
+            </div>
+
+            <h3>4. Array Type Mismatch</h3>
+            <div class="code-block">
+<pre><span class="keyword">function</span> sumNumbers(numbers: <span class="type">number</span>[]): <span class="type">number</span> {
+    <span class="keyword">return</span> numbers.reduce((a, b) => a + b, 0);
+}
+
+<span class="comment">// ❌ Mixed array</span>
+sumNumbers([1, 2, <span class="string">"3"</span>, 4]); <span class="error">// Error!</span>
+
+<span class="comment">// ✅ Correct</span>
+sumNumbers([1, 2, 3, 4]);</pre>
+            </div>
+
+            <h3>5. Generic Type Mismatch</h3>
+            <div class="code-block">
+<pre><span class="keyword">function</span> getFirst&lt;<span class="type">T</span>&gt;(arr: <span class="type">T</span>[]): <span class="type">T</span> {
+    <span class="keyword">return</span> arr[0];
+}
+
+<span class="keyword">const</span> result: <span class="type">string</span> = getFirst([1, 2, 3]); <span class="error">// Error!</span>
+<span class="comment">// Type 'number' is not assignable to type 'string'</span>
+
+<span class="comment">// ✅ Correct</span>
+<span class="keyword">const</span> result: <span class="type">number</span> = getFirst([1, 2, 3]);
+<span class="comment">// Or</span>
+<span class="keyword">const</span> result: <span class="type">string</span> = getFirst([<span class="string">"a"</span>, <span class="string">"b"</span>, <span class="string">"c"</span>]);</pre>
+            </div>
+
+            <h2>Solutions</h2>
+
+            <h3>1. Fix the Argument Type</h3>
+            <div class="code-block">
+<pre><span class="comment">// Convert or provide correct type</span>
+<span class="keyword">const</span> yearStr = <span class="string">"1990"</span>;
+calculateAge(parseInt(yearStr, 10)); <span class="comment">// Convert to number</span></pre>
+            </div>
+
+            <h3>2. Update Function Parameter Type</h3>
+            <div class="code-block">
+<pre><span class="comment">// Accept multiple types with union</span>
+<span class="keyword">function</span> processId(id: <span class="type">string</span> | <span class="type">number</span>): <span class="type">void</span> {
+    console.log(id);
+}
+
+processId(<span class="string">"abc"</span>); <span class="comment">// OK</span>
+processId(123);    <span class="comment">// OK</span></pre>
+            </div>
+
+            <h3>3. Use Optional Properties</h3>
+            <div class="code-block">
+<pre><span class="keyword">interface</span> <span class="type">User</span> {
+    id: <span class="type">number</span>;
+    name: <span class="type">string</span>;
+    email?: <span class="type">string</span>; <span class="comment">// Optional</span>
+}
+
+<span class="keyword">function</span> createUser(user: <span class="type">User</span>): <span class="type">void</span> { }
+
+createUser({ id: 1, name: <span class="string">"John"</span> }); <span class="comment">// OK now</span></pre>
+            </div>
+
+            <h3>4. Handle Null/Undefined</h3>
+            <div class="code-block">
+<pre><span class="comment">// Non-null assertion (use carefully)</span>
+processName(userName!); <span class="comment">// Assert non-null</span>
+
+<span class="comment">// Default value</span>
+processName(userName || <span class="string">"Default"</span>);
+
+<span class="comment">// Nullish coalescing</span>
+processName(userName ?? <span class="string">"Default"</span>);</pre>
+            </div>
+
+            <h3>5. Use Partial for Optional Properties</h3>
+            <div class="code-block">
+<pre><span class="keyword">interface</span> <span class="type">User</span> {
+    id: <span class="type">number</span>;
+    name: <span class="type">string</span>;
+    email: <span class="type">string</span>;
+}
+
+<span class="comment">// All properties become optional</span>
+<span class="keyword">function</span> updateUser(updates: <span class="type">Partial</span>&lt;<span class="type">User</span>&gt;): <span class="type">void</span> { }
+
+updateUser({ name: <span class="string">"New Name"</span> }); <span class="comment">// OK</span></pre>
+            </div>
+
+            <div class="tip-box">
+                <h4>💡 Pro Tip</h4>
+                <p>When working with API responses, use type guards or validation libraries like Zod to ensure data matches expected types before passing to functions.</p>
+            </div>
+
+            <h2>Real-World Examples</h2>
+
+            <h3>React Event Handlers</h3>
+            <div class="code-block">
+<pre><span class="comment">// ❌ Wrong event type</span>
+<span class="keyword">const</span> handleClick = (e: <span class="type">MouseEvent</span>) => { };
+&lt;button onClick={handleClick}&gt;Click&lt;/button&gt; <span class="error">// Error!</span>
+
+<span class="comment">// ✅ Use React's event type</span>
+<span class="keyword">const</span> handleClick = (e: <span class="type">React.MouseEvent</span>&lt;<span class="type">HTMLButtonElement</span>&gt;) => { };
+&lt;button onClick={handleClick}&gt;Click&lt;/button&gt; <span class="comment">// OK</span></pre>
+            </div>
+
+            <h3>Array Methods</h3>
+            <div class="code-block">
+<pre><span class="keyword">const</span> numbers = [1, 2, 3, 4, 5];
+
+<span class="comment">// ❌ Callback returns wrong type</span>
+<span class="keyword">const</span> doubled: <span class="type">number</span>[] = numbers.map(n => n.toString()); <span class="error">// Error!</span>
+
+<span class="comment">// ✅ Correct</span>
+<span class="keyword">const</span> doubled: <span class="type">number</span>[] = numbers.map(n => n * 2);
+<span class="keyword">const</span> strings: <span class="type">string</span>[] = numbers.map(n => n.toString());</pre>
+            </div>
+
+            <h3>Promise/Async Functions</h3>
+            <div class="code-block">
+<pre><span class="keyword">async function</span> fetchUser(id: <span class="type">number</span>): <span class="type">Promise</span>&lt;<span class="type">User</span>&gt; {
+    <span class="comment">// ...</span>
+}
+
+<span class="comment">// ❌ Passing string instead of number</span>
+fetchUser(<span class="string">"123"</span>); <span class="error">// Error!</span>
+
+<span class="comment">// ✅ Correct</span>
+fetchUser(123);
+fetchUser(parseInt(userId, 10));</pre>
+            </div>
+
+            <div class="tip-box warning">
+                <h4>⚠️ Common Mistake</h4>
+                <p>Don't use type assertions (<code>as Type</code>) to silence TS2345 errors. This bypasses type checking and can cause runtime errors. Fix the actual type mismatch instead.</p>
+            </div>
+
+            <h2>Summary</h2>
+            <ul>
+                <li>TS2345 occurs when function arguments don't match parameter types</li>
+                <li>Check if you're passing the correct type</li>
+                <li>Handle null/undefined before passing to functions</li>
+                <li>Use union types when multiple types are valid</li>
+                <li>Use Partial&lt;T&gt; for optional object properties</li>
+                <li>Convert types explicitly when needed</li>
+            </ul>
+        </article>
+
+        <section class="cta-section">
+            <h3>Still Confused by Your Error?</h3>
+            <p>Paste your TypeScript error into our analyzer for instant, detailed explanations.</p>
+            <a href="../" class="cta-btn">Try Error Analyzer →</a>
+        </section>
+
+        <section class="related-guides">
+            <h3>Related Error Guides</h3>
+            <div class="related-list">
+                <a href="./ts2322-type-not-assignable.html" class="related-item">
+                    <span class="code">TS2322</span>
+                    <span class="title">Type 'X' is not assignable to type 'Y'</span>
+                </a>
+                <a href="./ts2339-property-does-not-exist.html" class="related-item">
+                    <span class="code">TS2339</span>
+                    <span class="title">Property does not exist on type</span>
+                </a>
+                <a href="./ts2304-cannot-find-name.html" class="related-item">
+                    <span class="code">TS2304</span>
+                    <span class="title">Cannot find name 'X'</span>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="guide-footer">
+        <p>© 2024 TypeScript Error Analyzer. <a href="../privacy.html">Privacy</a> · <a href="../terms.html">Terms</a></p>
+    </footer>
+</body>
+</html>

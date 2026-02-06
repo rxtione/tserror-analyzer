@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- SEO -->
+    <title>TS2304: Cannot find name - Complete Guide | TypeScript Error Analyzer</title>
+    <meta name="description" content="Fix TypeScript error TS2304: Cannot find name 'X'. Learn why this error occurs and how to resolve undefined variables, missing imports, and more.">
+    <meta name="keywords" content="TS2304, TypeScript error, cannot find name, undefined variable, missing import, TypeScript debugging">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://tserror-analyzer.me/guides/ts2304-cannot-find-name.html">
+    <meta property="og:title" content="TS2304: Cannot find name - Complete Guide">
+    <meta property="og:description" content="Learn how to fix TypeScript error TS2304 with practical examples.">
+    <meta property="og:image" content="https://tserror-analyzer.me/og-image.svg">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://tserror-analyzer.me/guides/ts2304-cannot-find-name.html">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "headline": "TS2304: Cannot find name - Complete Guide",
+        "description": "Fix TypeScript error TS2304: Cannot find name 'X'",
+        "author": {"@type": "Organization", "name": "TypeScript Error Analyzer"},
+        "publisher": {"@type": "Organization", "name": "TypeScript Error Analyzer", "url": "https://tserror-analyzer.me"},
+        "datePublished": "2024-01-15",
+        "dateModified": "2024-12-01"
+    }
+    </script>
+
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="./guide-styles.css">
+</head>
+<body>
+    <nav class="guide-nav">
+        <a href="../" class="logo">TS<span>Error</span> Analyzer</a>
+        <div class="nav-links">
+            <a href="../">Analyzer</a>
+            <a href="./index.html">Guides</a>
+            <a href="../about.html">About</a>
+        </div>
+    </nav>
+
+    <main class="guide-container">
+        <nav class="breadcrumb">
+            <a href="../">Home</a>
+            <span>›</span>
+            <a href="./index.html">Guides</a>
+            <span>›</span>
+            <span>TS2304</span>
+        </nav>
+
+        <header class="guide-header">
+            <span class="error-badge">TS2304</span>
+            <h1>Cannot find name 'X'</h1>
+            <div class="guide-meta">
+                <span>📚 Difficulty: Beginner</span>
+                <span>⏱️ 4 min read</span>
+                <span>🔄 Updated: Dec 2024</span>
+            </div>
+        </header>
+
+        <article class="guide-content">
+            <h2>What is TS2304?</h2>
+            <p>
+                TS2304 occurs when TypeScript encounters a name (variable, function, class, type, etc.) that it doesn't recognize in the current scope. This usually means the name hasn't been declared, imported, or is misspelled.
+            </p>
+
+            <div class="code-block">
+<pre><span class="comment">// Example of TS2304 error</span>
+console.log(userName); <span class="error">// Error: Cannot find name 'userName'</span>
+
+<span class="comment">// Variable was never declared</span></pre>
+            </div>
+
+            <h2>Common Causes</h2>
+
+            <h3>1. Variable Not Declared</h3>
+            <div class="code-block">
+<pre><span class="comment">// ❌ Using variable before declaration</span>
+console.log(message); <span class="error">// Error!</span>
+
+<span class="comment">// ✅ Declare first</span>
+<span class="keyword">const</span> message = <span class="string">"Hello"</span>;
+console.log(message);</pre>
+            </div>
+
+            <h3>2. Missing Import</h3>
+            <div class="code-block">
+<pre><span class="comment">// ❌ Using React without importing</span>
+<span class="keyword">const</span> App = () => &lt;div&gt;Hello&lt;/div&gt;; <span class="error">// Error: Cannot find name 'React'</span>
+
+<span class="comment">// ✅ Add import</span>
+<span class="keyword">import</span> React <span class="keyword">from</span> <span class="string">'react'</span>;
+<span class="keyword">const</span> App = () => &lt;div&gt;Hello&lt;/div&gt;;</pre>
+            </div>
+
+            <h3>3. Typo in Name</h3>
+            <div class="code-block">
+<pre><span class="keyword">const</span> userName = <span class="string">"John"</span>;
+
+<span class="comment">// ❌ Typo</span>
+console.log(username); <span class="error">// Error! (lowercase 'n')</span>
+
+<span class="comment">// ✅ Correct spelling</span>
+console.log(userName);</pre>
+            </div>
+
+            <h3>4. Missing Type Definitions</h3>
+            <div class="code-block">
+<pre><span class="comment">// ❌ Using Node.js globals without types</span>
+console.log(process.env.NODE_ENV); <span class="error">// Error: Cannot find name 'process'</span>
+
+<span class="comment">// ✅ Install @types/node</span>
+<span class="comment">// npm install --save-dev @types/node</span></pre>
+            </div>
+
+            <h3>5. Scope Issues</h3>
+            <div class="code-block">
+<pre><span class="keyword">function</span> outer() {
+    <span class="keyword">const</span> localVar = <span class="string">"I'm local"</span>;
+}
+
+<span class="comment">// ❌ Accessing variable outside its scope</span>
+console.log(localVar); <span class="error">// Error!</span></pre>
+            </div>
+
+            <h3>6. Browser/DOM Globals</h3>
+            <div class="code-block">
+<pre><span class="comment">// ❌ In Node.js or non-browser environment</span>
+<span class="keyword">const</span> element = document.getElementById(<span class="string">'app'</span>); <span class="error">// Error: Cannot find name 'document'</span>
+
+<span class="comment">// ✅ Add 'dom' to lib in tsconfig.json</span>
+<span class="comment">// Or check if running in browser</span>
+<span class="keyword">if</span> (<span class="keyword">typeof</span> document !== <span class="string">'undefined'</span>) {
+    <span class="keyword">const</span> element = document.getElementById(<span class="string">'app'</span>);
+}</pre>
+            </div>
+
+            <h2>Solutions</h2>
+
+            <h3>1. Declare the Variable</h3>
+            <div class="code-block">
+<pre><span class="comment">// Use let, const, or var</span>
+<span class="keyword">let</span> count = 0;
+<span class="keyword">const</span> API_URL = <span class="string">"https://api.example.com"</span>;
+<span class="keyword">var</span> legacyVar = <span class="string">"old style"</span>;</pre>
+            </div>
+
+            <h3>2. Add Missing Import</h3>
+            <div class="code-block">
+<pre><span class="comment">// Import named exports</span>
+<span class="keyword">import</span> { useState, useEffect } <span class="keyword">from</span> <span class="string">'react'</span>;
+
+<span class="comment">// Import default export</span>
+<span class="keyword">import</span> axios <span class="keyword">from</span> <span class="string">'axios'</span>;
+
+<span class="comment">// Import types</span>
+<span class="keyword">import</span> <span class="keyword">type</span> { User } <span class="keyword">from</span> <span class="string">'./types'</span>;</pre>
+            </div>
+
+            <h3>3. Install Type Definitions</h3>
+            <div class="code-block">
+<pre><span class="comment"># For Node.js</span>
+npm install --save-dev @types/node
+
+<span class="comment"># For jQuery</span>
+npm install --save-dev @types/jquery
+
+<span class="comment"># For Express</span>
+npm install --save-dev @types/express</pre>
+            </div>
+
+            <h3>4. Update tsconfig.json</h3>
+            <div class="code-block">
+<pre>{
+    <span class="string">"compilerOptions"</span>: {
+        <span class="string">"lib"</span>: [<span class="string">"ES2020"</span>, <span class="string">"DOM"</span>, <span class="string">"DOM.Iterable"</span>],
+        <span class="string">"types"</span>: [<span class="string">"node"</span>, <span class="string">"jest"</span>]
+    }
+}</pre>
+            </div>
+
+            <h3>5. Declare Global Variables</h3>
+            <div class="code-block">
+<pre><span class="comment">// For global variables from scripts</span>
+<span class="keyword">declare</span> <span class="keyword">var</span> $: <span class="keyword">typeof</span> jQuery;
+<span class="keyword">declare</span> <span class="keyword">var</span> google: <span class="keyword">typeof</span> google.maps;
+
+<span class="comment">// Or in a .d.ts file</span>
+<span class="keyword">declare</span> global {
+    <span class="keyword">interface</span> <span class="type">Window</span> {
+        myGlobal: <span class="type">string</span>;
+    }
+}</pre>
+            </div>
+
+            <div class="tip-box">
+                <h4>💡 Pro Tip</h4>
+                <p>Most IDEs (VS Code, WebStorm) can auto-import missing dependencies. Use the quick-fix feature (Ctrl/Cmd + .) when you see TS2304 to add imports automatically.</p>
+            </div>
+
+            <h2>Real-World Examples</h2>
+
+            <h3>React with TypeScript</h3>
+            <div class="code-block">
+<pre><span class="comment">// ❌ Common mistake in React 17+</span>
+<span class="keyword">const</span> App = () => {
+    <span class="keyword">const</span> [count, setCount] = useState(0); <span class="error">// Error: Cannot find name 'useState'</span>
+    <span class="keyword">return</span> &lt;div&gt;{count}&lt;/div&gt;;
+};
+
+<span class="comment">// ✅ Import the hook</span>
+<span class="keyword">import</span> { useState } <span class="keyword">from</span> <span class="string">'react'</span>;
+
+<span class="keyword">const</span> App = () => {
+    <span class="keyword">const</span> [count, setCount] = useState(0);
+    <span class="keyword">return</span> &lt;div&gt;{count}&lt;/div&gt;;
+};</pre>
+            </div>
+
+            <h3>Jest Testing</h3>
+            <div class="code-block">
+<pre><span class="comment">// ❌ Jest globals not recognized</span>
+describe(<span class="string">'MyTest'</span>, () => { <span class="error">// Error: Cannot find name 'describe'</span>
+    it(<span class="string">'works'</span>, () => {
+        expect(<span class="keyword">true</span>).toBe(<span class="keyword">true</span>);
+    });
+});
+
+<span class="comment">// ✅ Install and configure Jest types</span>
+<span class="comment">// npm install --save-dev @types/jest</span>
+<span class="comment">// Add "jest" to types in tsconfig.json</span></pre>
+            </div>
+
+            <h3>Environment Variables</h3>
+            <div class="code-block">
+<pre><span class="comment">// ❌ process.env in browser code</span>
+<span class="keyword">const</span> apiKey = process.env.API_KEY; <span class="error">// Error!</span>
+
+<span class="comment">// ✅ For Vite/Next.js, use their specific patterns</span>
+<span class="comment">// Vite</span>
+<span class="keyword">const</span> apiKey = <span class="keyword">import</span>.meta.env.VITE_API_KEY;
+
+<span class="comment">// Next.js</span>
+<span class="keyword">const</span> apiKey = process.env.NEXT_PUBLIC_API_KEY;</pre>
+            </div>
+
+            <div class="tip-box warning">
+                <h4>⚠️ Watch Out</h4>
+                <p>If you're seeing TS2304 for types like <code>Promise</code>, <code>Map</code>, or <code>Set</code>, your tsconfig.json might be targeting an older ES version. Update <code>"target"</code> or <code>"lib"</code> to include modern JavaScript features.</p>
+            </div>
+
+            <h2>Summary</h2>
+            <ul>
+                <li>TS2304 means TypeScript can't find a name in the current scope</li>
+                <li>Check for typos first</li>
+                <li>Add missing imports</li>
+                <li>Install @types packages for third-party libraries</li>
+                <li>Update tsconfig.json lib array for browser/Node APIs</li>
+                <li>Declare global variables when needed</li>
+            </ul>
+        </article>
+
+        <section class="cta-section">
+            <h3>Still Confused by Your Error?</h3>
+            <p>Paste your TypeScript error into our analyzer for instant, detailed explanations.</p>
+            <a href="../" class="cta-btn">Try Error Analyzer →</a>
+        </section>
+
+        <section class="related-guides">
+            <h3>Related Error Guides</h3>
+            <div class="related-list">
+                <a href="./ts2307-module-not-found.html" class="related-item">
+                    <span class="code">TS2307</span>
+                    <span class="title">Cannot find module 'X'</span>
+                </a>
+                <a href="./ts2322-type-not-assignable.html" class="related-item">
+                    <span class="code">TS2322</span>
+                    <span class="title">Type 'X' is not assignable to type 'Y'</span>
+                </a>
+                <a href="./ts2339-property-does-not-exist.html" class="related-item">
+                    <span class="code">TS2339</span>
+                    <span class="title">Property does not exist on type</span>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="guide-footer">
+        <p>© 2024 TypeScript Error Analyzer. <a href="../privacy.html">Privacy</a> · <a href="../terms.html">Terms</a></p>
+    </footer>
+</body>
+</html>

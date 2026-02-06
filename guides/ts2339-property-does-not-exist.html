@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- SEO -->
+    <title>TS2339: Property does not exist on type - Complete Guide | TypeScript Error Analyzer</title>
+    <meta name="description" content="Fix TypeScript error TS2339: Property 'X' does not exist on type 'Y'. Learn why this error occurs and how to solve it with practical examples.">
+    <meta name="keywords" content="TS2339, TypeScript error, property does not exist, type error, TypeScript debugging">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://tserror-analyzer.me/guides/ts2339-property-does-not-exist.html">
+    <meta property="og:title" content="TS2339: Property does not exist on type - Complete Guide">
+    <meta property="og:description" content="Learn how to fix TypeScript error TS2339 with practical examples and solutions.">
+    <meta property="og:image" content="https://tserror-analyzer.me/og-image.svg">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://tserror-analyzer.me/guides/ts2339-property-does-not-exist.html">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "headline": "TS2339: Property does not exist on type - Complete Guide",
+        "description": "Fix TypeScript error TS2339: Property 'X' does not exist on type 'Y'",
+        "author": {"@type": "Organization", "name": "TypeScript Error Analyzer"},
+        "publisher": {"@type": "Organization", "name": "TypeScript Error Analyzer", "url": "https://tserror-analyzer.me"},
+        "datePublished": "2024-01-15",
+        "dateModified": "2024-12-01"
+    }
+    </script>
+
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="./guide-styles.css">
+</head>
+<body>
+    <nav class="guide-nav">
+        <a href="../" class="logo">TS<span>Error</span> Analyzer</a>
+        <div class="nav-links">
+            <a href="../">Analyzer</a>
+            <a href="./index.html">Guides</a>
+            <a href="../about.html">About</a>
+        </div>
+    </nav>
+
+    <main class="guide-container">
+        <nav class="breadcrumb">
+            <a href="../">Home</a>
+            <span>›</span>
+            <a href="./index.html">Guides</a>
+            <span>›</span>
+            <span>TS2339</span>
+        </nav>
+
+        <header class="guide-header">
+            <span class="error-badge">TS2339</span>
+            <h1>Property 'X' does not exist on type 'Y'</h1>
+            <div class="guide-meta">
+                <span>📚 Difficulty: Beginner</span>
+                <span>⏱️ 5 min read</span>
+                <span>🔄 Updated: Dec 2024</span>
+            </div>
+        </header>
+
+        <article class="guide-content">
+            <h2>What is TS2339?</h2>
+            <p>
+                TS2339 occurs when you try to access a property that TypeScript doesn't recognize on a given type. This is one of TypeScript's most helpful errors as it catches typos, missing properties, and incorrect assumptions about object shapes at compile time.
+            </p>
+
+            <div class="code-block">
+<pre><span class="comment">// Example of TS2339 error</span>
+<span class="keyword">interface</span> <span class="type">User</span> {
+    name: <span class="type">string</span>;
+    age: <span class="type">number</span>;
+}
+
+<span class="keyword">const</span> user: <span class="type">User</span> = { name: <span class="string">"John"</span>, age: 30 };
+console.log(user.email); <span class="error">// Error: Property 'email' does not exist on type 'User'</span></pre>
+            </div>
+
+            <h2>Common Causes</h2>
+
+            <h3>1. Typo in Property Name</h3>
+            <p>The most common cause is simply misspelling a property name:</p>
+
+            <div class="code-block">
+<pre><span class="keyword">interface</span> <span class="type">Config</span> {
+    apiEndpoint: <span class="type">string</span>;
+    timeout: <span class="type">number</span>;
+}
+
+<span class="keyword">const</span> config: <span class="type">Config</span> = { apiEndpoint: <span class="string">"/api"</span>, timeout: 5000 };
+
+<span class="comment">// ❌ Wrong - typo</span>
+console.log(config.apiEndPoint); <span class="error">// Error! (capital P)</span>
+
+<span class="comment">// ✅ Correct</span>
+console.log(config.apiEndpoint);</pre>
+            </div>
+
+            <h3>2. Missing Property in Interface</h3>
+            <p>The property exists on the object but not in the type definition:</p>
+
+            <div class="code-block">
+<pre><span class="comment">// ❌ Interface is incomplete</span>
+<span class="keyword">interface</span> <span class="type">User</span> {
+    name: <span class="type">string</span>;
+}
+
+<span class="keyword">const</span> user: <span class="type">User</span> = { name: <span class="string">"John"</span> };
+console.log(user.email); <span class="error">// Error!</span>
+
+<span class="comment">// ✅ Add the missing property to interface</span>
+<span class="keyword">interface</span> <span class="type">User</span> {
+    name: <span class="type">string</span>;
+    email?: <span class="type">string</span>; <span class="comment">// Optional property</span>
+}</pre>
+            </div>
+
+            <h3>3. Accessing Properties on Union Types</h3>
+            <p>When a variable can be multiple types:</p>
+
+            <div class="code-block">
+<pre><span class="keyword">interface</span> <span class="type">Dog</span> { bark(): <span class="type">void</span>; }
+<span class="keyword">interface</span> <span class="type">Cat</span> { meow(): <span class="type">void</span>; }
+
+<span class="keyword">function</span> makeSound(animal: <span class="type">Dog</span> | <span class="type">Cat</span>) {
+    animal.bark(); <span class="error">// Error! Cat doesn't have bark()</span>
+}
+
+<span class="comment">// ✅ Use type narrowing</span>
+<span class="keyword">function</span> makeSound(animal: <span class="type">Dog</span> | <span class="type">Cat</span>) {
+    <span class="keyword">if</span> (<span class="string">'bark'</span> <span class="keyword">in</span> animal) {
+        animal.bark(); <span class="comment">// OK - TypeScript knows it's a Dog</span>
+    } <span class="keyword">else</span> {
+        animal.meow(); <span class="comment">// OK - TypeScript knows it's a Cat</span>
+    }
+}</pre>
+            </div>
+
+            <h3>4. Object from External Source (API, JSON)</h3>
+            <p>Data from external sources isn't type-checked:</p>
+
+            <div class="code-block">
+<pre><span class="comment">// ❌ Unknown shape from API</span>
+<span class="keyword">const</span> data = <span class="keyword">await</span> fetch(<span class="string">'/api/user'</span>).then(r => r.json());
+console.log(data.name); <span class="error">// Error! 'data' is 'any' or unknown</span>
+
+<span class="comment">// ✅ Define and assert the type</span>
+<span class="keyword">interface</span> <span class="type">UserResponse</span> {
+    name: <span class="type">string</span>;
+    email: <span class="type">string</span>;
+}
+
+<span class="keyword">const</span> data: <span class="type">UserResponse</span> = <span class="keyword">await</span> fetch(<span class="string">'/api/user'</span>).then(r => r.json());
+console.log(data.name); <span class="comment">// OK</span></pre>
+            </div>
+
+            <h2>Solutions</h2>
+
+            <h3>1. Add Property to Interface</h3>
+            <div class="code-block">
+<pre><span class="keyword">interface</span> <span class="type">User</span> {
+    name: <span class="type">string</span>;
+    email: <span class="type">string</span>;  <span class="comment">// Add the missing property</span>
+    phone?: <span class="type">string</span>; <span class="comment">// Use ? for optional properties</span>
+}</pre>
+            </div>
+
+            <h3>2. Use Type Narrowing</h3>
+            <div class="code-block">
+<pre><span class="keyword">function</span> process(input: <span class="type">string</span> | <span class="type">string</span>[]) {
+    <span class="keyword">if</span> (<span class="keyword">typeof</span> input === <span class="string">'string'</span>) {
+        console.log(input.toUpperCase()); <span class="comment">// OK</span>
+    } <span class="keyword">else</span> {
+        console.log(input.length); <span class="comment">// OK - array</span>
+    }
+}</pre>
+            </div>
+
+            <h3>3. Use Optional Chaining</h3>
+            <div class="code-block">
+<pre><span class="keyword">interface</span> <span class="type">User</span> {
+    name: <span class="type">string</span>;
+    address?: {
+        city: <span class="type">string</span>;
+    };
+}
+
+<span class="keyword">const</span> user: <span class="type">User</span> = { name: <span class="string">"John"</span> };
+console.log(user.address?.city); <span class="comment">// undefined (no error)</span></pre>
+            </div>
+
+            <h3>4. Extend Existing Types</h3>
+            <div class="code-block">
+<pre><span class="comment">// Extending an interface</span>
+<span class="keyword">interface</span> <span class="type">BaseUser</span> {
+    name: <span class="type">string</span>;
+}
+
+<span class="keyword">interface</span> <span class="type">AdminUser</span> <span class="keyword">extends</span> <span class="type">BaseUser</span> {
+    adminLevel: <span class="type">number</span>;
+}
+
+<span class="keyword">const</span> admin: <span class="type">AdminUser</span> = { name: <span class="string">"Admin"</span>, adminLevel: 1 };
+console.log(admin.adminLevel); <span class="comment">// OK</span></pre>
+            </div>
+
+            <h3>5. Index Signature (Dynamic Properties)</h3>
+            <div class="code-block">
+<pre><span class="comment">// When you need dynamic property names</span>
+<span class="keyword">interface</span> <span class="type">Config</span> {
+    [key: <span class="type">string</span>]: <span class="type">string</span> | <span class="type">number</span>;
+}
+
+<span class="keyword">const</span> config: <span class="type">Config</span> = {};
+config.anyProperty = <span class="string">"value"</span>; <span class="comment">// OK</span>
+config.anotherOne = 123; <span class="comment">// OK</span></pre>
+            </div>
+
+            <div class="tip-box">
+                <h4>💡 Pro Tip</h4>
+                <p>Always prefer specific interfaces over index signatures when possible. Index signatures sacrifice type safety for flexibility.</p>
+            </div>
+
+            <h2>Real-World Examples</h2>
+
+            <h3>Working with DOM Elements</h3>
+            <div class="code-block">
+<pre><span class="keyword">const</span> element = document.getElementById(<span class="string">'myInput'</span>);
+
+<span class="comment">// ❌ Error - element might be null, and it's HTMLElement, not HTMLInputElement</span>
+console.log(element.value); <span class="error">// Error!</span>
+
+<span class="comment">// ✅ Type narrowing with assertion</span>
+<span class="keyword">const</span> input = document.getElementById(<span class="string">'myInput'</span>) <span class="keyword">as</span> <span class="type">HTMLInputElement</span>;
+<span class="keyword">if</span> (input) {
+    console.log(input.value); <span class="comment">// OK</span>
+}</pre>
+            </div>
+
+            <h3>Event Handling</h3>
+            <div class="code-block">
+<pre><span class="comment">// ❌ Generic Event doesn't have 'target.value'</span>
+<span class="keyword">function</span> handleChange(e: <span class="type">Event</span>) {
+    console.log(e.target.value); <span class="error">// Error!</span>
+}
+
+<span class="comment">// ✅ Use specific event type</span>
+<span class="keyword">function</span> handleChange(e: <span class="type">React.ChangeEvent</span>&lt;<span class="type">HTMLInputElement</span>&gt;) {
+    console.log(e.target.value); <span class="comment">// OK</span>
+}</pre>
+            </div>
+
+            <div class="tip-box warning">
+                <h4>⚠️ Avoid This</h4>
+                <p>Don't use <code>(obj as any).property</code> to silence this error. It defeats the purpose of TypeScript and can lead to runtime errors.</p>
+            </div>
+
+            <h2>Summary</h2>
+            <ul>
+                <li>TS2339 protects you from accessing non-existent properties</li>
+                <li>Check for typos in property names first</li>
+                <li>Update interfaces to include missing properties</li>
+                <li>Use type narrowing for union types</li>
+                <li>Use optional chaining (?.) for possibly undefined properties</li>
+                <li>Avoid using <code>any</code> to bypass the error</li>
+            </ul>
+        </article>
+
+        <section class="cta-section">
+            <h3>Still Confused by Your Error?</h3>
+            <p>Paste your TypeScript error into our analyzer for instant, detailed explanations.</p>
+            <a href="../" class="cta-btn">Try Error Analyzer →</a>
+        </section>
+
+        <section class="related-guides">
+            <h3>Related Error Guides</h3>
+            <div class="related-list">
+                <a href="./ts2322-type-not-assignable.html" class="related-item">
+                    <span class="code">TS2322</span>
+                    <span class="title">Type 'X' is not assignable to type 'Y'</span>
+                </a>
+                <a href="./ts2345-argument-type.html" class="related-item">
+                    <span class="code">TS2345</span>
+                    <span class="title">Argument of type 'X' is not assignable to parameter</span>
+                </a>
+                <a href="./ts2304-cannot-find-name.html" class="related-item">
+                    <span class="code">TS2304</span>
+                    <span class="title">Cannot find name 'X'</span>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="guide-footer">
+        <p>© 2024 TypeScript Error Analyzer. <a href="../privacy.html">Privacy</a> · <a href="../terms.html">Terms</a></p>
+    </footer>
+</body>
+</html>
