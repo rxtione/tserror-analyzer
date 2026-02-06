@@ -600,7 +600,19 @@ button {
     gap: 12px;
 }
 
-.warning-icon { font-size: 24px; flex-shrink: 0; }
+.warning-icon {
+    font-size: 14px;
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    background: var(--accent-orange);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
 .warning-text { color: var(--accent-orange); font-weight: 600; font-size: 14px; }
 
 /* Summary Box */

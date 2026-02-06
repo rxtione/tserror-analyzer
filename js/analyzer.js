@@ -984,13 +984,13 @@ function displayResult(result) {
 
     if (result.isArrayObjectMismatch) {
         html += '<div class="warning-box">';
-        html += '<span class="warning-icon">⚠️</span>';
+        html += '<span class="warning-icon">!</span>';
         html += '<span class="warning-text">' + t('arrayObjectMismatch') + '</span>';
         html += '</div>';
     }
 
     html += '<div class="summary-box">';
-    html += '<div class="summary-title">🔍 ' + t('foundProblems') + ': ' + result.problems.length;
+    html += '<div class="summary-title">' + t('foundProblems') + ': ' + result.problems.length;
     if (result.errorCodes && result.errorCodes.length > 0) {
         result.errorCodes.forEach(function(code) {
             html += '<span class="error-code">' + code + '</span>';
@@ -1023,7 +1023,7 @@ function displayResult(result) {
                 html += '<br><br>' + t('didYouMean') + ' <span class="diff-correct">' + problem.suggestion + '</span>';
             }
             html += '</div>';
-            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">' + t('solution') + '</div>';
             html += '<p class="solution-text">' + t('checkName') + '</p>';
             html += '<div class="solution-code">';
             html += '<span class="comment">// ' + t('wrongCode').replace('// ', '') + '</span>\n';
@@ -1035,7 +1035,7 @@ function displayResult(result) {
             html += '</div></div>';
         } else if (problem.type === 'cannotFindModule') {
             html += '<div class="type-box wrong">Cannot find module "' + problem.moduleName + '"</div>';
-            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">' + t('solution') + '</div>';
             html += '<p class="solution-text">' + t('installModule') + '</p>';
             html += '<div class="solution-code">';
             html += '<span class="keyword">npm</span> install ' + problem.moduleName + '\n';
@@ -1046,7 +1046,7 @@ function displayResult(result) {
             html += '<div class="type-box wrong">No overload matches this call. Check function arguments.</div>';
         } else if (problem.type === 'implicitAny') {
             html += '<div class="type-box wrong">Parameter "' + problem.paramName + '" implicitly has an "any" type</div>';
-            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">' + t('solution') + '</div>';
             html += '<div class="solution-code">';
             html += '<span class="comment">' + t('wrongCode') + '</span>\n';
             html += 'function fn(' + problem.paramName + ') { ... }\n\n';
@@ -1055,7 +1055,7 @@ function displayResult(result) {
             html += '</div></div>';
         } else if (problem.type === 'unknownType') {
             html += '<div class="type-box wrong">' + t('unknownTypeDesc') + '</div>';
-            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">' + t('solution') + '</div>';
             html += '<div class="solution-code">';
             html += '<span class="comment">' + t('wrongCode') + '</span>\n';
             html += 'const value: unknown = getData();\nvalue.someMethod(); <span class="comment">// Error!</span>\n\n';
@@ -1064,7 +1064,7 @@ function displayResult(result) {
             html += '</div></div>';
         } else if (problem.type === 'possiblyUndefined') {
             html += '<div class="type-box wrong">' + t('possiblyUndefinedDesc') + '</div>';
-            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">' + t('solution') + '</div>';
             html += '<div class="solution-code">';
             html += '<span class="comment">// Option 1: Optional chaining</span>\nobj?.property\n\n';
             html += '<span class="comment">// Option 2: Nullish check</span>\n<span class="keyword">if</span> (obj !== undefined) { obj.property }\n\n';
@@ -1072,7 +1072,7 @@ function displayResult(result) {
             html += '</div></div>';
         } else if (problem.type === 'possiblyNull') {
             html += '<div class="type-box wrong">' + t('possiblyNullDesc') + '</div>';
-            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">' + t('solution') + '</div>';
             html += '<div class="solution-code">';
             html += '<span class="comment">// Option 1: Optional chaining</span>\nobj?.property\n\n';
             html += '<span class="comment">// Option 2: Null check</span>\n<span class="keyword">if</span> (obj !== null) { obj.property }\n\n';
@@ -1080,7 +1080,7 @@ function displayResult(result) {
             html += '</div></div>';
         } else if (problem.type === 'possiblyNullOrUndefined') {
             html += '<div class="type-box wrong">' + t('possiblyNullOrUndefinedDesc') + '</div>';
-            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">' + t('solution') + '</div>';
             html += '<div class="solution-code">';
             html += '<span class="comment">// Option 1: Optional chaining</span>\nobj?.property\n\n';
             html += '<span class="comment">// Option 2: Nullish check</span>\n<span class="keyword">if</span> (obj != null) { obj.property }\n\n';
@@ -1088,22 +1088,22 @@ function displayResult(result) {
             html += '</div></div>';
         } else if (problem.type === 'argumentCount') {
             html += '<div class="type-box wrong">' + t('expectedArgs') + ': ' + problem.expectedMin + (problem.expectedMax !== problem.expectedMin ? '-' + problem.expectedMax : '') + ', ' + t('gotArgs') + ': ' + problem.got + '</div>';
-            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">' + t('solution') + '</div>';
             html += '<p class="solution-text">' + t('argumentCountSolution') + '</p>';
             html += '</div>';
         } else if (problem.type === 'notCallable') {
             html += '<div class="type-box wrong">' + t('notCallableDesc') + '</div>';
-            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">' + t('solution') + '</div>';
             html += '<p class="solution-text">' + t('notCallableSolution') + '</p>';
             html += '</div>';
         } else if (problem.type === 'notConstructable') {
             html += '<div class="type-box wrong">' + t('notConstructableDesc') + '</div>';
-            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">' + t('solution') + '</div>';
             html += '<p class="solution-text">' + t('notConstructableSolution') + '</p>';
             html += '</div>';
         } else if (problem.type === 'mustReturn') {
             html += '<div class="type-box wrong">' + t('mustReturnDesc') + '</div>';
-            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">' + t('solution') + '</div>';
             html += '<div class="solution-code">';
             html += '<span class="comment">' + t('wrongCode') + '</span>\n';
             html += '<span class="keyword">function</span> getValue(): string {\n  <span class="comment">// no return!</span>\n}\n\n';
@@ -1112,36 +1112,36 @@ function displayResult(result) {
             html += '</div></div>';
         } else if (problem.type === 'operatorError') {
             html += '<div class="type-box wrong">' + t('operatorErrorDesc').replace('{op}', problem.operator).replace('{left}', problem.leftType).replace('{right}', problem.rightType) + '</div>';
-            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">' + t('solution') + '</div>';
             html += '<p class="solution-text">' + t('operatorSolution') + '</p>';
             html += '</div>';
         } else if (problem.type === 'constraintError') {
             html += '<div class="type-box wrong">' + t('constraintErrorDesc').replace('{type}', problem.sourceType).replace('{constraint}', problem.constraint) + '</div>';
-            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">' + t('solution') + '</div>';
             html += '<p class="solution-text">' + t('constraintSolution') + '</p>';
             html += '</div>';
         } else if (problem.type === 'conversionMistake') {
             html += '<div class="type-box wrong">' + t('conversionMistakeDesc').replace('{from}', problem.sourceType).replace('{to}', problem.targetType) + '</div>';
-            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">' + t('solution') + '</div>';
             html += '<div class="solution-code">';
             html += '<span class="comment">// ' + t('useAsUnknown') + '</span>\n';
             html += 'const result = value <span class="keyword">as unknown as</span> TargetType;';
             html += '</div></div>';
         } else if (problem.type === 'basePropertyMismatch') {
             html += '<div class="type-box wrong">' + t('basePropertyDesc').replace('{prop}', problem.propName).replace('{child}', problem.childType).replace('{base}', problem.baseType) + '</div>';
-            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">' + t('solution') + '</div>';
             html += '<p class="solution-text">' + t('basePropertySolution') + '</p>';
             html += '</div>';
         } else if (problem.type === 'missingPropsFrom') {
             html += '<div class="type-box wrong">' + t('missingPropsFromDesc').replace('{source}', problem.sourceType).replace('{target}', problem.targetType) + '<br><br>' + t('requiredProps') + ': ' + problem.missingProps.join(', ') + '</div>';
         } else if (problem.type === 'unintentionalComparison') {
             html += '<div class="type-box wrong">' + t('unintentionalComparisonDesc').replace('{result}', problem.result) + '</div>';
-            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">' + t('solution') + '</div>';
             html += '<p class="solution-text">' + t('unintentionalComparisonSolution') + '</p>';
             html += '</div>';
         } else if (problem.type === 'usedBeforeAssigned') {
             html += '<div class="type-box wrong">' + t('usedBeforeAssignedDesc').replace('{var}', problem.varName) + '</div>';
-            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">' + t('solution') + '</div>';
             html += '<div class="solution-code">';
             html += '<span class="comment">' + t('wrongCode') + '</span>\n';
             html += '<span class="keyword">let</span> ' + problem.varName + ';\nconsole.log(' + problem.varName + '); <span class="comment">// Error!</span>\n\n';
@@ -1150,7 +1150,7 @@ function displayResult(result) {
             html += '</div></div>';
         } else if (problem.type === 'noInitializer') {
             html += '<div class="type-box wrong">' + t('noInitializerDesc').replace('{prop}', problem.propName) + '</div>';
-            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">' + t('solution') + '</div>';
             html += '<div class="solution-code">';
             html += '<span class="comment">// Option 1: Initialize in declaration</span>\n';
             html += problem.propName + ': string = "";\n\n';
@@ -1162,7 +1162,7 @@ function displayResult(result) {
         } else if (problem.type === 'undefinedNotAssignable' || problem.type === 'nullNotAssignable') {
             var nullOrUndefined = problem.type === 'undefinedNotAssignable' ? 'undefined' : 'null';
             html += '<div class="type-box wrong">' + t('nullishNotAssignableDesc').replace('{nullish}', nullOrUndefined).replace('{target}', problem.targetType) + '</div>';
-            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">' + t('solution') + '</div>';
             html += '<div class="solution-code">';
             html += '<span class="comment">// Option 1: Provide a value</span>\nconst value: ' + problem.targetType + ' = actualValue;\n\n';
             html += '<span class="comment">// Option 2: Make optional</span>\nconst value: ' + problem.targetType + ' | ' + nullOrUndefined + ' = ' + nullOrUndefined + ';\n\n';
@@ -1170,7 +1170,7 @@ function displayResult(result) {
             html += '</div></div>';
         } else if (problem.type === 'genericArgsRequired') {
             html += '<div class="type-box wrong">' + t('genericArgsDesc').replace('{type}', problem.genericType).replace('{count}', problem.requiredCount) + '</div>';
-            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">' + t('solution') + '</div>';
             html += '<div class="solution-code">';
             html += '<span class="comment">' + t('wrongCode') + '</span>\n';
             html += 'const arr: Array; <span class="comment">// Missing type argument</span>\n\n';
@@ -1179,7 +1179,7 @@ function displayResult(result) {
             html += '</div></div>';
         } else if (problem.type === 'typeAsValue') {
             html += '<div class="type-box wrong">' + t('typeAsValueDesc').replace('{name}', problem.typeName) + '</div>';
-            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">' + t('solution') + '</div>';
             html += '<div class="solution-code">';
             html += '<span class="comment">' + t('wrongCode') + '</span>\n';
             html += 'const x = ' + problem.typeName + '; <span class="comment">// Using type as value</span>\n\n';
@@ -1189,7 +1189,7 @@ function displayResult(result) {
             html += '</div></div>';
         } else if (problem.type === 'valueAsType') {
             html += '<div class="type-box wrong">' + t('valueAsTypeDesc').replace('{name}', problem.valueName) + '</div>';
-            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">' + t('solution') + '</div>';
             html += '<div class="solution-code">';
             html += '<span class="comment">' + t('wrongCode') + '</span>\n';
             html += '<span class="keyword">const</span> myVar = "hello";\n<span class="keyword">type</span> X = myVar; <span class="comment">// Using value as type</span>\n\n';
@@ -1198,22 +1198,22 @@ function displayResult(result) {
             html += '</div></div>';
         } else if (problem.type === 'syntaxExpected') {
             html += '<div class="type-box wrong">' + t('syntaxExpectedDesc').replace('{expected}', problem.expected) + '</div>';
-            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">' + t('solution') + '</div>';
             html += '<p class="solution-text">' + t('syntaxSolution').replace('{expected}', problem.expected) + '</p>';
             html += '</div>';
         } else if (problem.type === 'interfaceExtendError') {
             html += '<div class="type-box wrong">' + t('interfaceExtendDesc').replace('{child}', problem.childInterface).replace('{parent}', problem.parentInterface) + '</div>';
-            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">' + t('solution') + '</div>';
             html += '<p class="solution-text">' + t('interfaceExtendSolution') + '</p>';
             html += '</div>';
         } else if (problem.type === 'classImplementError') {
             html += '<div class="type-box wrong">' + t('classImplementDesc').replace('{class}', problem.className).replace('{interface}', problem.interfaceName) + '</div>';
-            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">' + t('solution') + '</div>';
             html += '<p class="solution-text">' + t('classImplementSolution') + '</p>';
             html += '</div>';
         } else if (problem.type === 'indexAccessError') {
             html += '<div class="type-box wrong">' + t('indexAccessDesc').replace('{indexType}', problem.indexType).replace('{objectType}', problem.objectType) + '</div>';
-            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">' + t('solution') + '</div>';
             html += '<div class="solution-code">';
             html += '<span class="comment">// Option 1: Add index signature</span>\n';
             html += '<span class="keyword">interface</span> MyType {\n  [key: string]: any;\n}\n\n';
@@ -1224,7 +1224,7 @@ function displayResult(result) {
             var indexType = problem.indexType;
             var objectType = problem.objectType || 'object';
             html += '<div class="type-box wrong">' + t('invalidIndexDesc').replace('{indexType}', indexType).replace('{objectType}', objectType) + '</div>';
-            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">' + t('solution') + '</div>';
             html += '<p class="solution-text">' + t('invalidIndexSolution') + '</p>';
             html += '</div>';
         } else if (problem.type === 'propertyNotExist') {
@@ -1233,7 +1233,7 @@ function displayResult(result) {
                 html += '<br><br>' + t('didYouMean') + ' <span class="diff-correct">' + problem.suggestion + '</span>';
             }
             html += '</div>';
-            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">' + t('solution') + '</div>';
             html += '<p class="solution-text">' + t('propertyNotExistSolution') + '</p>';
             html += '</div>';
         } else if (problem.isLiteral && problem.sourceType && problem.targetType) {
@@ -1250,20 +1250,20 @@ function displayResult(result) {
             html += '<div class="type-comparison">';
 
             html += '<div class="type-column">';
-            html += '<div class="type-label wrong">❌ ' + t('providedType') + '</div>';
+            html += '<div class="type-label wrong">' + t('providedType') + '</div>';
             html += '<div class="type-box wrong"><pre class="type-pre"><span class="diff-error">' + escapeHtml(problem.sourceType) + '</span></pre></div>';
             html += '</div>';
 
             html += '<div class="type-arrow">→</div>';
 
             html += '<div class="type-column">';
-            html += '<div class="type-label correct">✅ ' + t('expectedType') + '</div>';
+            html += '<div class="type-label correct">' + t('expectedType') + '</div>';
             html += '<div class="type-box correct"><pre class="type-pre"><span class="diff-correct">' + escapeHtml(problem.targetType) + '</span></pre></div>';
             html += '</div>';
 
             html += '</div>';
 
-            html += '<div class="solution-box"><div class="solution-title">💡 ' + t('solution') + '</div>';
+            html += '<div class="solution-box"><div class="solution-title">' + t('solution') + '</div>';
             if (isStringLiteral) {
                 html += '<p class="solution-text">' + t('literalStringSolution') + '</p>';
             } else if (isNumberLiteral) {
@@ -1289,7 +1289,7 @@ function displayResult(result) {
                 html += 'fn(value); <span class="comment">// OK!</span>';
             }
             html += '</div>';
-            html += '<p class="solution-text" style="margin-top: 12px; font-size: 13px; color: #666;">💡 ' + t('literalWideningHint') + '</p>';
+            html += '<p class="solution-text" style="margin-top: 12px; font-size: 13px; color: #666;">' + t('literalWideningHint') + '</p>';
             html += '</div>';
         } else if (problem.sourceType && problem.targetType) {
             // Type comparison with aligned structure
@@ -1297,23 +1297,42 @@ function displayResult(result) {
                 html += '<div class="problem-path">' + problem.path.join(' → ') + '</div>';
             }
 
-            var comparison = renderAlignedTypeComparison(problem.sourceType, problem.targetType);
+            // Special handling for array mismatch - show array brackets clearly
+            if (problem.isArrayMismatch) {
+                html += '<div class="type-comparison">';
 
-            html += '<div class="type-comparison">';
+                html += '<div class="type-column">';
+                html += '<div class="type-label wrong">' + t('providedType') + ' (' + t('object') + ')</div>';
+                html += '<div class="type-box wrong"><pre class="type-pre"><span class="diff-error">' + escapeHtml(problem.sourceType) + '</span></pre></div>';
+                html += '</div>';
 
-            html += '<div class="type-column">';
-            html += '<div class="type-label wrong">❌ ' + t('providedType') + ' (' + getTypeSummary(problem.sourceType) + ')</div>';
-            html += '<div class="type-box wrong"><pre class="type-pre">' + comparison.sourceHtml + '</pre></div>';
-            html += '</div>';
+                html += '<div class="type-arrow">→</div>';
 
-            html += '<div class="type-arrow">→</div>';
+                html += '<div class="type-column">';
+                html += '<div class="type-label correct">' + t('expectedType') + ' (' + t('array') + ')</div>';
+                html += '<div class="type-box correct"><pre class="type-pre"><span class="diff-correct">' + escapeHtml(problem.targetType) + '</span></pre></div>';
+                html += '</div>';
 
-            html += '<div class="type-column">';
-            html += '<div class="type-label correct">✅ ' + t('expectedType') + ' (' + getTypeSummary(problem.targetType) + ')</div>';
-            html += '<div class="type-box correct"><pre class="type-pre">' + comparison.targetHtml + '</pre></div>';
-            html += '</div>';
+                html += '</div>';
+            } else {
+                var comparison = renderAlignedTypeComparison(problem.sourceType, problem.targetType);
 
-            html += '</div>';
+                html += '<div class="type-comparison">';
+
+                html += '<div class="type-column">';
+                html += '<div class="type-label wrong">' + t('providedType') + ' (' + getTypeSummary(problem.sourceType) + ')</div>';
+                html += '<div class="type-box wrong"><pre class="type-pre">' + comparison.sourceHtml + '</pre></div>';
+                html += '</div>';
+
+                html += '<div class="type-arrow">→</div>';
+
+                html += '<div class="type-column">';
+                html += '<div class="type-label correct">' + t('expectedType') + ' (' + getTypeSummary(problem.targetType) + ')</div>';
+                html += '<div class="type-box correct"><pre class="type-pre">' + comparison.targetHtml + '</pre></div>';
+                html += '</div>';
+
+                html += '</div>';
+            }
         }
 
         html += '</div>';
@@ -1329,7 +1348,7 @@ function displayResult(result) {
         if (uniquePropNames.length === 0) uniquePropNames.push('data');
 
         html += '<div class="solution-box">';
-        html += '<div class="solution-title">💡 ' + t('solution') + '</div>';
+        html += '<div class="solution-title">' + t('solution') + '</div>';
         html += '<p class="solution-text">' + t('wrapArray') + '</p>';
         html += '<div class="solution-code">';
         html += '<span class="comment">' + t('wrongCode') + '</span>\n';
@@ -1342,7 +1361,7 @@ function displayResult(result) {
     // Error trace
     html += '<div class="error-trace">';
     html += '<div class="error-trace-header" onclick="toggleTrace()">';
-    html += '<span>📜 ' + t('viewFullError') + '</span>';
+    html += '<span>' + t('viewFullError') + '</span>';
     html += '<span id="traceArrow">▼</span>';
     html += '</div>';
     html += '<div class="error-trace-content" id="traceContent">';
