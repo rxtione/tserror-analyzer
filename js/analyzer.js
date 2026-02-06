@@ -608,12 +608,46 @@ function parseObjectProps(typeStr) {
 
 function deduplicateProblems(problems) {
     var seen = {};
-    return problems.filter(function(p) {
-        var key = p.path.join('.') + '|' + (p.type || 'type') + '|' + (p.sourceType || '') + '|' + (p.name || '') + '|' + (p.moduleName || '');
-        if (seen[key]) return false;
+    var result = [];
+
+    for (var i = 0; i < problems.length; i++) {
+        var p = problems[i];
+        // Create unique key based on problem type and types involved
+        var key = (p.type || 'typeMismatch') + '|' +
+                  (p.sourceType || '') + '|' +
+                  (p.targetType || '') + '|' +
+                  (p.name || '') + '|' +
+                  (p.moduleName || '') + '|' +
+                  (p.propName || '') + '|' +
+                  (p.missingProps ? p.missingProps.join(',') : '');
+
+        // Skip if we've seen this exact error before
+        if (seen[key]) continue;
         seen[key] = true;
-        return true;
-    });
+
+        // For type mismatches, prefer the one with shortest path (root cause)
+        var dominated = false;
+        for (var j = 0; j < result.length; j++) {
+            var existing = result[j];
+            // If same source/target types but different paths, keep only shortest path
+            if (p.sourceType && existing.sourceType === p.sourceType &&
+                existing.targetType === p.targetType) {
+                if (existing.path.length <= p.path.length) {
+                    dominated = true;
+                    break;
+                } else {
+                    result.splice(j, 1);
+                    j--;
+                }
+            }
+        }
+
+        if (!dominated) {
+            result.push(p);
+        }
+    }
+
+    return result;
 }
 
 // ========== NEW: Unified Type Comparison System ==========
@@ -1398,7 +1432,7 @@ function clearAll() {
 }
 
 function loadSample() {
-    var sample = "Argument of type '{ generalInfo: { dsaleOutfirmName: string; bzpersonRegNo: string; }; bondProcure: { dsaleOutfirmNo: string; }[]; factoryEdit?: { deleteRequest: { dsaleOutfirmNo: string; }; insertRequest?: { dsaleOutfirmNo: string; } | undefined; } | undefined; }' is not assignable to parameter of type '{ generalInfo?: { dsaleOutfirmName: string; } | undefined; bondProcure?: { dsaleOutfirmNo: string; }[] | undefined; factoryEdit?: { insertRequest?: { dsaleOutfirmNo: string; }[] | undefined; deleteRequest?: { dsaleOutfirmNo: string; }[] | undefined; } | undefined; }'.\n  Types of property 'factoryEdit' are incompatible.\n    Type '{ deleteRequest: { dsaleOutfirmNo: string; }; insertRequest?: { dsaleOutfirmNo: string; } | undefined; }' is not assignable to type '{ insertRequest?: { dsaleOutfirmNo: string; }[] | undefined; deleteRequest?: { dsaleOutfirmNo: string; }[] | undefined; }'.\n      Types of property 'insertRequest' are incompatible.\n        Type '{ dsaleOutfirmNo: string; } | undefined' is not assignable to type '{ dsaleOutfirmNo: string; }[] | undefined'.\n          Type '{ dsaleOutfirmNo: string; }' is not assignable to type '{ dsaleOutfirmNo: string; }[]'.\n            Type '{ dsaleOutfirmNo: string; }' is missing the following properties from type '{ dsaleOutfirmNo: string; }[]': length, pop, push, concat, and 35 more.";
+    var sample = "Type '{ id: number; name: string; email: string; profile: { avatar: string; bio: string; settings: { theme: string; notifications: boolean; language: number; }; }; posts: { title: string; content: string; createdAt: string; }[]; }' is not assignable to type 'User'.\n  Types of property 'profile' are incompatible.\n    Type '{ avatar: string; bio: string; settings: { theme: string; notifications: boolean; language: number; }; }' is not assignable to type '{ avatar: string; bio: string; settings: { theme: \"light\" | \"dark\"; notifications: boolean; language: string; }; }'.\n      Types of property 'settings' are incompatible.\n        Type '{ theme: string; notifications: boolean; language: number; }' is not assignable to type '{ theme: \"light\" | \"dark\"; notifications: boolean; language: string; }'.\n          Types of property 'theme' are incompatible.\n            Type 'string' is not assignable to type '\"light\" | \"dark\"'.\n          Types of property 'language' are incompatible.\n            Type 'number' is not assignable to type 'string'.";
     document.getElementById('errorInput').value = sample;
 }
 

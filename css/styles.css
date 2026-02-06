@@ -755,7 +755,12 @@ button {
     gap: 8px;
 }
 
-.problem-path::before { content: '📍'; }
+.problem-path::before {
+    content: 'Path:';
+    color: var(--text-muted);
+    font-weight: 400;
+    margin-right: 4px;
+}
 
 /* Error Code Tag */
 .error-code {
@@ -785,26 +790,49 @@ button {
 .type-column { min-width: 0; }
 
 .type-label {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
     margin-bottom: 8px;
     display: flex;
     align-items: center;
     gap: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-.type-label.wrong { color: var(--accent-red); }
-.type-label.correct { color: var(--accent-green); }
+.type-label.wrong {
+    color: var(--accent-red);
+}
+
+.type-label.wrong::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background: var(--accent-red);
+    border-radius: 50%;
+}
+
+.type-label.correct {
+    color: var(--accent-green);
+}
+
+.type-label.correct::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background: var(--accent-green);
+    border-radius: 50%;
+}
 
 .type-box {
     padding: 16px;
     border-radius: 10px;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    line-height: 1.8;
+    font-size: 13px;
+    line-height: 1.7;
     white-space: pre-wrap;
-    word-break: break-all;
-    min-height: 80px;
+    word-break: break-word;
+    overflow-x: auto;
 }
 
 .type-box.wrong {
