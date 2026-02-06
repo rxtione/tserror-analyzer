@@ -44,24 +44,29 @@ function submitFeedback() {
     img.src = url;
 }
 
-// Hero section control
+// Hero section control (legacy - kept for compatibility)
 function scrollToAnalyzer() {
     var container = document.getElementById('mainContainer');
-    container.scrollIntoView({ behavior: 'smooth' });
+    if (container) {
+        container.scrollIntoView({ behavior: 'smooth' });
+    }
 }
 
 function collapseHero() {
+    // Legacy function - Hero section was removed in layout redesign
+    // Kept for backward compatibility, does nothing now
     var hero = document.getElementById('heroSection');
     var header = document.getElementById('headerCompact');
-    hero.classList.add('collapsed');
-    header.classList.add('visible');
+    if (hero) hero.classList.add('collapsed');
+    if (header) header.classList.add('visible');
 }
 
 function expandHero() {
+    // Legacy function - Hero section was removed in layout redesign
     var hero = document.getElementById('heroSection');
     var header = document.getElementById('headerCompact');
-    hero.classList.remove('collapsed');
-    header.classList.remove('visible');
+    if (hero) hero.classList.remove('collapsed');
+    if (header) header.classList.remove('visible');
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
