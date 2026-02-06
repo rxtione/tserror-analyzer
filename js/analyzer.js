@@ -866,14 +866,14 @@ function renderAlignedTypeComparison(sourceType, targetType) {
     // Get all properties in order
     var allProps = getAllPropertyNames(sourceAST, targetAST);
 
-    // If both are primitives - simple comparison
-    if (sourceAST.type === 'primitive' && targetAST.type === 'primitive') {
+    // If both are primitives or one has no properties - simple comparison with highlighting
+    if ((sourceAST.type === 'primitive' && targetAST.type === 'primitive') || allProps.length === 0) {
         var sourceHtml = escapeHtml(sourceType);
         var targetHtml = escapeHtml(targetType);
 
-        if (sourceType !== targetType) {
-            sourceHtml = '<span class="diff-error">' + sourceHtml + '</span>';
-            targetHtml = '<span class="diff-correct">' + targetHtml + '</span>';
+        if (normalizeType(sourceType) !== normalizeType(targetType)) {
+            sourceHtml = '<span class="diff-error">' + formatTypeForDisplay(sourceType) + '</span>';
+            targetHtml = '<span class="diff-correct">' + formatTypeForDisplay(targetType) + '</span>';
         }
 
         return {
@@ -897,7 +897,7 @@ function renderAlignedTypeComparison(sourceType, targetType) {
         if (sourceProp) {
             var sourceOptional = sourceProp.optional ? '?' : '';
             var sourceValue = sourceProp.valueType;
-            var sourceLine = '<span class="' + lineClass + '">  <span class="prop-name">' + propName + sourceOptional + '</span>: ';
+            var sourceLine = '<span class="' + lineClass + '">  <span class="prop-name">' + escapeHtml(propName) + sourceOptional + '</span>: ';
 
             if (diff && (diff.type === 'value_mismatch' || diff.type === 'extra_in_source')) {
                 sourceLine += '<span class="diff-error">' + escapeHtml(sourceValue) + '</span>';
@@ -909,14 +909,14 @@ function renderAlignedTypeComparison(sourceType, targetType) {
         } else {
             // Property missing in source
             var targetOptional = targetProp.optional ? '?' : '';
-            sourceLines.push('<span class="type-line has-diff">  <span class="diff-missing">' + propName + targetOptional + ': (missing)</span></span>');
+            sourceLines.push('<span class="type-line has-diff">  <span class="diff-missing">' + escapeHtml(propName) + targetOptional + ': (missing)</span></span>');
         }
 
         // Target side
         if (targetProp) {
             var targetOptional2 = targetProp.optional ? '?' : '';
             var targetValue = targetProp.valueType;
-            var targetLine = '<span class="' + lineClass + '">  <span class="prop-name">' + propName + targetOptional2 + '</span>: ';
+            var targetLine = '<span class="' + lineClass + '">  <span class="prop-name">' + escapeHtml(propName) + targetOptional2 + '</span>: ';
 
             if (diff && diff.type === 'value_mismatch') {
                 targetLine += '<span class="diff-correct">' + escapeHtml(targetValue) + '</span>';
@@ -930,7 +930,7 @@ function renderAlignedTypeComparison(sourceType, targetType) {
         } else {
             // Property extra in source (not in target)
             var sourceOptional2 = sourceProp.optional ? '?' : '';
-            targetLines.push('<span class="type-line has-diff">  <span class="diff-extra">' + propName + sourceOptional2 + ': (not expected)</span></span>');
+            targetLines.push('<span class="type-line has-diff">  <span class="diff-extra">' + escapeHtml(propName) + sourceOptional2 + ': (not expected)</span></span>');
         }
     });
 
@@ -941,6 +941,25 @@ function renderAlignedTypeComparison(sourceType, targetType) {
         sourceHtml: sourceLines.join('\n'),
         targetHtml: targetLines.join('\n')
     };
+}
+
+/**
+ * Format type string for better display (truncate if too long)
+ */
+function formatTypeForDisplay(typeStr) {
+    var escaped = escapeHtml(typeStr);
+    // If type is very long, try to format it nicely
+    if (escaped.length > 100 && escaped.includes(';')) {
+        // Replace ; with ;\n for readability
+        escaped = escaped.replace(/;\s*/g, ';\n  ');
+        if (escaped.startsWith('{')) {
+            escaped = '{\n  ' + escaped.substring(1);
+        }
+        if (escaped.endsWith('}')) {
+            escaped = escaped.substring(0, escaped.length - 1) + '\n}';
+        }
+    }
+    return escaped;
 }
 
 // ========== END: Unified Type Comparison System ==========
@@ -1367,14 +1386,14 @@ function displayResult(result) {
 
                 html += '<div class="type-column">';
                 html += '<div class="type-label wrong">' + t('providedType') + ' (' + t('object') + ')</div>';
-                html += '<div class="type-box wrong"><pre class="type-pre"><span class="diff-error">' + escapeHtml(problem.sourceType) + '</span></pre></div>';
+                html += '<div class="type-box wrong"><div class="type-content"><span class="diff-error">' + escapeHtml(problem.sourceType) + '</span></div></div>';
                 html += '</div>';
 
                 html += '<div class="type-arrow">→</div>';
 
                 html += '<div class="type-column">';
                 html += '<div class="type-label correct">' + t('expectedType') + ' (' + t('array') + ')</div>';
-                html += '<div class="type-box correct"><pre class="type-pre"><span class="diff-correct">' + escapeHtml(problem.targetType) + '</span></pre></div>';
+                html += '<div class="type-box correct"><div class="type-content"><span class="diff-correct">' + escapeHtml(problem.targetType) + '</span></div></div>';
                 html += '</div>';
 
                 html += '</div>';
@@ -1385,14 +1404,14 @@ function displayResult(result) {
 
                 html += '<div class="type-column">';
                 html += '<div class="type-label wrong">' + t('providedType') + ' (' + getTypeSummary(problem.sourceType) + ')</div>';
-                html += '<div class="type-box wrong"><pre class="type-pre">' + comparison.sourceHtml + '</pre></div>';
+                html += '<div class="type-box wrong"><div class="type-content">' + comparison.sourceHtml + '</div></div>';
                 html += '</div>';
 
                 html += '<div class="type-arrow">→</div>';
 
                 html += '<div class="type-column">';
                 html += '<div class="type-label correct">' + t('expectedType') + ' (' + getTypeSummary(problem.targetType) + ')</div>';
-                html += '<div class="type-box correct"><pre class="type-pre">' + comparison.targetHtml + '</pre></div>';
+                html += '<div class="type-box correct"><div class="type-content">' + comparison.targetHtml + '</div></div>';
                 html += '</div>';
 
                 html += '</div>';

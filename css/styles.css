@@ -856,6 +856,27 @@ button {
     overflow-y: auto;
 }
 
+/* Direct highlight in type-box for array mismatch */
+.type-box .diff-error {
+    display: inline;
+    background: linear-gradient(135deg, var(--accent-red), #dc2626) !important;
+    color: white !important;
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-weight: 600;
+    box-shadow: 0 2px 12px rgba(239, 68, 68, 0.4);
+}
+
+.type-box .diff-correct {
+    display: inline;
+    background: linear-gradient(135deg, var(--accent-green), #059669) !important;
+    color: white !important;
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-weight: 600;
+    box-shadow: 0 2px 12px rgba(16, 185, 129, 0.4);
+}
+
 .type-box.wrong {
     background: rgba(239, 68, 68, 0.06);
     border: 2px solid rgba(239, 68, 68, 0.25);
@@ -895,7 +916,8 @@ button {
 }
 
 /* Aligned Type Comparison Diff Highlighting */
-.type-pre {
+.type-pre,
+.type-content {
     margin: 0;
     font-family: 'JetBrains Mono', monospace;
     font-size: 13px;
@@ -905,21 +927,35 @@ button {
 }
 
 .diff-error {
-    background: linear-gradient(135deg, var(--accent-red), #dc2626);
-    color: white;
-    padding: 3px 10px;
-    border-radius: 5px;
+    background: linear-gradient(135deg, var(--accent-red), #dc2626) !important;
+    color: white !important;
+    padding: 4px 12px;
+    border-radius: 6px;
     font-weight: 600;
-    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+    box-shadow: 0 2px 12px rgba(239, 68, 68, 0.4);
+    display: inline;
 }
 
 .diff-correct {
-    background: linear-gradient(135deg, var(--accent-green), #059669);
-    color: white;
-    padding: 3px 10px;
-    border-radius: 5px;
+    background: linear-gradient(135deg, var(--accent-green), #059669) !important;
+    color: white !important;
+    padding: 4px 12px;
+    border-radius: 6px;
     font-weight: 600;
-    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+    box-shadow: 0 2px 12px rgba(16, 185, 129, 0.4);
+    display: inline;
+}
+
+/* Ensure highlights work inside type containers */
+.type-pre .diff-error,
+.type-pre .diff-correct,
+.type-content .diff-error,
+.type-content .diff-correct,
+.type-box .diff-error,
+.type-box .diff-correct {
+    display: inline;
+    white-space: pre-wrap;
+    word-break: break-word;
 }
 
 .diff-missing {
