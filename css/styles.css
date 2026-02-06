@@ -829,10 +829,11 @@ button {
     border-radius: 10px;
     font-family: 'JetBrains Mono', monospace;
     font-size: 13px;
-    line-height: 1.7;
+    line-height: 2;
     white-space: pre-wrap;
     word-break: break-word;
     overflow-x: auto;
+    min-height: 60px;
 }
 
 .type-box.wrong {
@@ -876,25 +877,46 @@ button {
 .type-pre {
     margin: 0;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    line-height: 1.8;
-    white-space: pre;
+    font-size: 13px;
+    line-height: 2;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.type-row {
+    display: flex;
+    padding: 4px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.type-row:last-child {
+    border-bottom: none;
+}
+
+.type-row.diff {
+    background: rgba(239, 68, 68, 0.1);
+    margin: 0 -16px;
+    padding: 4px 16px;
+}
+
+.type-box.correct .type-row.diff {
+    background: rgba(16, 185, 129, 0.1);
 }
 
 .diff-error {
     background: var(--accent-red);
     color: white;
-    padding: 1px 4px;
-    border-radius: 3px;
-    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 600;
 }
 
 .diff-correct {
     background: var(--accent-green);
     color: white;
-    padding: 1px 4px;
-    border-radius: 3px;
-    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 600;
 }
 
 .diff-missing {
@@ -912,6 +934,7 @@ button {
 
 .prop-name {
     color: var(--accent-cyan);
+    font-weight: 500;
 }
 
 .prop-colon {
@@ -928,6 +951,28 @@ button {
 
 .type-bracket {
     color: var(--accent-purple);
+}
+
+.type-line {
+    display: block;
+    padding: 4px 0;
+}
+
+.type-line.has-diff {
+    background: rgba(255, 255, 255, 0.05);
+    margin: 0 -16px;
+    padding: 4px 16px;
+    border-left: 3px solid var(--accent-orange);
+}
+
+.type-box.wrong .type-line.has-diff {
+    border-left-color: var(--accent-red);
+    background: rgba(239, 68, 68, 0.08);
+}
+
+.type-box.correct .type-line.has-diff {
+    border-left-color: var(--accent-green);
+    background: rgba(16, 185, 129, 0.08);
 }
 
 /* Solution Box */

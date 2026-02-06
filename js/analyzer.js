@@ -816,6 +816,38 @@ function normalizeType(type) {
 }
 
 /**
+ * Format type string for better readability
+ */
+function formatTypeString(typeStr) {
+    // Replace semicolons with line breaks and add indentation
+    var result = typeStr;
+    var depth = 0;
+    var output = '';
+    var i = 0;
+
+    while (i < result.length) {
+        var char = result[i];
+
+        if (char === '{') {
+            depth++;
+            output += '{\n' + '  '.repeat(depth);
+        } else if (char === '}') {
+            depth--;
+            output += '\n' + '  '.repeat(depth) + '}';
+        } else if (char === ';') {
+            output += ';\n' + '  '.repeat(depth);
+        } else if (char === ' ' && result[i-1] === ';') {
+            // Skip space after semicolon (we added newline)
+        } else {
+            output += char;
+        }
+        i++;
+    }
+
+    return output.trim();
+}
+
+/**
  * Render both types with aligned structure and highlighted differences
  */
 function renderAlignedTypeComparison(sourceType, targetType) {
@@ -834,7 +866,7 @@ function renderAlignedTypeComparison(sourceType, targetType) {
     // Get all properties in order
     var allProps = getAllPropertyNames(sourceAST, targetAST);
 
-    // If both are primitives
+    // If both are primitives - simple comparison
     if (sourceAST.type === 'primitive' && targetAST.type === 'primitive') {
         var sourceHtml = escapeHtml(sourceType);
         var targetHtml = escapeHtml(targetType);
@@ -850,62 +882,60 @@ function renderAlignedTypeComparison(sourceType, targetType) {
         };
     }
 
-    // Build aligned output for objects
-    var sourceLines = ['{'];
-    var targetLines = ['{'];
+    // For objects, build aligned output with highlighting
+    var sourceLines = ['<span class="type-line">{</span>'];
+    var targetLines = ['<span class="type-line">{</span>'];
 
     allProps.forEach(function(propName, idx) {
         var sourceProp = sourceAST.properties ? sourceAST.properties[propName] : null;
         var targetProp = targetAST.properties ? targetAST.properties[propName] : null;
         var diff = diffMap[propName];
-        var isLast = idx === allProps.length - 1;
-        var semicolon = isLast ? '' : ';';
+        var hasDiff = !!diff;
+        var lineClass = hasDiff ? 'type-line has-diff' : 'type-line';
 
         // Source side
         if (sourceProp) {
             var sourceOptional = sourceProp.optional ? '?' : '';
             var sourceValue = sourceProp.valueType;
-            var sourceLine = '  ' + propName + sourceOptional + ': ';
+            var sourceLine = '<span class="' + lineClass + '">  <span class="prop-name">' + propName + sourceOptional + '</span>: ';
 
             if (diff && (diff.type === 'value_mismatch' || diff.type === 'extra_in_source')) {
                 sourceLine += '<span class="diff-error">' + escapeHtml(sourceValue) + '</span>';
             } else {
-                sourceLine += escapeHtml(sourceValue);
+                sourceLine += '<span class="type-value">' + escapeHtml(sourceValue) + '</span>';
             }
-            sourceLine += semicolon;
+            sourceLine += '</span>';
             sourceLines.push(sourceLine);
         } else {
-            // Property missing in source - show placeholder
+            // Property missing in source
             var targetOptional = targetProp.optional ? '?' : '';
-            var placeholderLine = '  <span class="diff-missing">' + propName + targetOptional + ': (missing)</span>' + semicolon;
-            sourceLines.push(placeholderLine);
+            sourceLines.push('<span class="type-line has-diff">  <span class="diff-missing">' + propName + targetOptional + ': (missing)</span></span>');
         }
 
         // Target side
         if (targetProp) {
             var targetOptional2 = targetProp.optional ? '?' : '';
             var targetValue = targetProp.valueType;
-            var targetLine = '  ' + propName + targetOptional2 + ': ';
+            var targetLine = '<span class="' + lineClass + '">  <span class="prop-name">' + propName + targetOptional2 + '</span>: ';
 
             if (diff && diff.type === 'value_mismatch') {
                 targetLine += '<span class="diff-correct">' + escapeHtml(targetValue) + '</span>';
             } else if (diff && diff.type === 'missing_in_source') {
                 targetLine += '<span class="diff-correct">' + escapeHtml(targetValue) + '</span>';
             } else {
-                targetLine += escapeHtml(targetValue);
+                targetLine += '<span class="type-value">' + escapeHtml(targetValue) + '</span>';
             }
-            targetLine += semicolon;
+            targetLine += '</span>';
             targetLines.push(targetLine);
         } else {
-            // Property missing in target - show placeholder (extra property)
+            // Property extra in source (not in target)
             var sourceOptional2 = sourceProp.optional ? '?' : '';
-            var placeholderLine2 = '  <span class="diff-extra">' + propName + sourceOptional2 + ': (extra)</span>' + semicolon;
-            targetLines.push(placeholderLine2);
+            targetLines.push('<span class="type-line has-diff">  <span class="diff-extra">' + propName + sourceOptional2 + ': (not expected)</span></span>');
         }
     });
 
-    sourceLines.push('}');
-    targetLines.push('}');
+    sourceLines.push('<span class="type-line">}</span>');
+    targetLines.push('<span class="type-line">}</span>');
 
     return {
         sourceHtml: sourceLines.join('\n'),
