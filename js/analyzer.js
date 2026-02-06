@@ -96,7 +96,11 @@ function parseTypeScriptError(errorText) {
         isArrayObjectMismatch: false,
         originalError: errorText,
         errorCode: null,
-        errorCodes: []
+        errorCodes: [],
+        // New: store root types and all error paths for full type display
+        rootSourceType: null,
+        rootTargetType: null,
+        allErrorPaths: []
     };
 
     var errorCodeMatches = errorText.match(/TS\d{4}/g);
@@ -112,6 +116,7 @@ function parseTypeScriptError(errorText) {
     var lines = errorText.split('\n');
     var currentPath = [];
     var problems = [];
+    var isFirstTypeMatch = true;
 
     for (var i = 0; i < lines.length; i++) {
         var line = lines[i];
@@ -126,6 +131,18 @@ function parseTypeScriptError(errorText) {
         if (typeMatch) {
             var sourceType = typeMatch[1];
             var targetType = typeMatch[2];
+
+            // Store root types (first type match is the root)
+            if (isFirstTypeMatch) {
+                result.rootSourceType = sourceType;
+                result.rootTargetType = targetType;
+                isFirstTypeMatch = false;
+            }
+
+            // Collect error path
+            if (currentPath.length > 0) {
+                result.allErrorPaths.push(currentPath.slice());
+            }
 
             var problem = {
                 path: currentPath.slice(),
@@ -944,6 +961,156 @@ function renderAlignedTypeComparison(sourceType, targetType) {
 }
 
 /**
+ * Render full type with nested structure and highlight error paths
+ * errorPaths: array of paths like [['phoneNumber'], ['settings', 'theme'], ['settings', 'language']]
+ */
+function renderFullTypeWithHighlights(typeStr, errorPaths, isSource) {
+    // Parse the type string into a formatted structure
+    var formatted = formatTypeStringWithHighlights(typeStr, errorPaths, isSource, 0);
+    return formatted;
+}
+
+/**
+ * Format type string with proper indentation and highlight error paths
+ */
+function formatTypeStringWithHighlights(typeStr, errorPaths, isSource, indentLevel) {
+    var indent = '  '.repeat(indentLevel);
+    var nextIndent = '  '.repeat(indentLevel + 1);
+
+    typeStr = typeStr.trim();
+
+    // Check if this is an object type
+    if (typeStr.startsWith('{') && typeStr.endsWith('}')) {
+        var inner = typeStr.slice(1, -1).trim();
+        if (!inner) return indent + '{ }';
+
+        var props = parsePropertiesFromType(inner);
+        var lines = [indent + '{'];
+
+        props.forEach(function(prop, idx) {
+            var propPath = [prop.name];
+            var isError = errorPaths.some(function(ep) {
+                return ep.length > 0 && ep[0] === prop.name;
+            });
+
+            // Get child error paths for nested objects
+            var childErrorPaths = errorPaths
+                .filter(function(ep) { return ep.length > 1 && ep[0] === prop.name; })
+                .map(function(ep) { return ep.slice(1); });
+
+            var propLine = nextIndent;
+            var propNameHtml = '<span class="prop-name">' + escapeHtml(prop.name) + (prop.optional ? '?' : '') + '</span>';
+
+            // Check if this property's value is nested
+            var valueStr = prop.value.trim();
+            var isNestedObject = valueStr.startsWith('{') && valueStr.endsWith('}');
+            var isNestedArray = valueStr.endsWith('[]') || (valueStr.includes('[]') && valueStr.startsWith('{'));
+
+            if (isError && !isNestedObject && childErrorPaths.length === 0) {
+                // Direct value error - highlight the value
+                if (isSource) {
+                    propLine += propNameHtml + ': <span class="diff-error">' + escapeHtml(valueStr) + '</span>';
+                } else {
+                    propLine += propNameHtml + ': <span class="diff-correct">' + escapeHtml(valueStr) + '</span>';
+                }
+            } else if (isNestedObject && (childErrorPaths.length > 0 || isError)) {
+                // Nested object with errors inside
+                propLine += propNameHtml + ': ';
+                var nestedHtml = formatTypeStringWithHighlights(valueStr, childErrorPaths.length > 0 ? childErrorPaths : [[]], isSource, indentLevel + 1);
+                // Remove the leading indent from nested since we're adding inline
+                nestedHtml = nestedHtml.replace(new RegExp('^' + nextIndent), '');
+                propLine += nestedHtml;
+            } else {
+                // Normal property
+                propLine += propNameHtml + ': <span class="type-value">' + escapeHtml(valueStr) + '</span>';
+            }
+
+            if (idx < props.length - 1) {
+                propLine += ';';
+            }
+
+            // Add line class for highlighting
+            if (isError || childErrorPaths.length > 0) {
+                lines.push('<span class="type-line has-diff">' + propLine + '</span>');
+            } else {
+                lines.push('<span class="type-line">' + propLine + '</span>');
+            }
+        });
+
+        lines.push(indent + '}');
+        return lines.join('\n');
+    }
+
+    // For non-object types, just return escaped
+    return indent + escapeHtml(typeStr);
+}
+
+/**
+ * Parse properties from type string interior (without outer braces)
+ */
+function parsePropertiesFromType(typeInner) {
+    var props = [];
+    var current = '';
+    var depth = 0;
+    var inQuote = false;
+    var quoteChar = '';
+
+    for (var i = 0; i < typeInner.length; i++) {
+        var char = typeInner[i];
+
+        if ((char === '"' || char === "'") && (i === 0 || typeInner[i-1] !== '\\')) {
+            if (!inQuote) {
+                inQuote = true;
+                quoteChar = char;
+            } else if (char === quoteChar) {
+                inQuote = false;
+            }
+        }
+
+        if (!inQuote) {
+            if (char === '{' || char === '(' || char === '<' || char === '[') {
+                depth++;
+            } else if (char === '}' || char === ')' || char === '>' || char === ']') {
+                depth--;
+            }
+
+            if (char === ';' && depth === 0) {
+                var prop = parseSingleProperty(current.trim());
+                if (prop) props.push(prop);
+                current = '';
+                continue;
+            }
+        }
+
+        current += char;
+    }
+
+    // Last property (may not have semicolon)
+    if (current.trim()) {
+        var prop = parseSingleProperty(current.trim());
+        if (prop) props.push(prop);
+    }
+
+    return props;
+}
+
+/**
+ * Parse a single property string like "name?: string" or "settings: { ... }"
+ */
+function parseSingleProperty(propStr) {
+    // Match property name (with optional ?) and value
+    var match = propStr.match(/^([a-zA-Z_$][a-zA-Z0-9_$]*)(\?)?:\s*(.+)$/s);
+    if (match) {
+        return {
+            name: match[1],
+            optional: !!match[2],
+            value: match[3]
+        };
+    }
+    return null;
+}
+
+/**
  * Format type string for better display (truncate if too long)
  */
 function formatTypeForDisplay(typeStr) {
@@ -1036,6 +1203,51 @@ function getProblemTitle(problem, result) {
     return t('typeMismatch');
 }
 
+/**
+ * Render full type comparison section with all errors highlighted
+ */
+function renderFullTypeComparisonSection(result) {
+    var html = '<div class="full-type-comparison-section">';
+    html += '<div class="section-title">' + t('fullTypeComparison') + '</div>';
+    html += '<p class="section-desc">' + t('fullTypeComparisonDesc') + '</p>';
+
+    // Show error path summary
+    if (result.allErrorPaths.length > 0) {
+        html += '<div class="error-paths-summary">';
+        html += '<span class="error-paths-label">' + t('errorLocations') + ':</span> ';
+        var pathStrings = result.allErrorPaths.map(function(path) {
+            return '<span class="error-path-tag">' + path.join(' → ') + '</span>';
+        });
+        html += pathStrings.join(' ');
+        html += '</div>';
+    }
+
+    html += '<div class="type-comparison full-type">';
+
+    // Source type (provided)
+    html += '<div class="type-column">';
+    html += '<div class="type-label wrong">' + t('providedType') + '</div>';
+    html += '<div class="type-box wrong"><div class="type-content">';
+    html += renderFullTypeWithHighlights(result.rootSourceType, result.allErrorPaths, true);
+    html += '</div></div>';
+    html += '</div>';
+
+    html += '<div class="type-arrow">→</div>';
+
+    // Target type (expected)
+    html += '<div class="type-column">';
+    html += '<div class="type-label correct">' + t('expectedType') + '</div>';
+    html += '<div class="type-box correct"><div class="type-content">';
+    html += renderFullTypeWithHighlights(result.rootTargetType, result.allErrorPaths, false);
+    html += '</div></div>';
+    html += '</div>';
+
+    html += '</div>'; // .type-comparison
+    html += '</div>'; // .full-type-comparison-section
+
+    return html;
+}
+
 function displayResult(result) {
     var html = '';
     var input = document.getElementById('errorInput').value.trim();
@@ -1080,6 +1292,12 @@ function displayResult(result) {
         });
     }
     html += '</div>';
+
+    // If we have root types with multiple nested errors, show full type comparison first
+    var typeProblems = result.problems.filter(function(p) { return p.sourceType && p.targetType && p.path.length > 0; });
+    if (result.rootSourceType && result.rootTargetType && typeProblems.length > 1) {
+        html += renderFullTypeComparisonSection(result);
+    }
 
     result.problems.forEach(function(problem, idx) {
         var problemClass = getProblemClass(problem);
