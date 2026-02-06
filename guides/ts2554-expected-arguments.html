@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- SEO -->
+    <title>TS2554: Expected X arguments, but got Y - Guide | TypeScript Error Analyzer</title>
+    <meta name="description" content="Fix TypeScript error TS2554: Expected X arguments, but got Y. Learn about function parameters, optional parameters, and rest parameters.">
+    <meta name="keywords" content="TS2554, TypeScript error, expected arguments, function parameters, optional parameters, TypeScript debugging">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://tserror-analyzer.me/guides/ts2554-expected-arguments.html">
+    <meta property="og:title" content="TS2554: Expected X arguments, but got Y - Guide">
+    <meta property="og:description" content="Learn how to fix TypeScript error TS2554 with practical examples.">
+    <meta property="og:image" content="https://tserror-analyzer.me/og-image.svg">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://tserror-analyzer.me/guides/ts2554-expected-arguments.html">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="./guide-styles.css">
+</head>
+<body>
+    <nav class="guide-nav">
+        <a href="../" class="logo">TS<span>Error</span> Analyzer</a>
+        <div class="nav-links">
+            <a href="../">Analyzer</a>
+            <a href="./index.html">Guides</a>
+            <a href="../about.html">About</a>
+        </div>
+    </nav>
+
+    <main class="guide-container">
+        <nav class="breadcrumb">
+            <a href="../">Home</a>
+            <span>›</span>
+            <a href="./index.html">Guides</a>
+            <span>›</span>
+            <span>TS2554</span>
+        </nav>
+
+        <header class="guide-header">
+            <span class="error-badge">TS2554</span>
+            <h1>Expected X arguments, but got Y</h1>
+            <div class="guide-meta">
+                <span>📚 Difficulty: Beginner</span>
+                <span>⏱️ 4 min read</span>
+                <span>🔄 Updated: Feb 2025</span>
+            </div>
+        </header>
+
+        <article class="guide-content">
+            <h2>What is TS2554?</h2>
+            <p>
+                TS2554 occurs when you call a function with the wrong number of arguments. TypeScript strictly enforces function signatures, so you must provide exactly the right number of required arguments.
+            </p>
+
+            <div class="code-block">
+<pre><span class="comment">// Example of TS2554 error</span>
+<span class="keyword">function</span> greet(firstName: <span class="type">string</span>, lastName: <span class="type">string</span>) {
+    console.log(<span class="string">`Hello, ${firstName} ${lastName}!`</span>);
+}
+
+greet(<span class="string">'John'</span>); <span class="error">// Error: Expected 2 arguments, but got 1</span></pre>
+            </div>
+
+            <h2>Common Causes</h2>
+
+            <h3>1. Missing Required Arguments</h3>
+            <div class="code-block">
+<pre><span class="keyword">function</span> createUser(name: <span class="type">string</span>, email: <span class="type">string</span>, age: <span class="type">number</span>) {
+    <span class="comment">// ...</span>
+}
+
+<span class="comment">// ❌ Missing 'age' argument</span>
+createUser(<span class="string">'John'</span>, <span class="string">'john@example.com'</span>); <span class="error">// Error!</span>
+
+<span class="comment">// ✅ All arguments provided</span>
+createUser(<span class="string">'John'</span>, <span class="string">'john@example.com'</span>, 25);</pre>
+            </div>
+
+            <h3>2. Too Many Arguments</h3>
+            <div class="code-block">
+<pre><span class="keyword">function</span> add(a: <span class="type">number</span>, b: <span class="type">number</span>): <span class="type">number</span> {
+    <span class="keyword">return</span> a + b;
+}
+
+<span class="comment">// ❌ Too many arguments</span>
+add(1, 2, 3); <span class="error">// Error: Expected 2 arguments, but got 3</span>
+
+<span class="comment">// ✅ Correct number of arguments</span>
+add(1, 2);</pre>
+            </div>
+
+            <h3>3. Forgetting to Call with Parentheses</h3>
+            <div class="code-block">
+<pre><span class="keyword">class</span> <span class="type">User</span> {
+    getName(): <span class="type">string</span> {
+        <span class="keyword">return</span> <span class="string">'John'</span>;
+    }
+}
+
+<span class="keyword">const</span> user = <span class="keyword">new</span> User();
+
+<span class="comment">// ❌ Treating method as property</span>
+console.log(user.getName.toUpperCase()); <span class="error">// Error!</span>
+
+<span class="comment">// ✅ Call the method first</span>
+console.log(user.getName().toUpperCase());</pre>
+            </div>
+
+            <h2>Solutions</h2>
+
+            <h3>1. Provide All Required Arguments</h3>
+            <div class="code-block">
+<pre><span class="keyword">function</span> greet(firstName: <span class="type">string</span>, lastName: <span class="type">string</span>) {
+    console.log(<span class="string">`Hello, ${firstName} ${lastName}!`</span>);
+}
+
+<span class="comment">// ✅ Provide both arguments</span>
+greet(<span class="string">'John'</span>, <span class="string">'Doe'</span>);</pre>
+            </div>
+
+            <h3>2. Use Optional Parameters</h3>
+            <div class="code-block">
+<pre><span class="comment">// ✅ Make lastName optional with ?</span>
+<span class="keyword">function</span> greet(firstName: <span class="type">string</span>, lastName?: <span class="type">string</span>) {
+    <span class="keyword">if</span> (lastName) {
+        console.log(<span class="string">`Hello, ${firstName} ${lastName}!`</span>);
+    } <span class="keyword">else</span> {
+        console.log(<span class="string">`Hello, ${firstName}!`</span>);
+    }
+}
+
+greet(<span class="string">'John'</span>);         <span class="comment">// OK</span>
+greet(<span class="string">'John'</span>, <span class="string">'Doe'</span>);  <span class="comment">// OK</span></pre>
+            </div>
+
+            <h3>3. Use Default Parameters</h3>
+            <div class="code-block">
+<pre><span class="comment">// ✅ Provide default value</span>
+<span class="keyword">function</span> greet(firstName: <span class="type">string</span>, lastName: <span class="type">string</span> = <span class="string">'User'</span>) {
+    console.log(<span class="string">`Hello, ${firstName} ${lastName}!`</span>);
+}
+
+greet(<span class="string">'John'</span>);         <span class="comment">// "Hello, John User!"</span>
+greet(<span class="string">'John'</span>, <span class="string">'Doe'</span>);  <span class="comment">// "Hello, John Doe!"</span></pre>
+            </div>
+
+            <h3>4. Use Rest Parameters</h3>
+            <div class="code-block">
+<pre><span class="comment">// ✅ Accept variable number of arguments</span>
+<span class="keyword">function</span> sum(...numbers: <span class="type">number</span>[]): <span class="type">number</span> {
+    <span class="keyword">return</span> numbers.reduce((a, b) => a + b, 0);
+}
+
+sum(1);           <span class="comment">// 1</span>
+sum(1, 2);        <span class="comment">// 3</span>
+sum(1, 2, 3, 4);  <span class="comment">// 10</span></pre>
+            </div>
+
+            <h3>5. Function Overloads</h3>
+            <div class="code-block">
+<pre><span class="comment">// ✅ Multiple function signatures</span>
+<span class="keyword">function</span> greet(name: <span class="type">string</span>): <span class="type">string</span>;
+<span class="keyword">function</span> greet(firstName: <span class="type">string</span>, lastName: <span class="type">string</span>): <span class="type">string</span>;
+<span class="keyword">function</span> greet(first: <span class="type">string</span>, last?: <span class="type">string</span>): <span class="type">string</span> {
+    <span class="keyword">return</span> last ? <span class="string">`Hello, ${first} ${last}!`</span> : <span class="string">`Hello, ${first}!`</span>;
+}
+
+greet(<span class="string">'John'</span>);         <span class="comment">// OK</span>
+greet(<span class="string">'John'</span>, <span class="string">'Doe'</span>);  <span class="comment">// OK</span></pre>
+            </div>
+
+            <h2>Real-World Examples</h2>
+
+            <h3>React Component Props</h3>
+            <div class="code-block">
+<pre><span class="keyword">interface</span> <span class="type">ButtonProps</span> {
+    label: <span class="type">string</span>;
+    onClick: () => <span class="type">void</span>;
+    disabled?: <span class="type">boolean</span>; <span class="comment">// Optional</span>
+}
+
+<span class="keyword">function</span> Button({ label, onClick, disabled = <span class="keyword">false</span> }: <span class="type">ButtonProps</span>) {
+    <span class="keyword">return</span> (
+        &lt;button onClick={onClick} disabled={disabled}&gt;
+            {label}
+        &lt;/button&gt;
+    );
+}
+
+<span class="comment">// ✅ Required props only</span>
+&lt;Button label=<span class="string">"Click me"</span> onClick={() => {}} /&gt;
+
+<span class="comment">// ✅ All props</span>
+&lt;Button label=<span class="string">"Click me"</span> onClick={() => {}} disabled={<span class="keyword">true</span>} /&gt;</pre>
+            </div>
+
+            <h3>API Functions</h3>
+            <div class="code-block">
+<pre><span class="comment">// API with optional config</span>
+<span class="keyword">interface</span> <span class="type">FetchOptions</span> {
+    method?: <span class="type">string</span>;
+    headers?: <span class="type">Record</span>&lt;<span class="type">string</span>, <span class="type">string</span>&gt;;
+    body?: <span class="type">string</span>;
+}
+
+<span class="keyword">async function</span> fetchData(url: <span class="type">string</span>, options?: <span class="type">FetchOptions</span>) {
+    <span class="keyword">return</span> fetch(url, options);
+}
+
+<span class="comment">// ✅ URL only</span>
+fetchData(<span class="string">'/api/users'</span>);
+
+<span class="comment">// ✅ With options</span>
+fetchData(<span class="string">'/api/users'</span>, { method: <span class="string">'POST'</span> });</pre>
+            </div>
+
+            <div class="tip-box">
+                <h4>💡 Pro Tip</h4>
+                <p>When designing APIs, put required parameters first and optional ones last. This makes function calls more intuitive and matches JavaScript conventions.</p>
+            </div>
+
+            <h2>Summary</h2>
+            <ul>
+                <li>TS2554 means wrong number of arguments passed to a function</li>
+                <li>Make parameters optional with <code>?</code> when they're not always needed</li>
+                <li>Use default values for sensible defaults</li>
+                <li>Use rest parameters (<code>...args</code>) for variable arguments</li>
+                <li>Consider function overloads for complex APIs</li>
+            </ul>
+        </article>
+
+        <section class="cta-section">
+            <h3>Still Confused by Your Error?</h3>
+            <p>Paste your TypeScript error into our analyzer for instant, detailed explanations.</p>
+            <a href="../" class="cta-btn">Try Error Analyzer →</a>
+        </section>
+
+        <section class="related-guides">
+            <h3>Related Error Guides</h3>
+            <div class="related-list">
+                <a href="./ts2345-argument-type.html" class="related-item">
+                    <span class="code">TS2345</span>
+                    <span class="title">Argument type mismatch</span>
+                </a>
+                <a href="./ts2322-type-not-assignable.html" class="related-item">
+                    <span class="code">TS2322</span>
+                    <span class="title">Type 'X' is not assignable to type 'Y'</span>
+                </a>
+                <a href="./ts7006-implicit-any.html" class="related-item">
+                    <span class="code">TS7006</span>
+                    <span class="title">Parameter implicitly has 'any' type</span>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="guide-footer">
+        <p>© 2025 TypeScript Error Analyzer. <a href="../privacy.html">Privacy</a> · <a href="../terms.html">Terms</a></p>
+    </footer>
+</body>
+</html>

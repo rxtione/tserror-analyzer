@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- SEO -->
+    <title>TS2531: Object is possibly 'null' - Complete Guide | TypeScript Error Analyzer</title>
+    <meta name="description" content="Fix TypeScript error TS2531: Object is possibly 'null'. Learn about null checking, optional chaining, and type guards with practical examples.">
+    <meta name="keywords" content="TS2531, TypeScript error, possibly null, null check, optional chaining, type guard, TypeScript debugging">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://tserror-analyzer.me/guides/ts2531-possibly-null.html">
+    <meta property="og:title" content="TS2531: Object is possibly 'null' - Complete Guide">
+    <meta property="og:description" content="Learn how to fix TypeScript error TS2531 with practical examples.">
+    <meta property="og:image" content="https://tserror-analyzer.me/og-image.svg">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://tserror-analyzer.me/guides/ts2531-possibly-null.html">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "headline": "TS2531: Object is possibly 'null' - Complete Guide",
+        "description": "Fix TypeScript error TS2531: Object is possibly 'null'",
+        "author": {"@type": "Organization", "name": "TypeScript Error Analyzer"},
+        "publisher": {"@type": "Organization", "name": "TypeScript Error Analyzer", "url": "https://tserror-analyzer.me"},
+        "datePublished": "2025-02-06",
+        "dateModified": "2025-02-06"
+    }
+    </script>
+
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="./guide-styles.css">
+</head>
+<body>
+    <nav class="guide-nav">
+        <a href="../" class="logo">TS<span>Error</span> Analyzer</a>
+        <div class="nav-links">
+            <a href="../">Analyzer</a>
+            <a href="./index.html">Guides</a>
+            <a href="../about.html">About</a>
+        </div>
+    </nav>
+
+    <main class="guide-container">
+        <nav class="breadcrumb">
+            <a href="../">Home</a>
+            <span>›</span>
+            <a href="./index.html">Guides</a>
+            <span>›</span>
+            <span>TS2531</span>
+        </nav>
+
+        <header class="guide-header">
+            <span class="error-badge">TS2531</span>
+            <h1>Object is possibly 'null'</h1>
+            <div class="guide-meta">
+                <span>📚 Difficulty: Beginner</span>
+                <span>⏱️ 5 min read</span>
+                <span>🔄 Updated: Feb 2025</span>
+            </div>
+        </header>
+
+        <article class="guide-content">
+            <h2>What is TS2531?</h2>
+            <p>
+                TS2531 occurs when you try to access a property or method on a value that TypeScript knows could be <code>null</code>. This is TypeScript's strict null checking feature protecting you from potential runtime errors.
+            </p>
+
+            <div class="code-block">
+<pre><span class="comment">// Example of TS2531 error</span>
+<span class="keyword">const</span> element = document.getElementById(<span class="string">'myElement'</span>);
+console.log(element.innerHTML); <span class="error">// Error: Object is possibly 'null'</span></pre>
+            </div>
+
+            <h2>Why Does This Happen?</h2>
+            <p>
+                Many DOM methods and other APIs can return <code>null</code> when the requested item doesn't exist. TypeScript's type system tracks this possibility and requires you to handle it explicitly.
+            </p>
+
+            <div class="code-block">
+<pre><span class="comment">// document.getElementById returns HTMLElement | null</span>
+<span class="keyword">const</span> element = document.getElementById(<span class="string">'myElement'</span>);
+<span class="comment">// TypeScript knows 'element' could be null!</span></pre>
+            </div>
+
+            <h2>Common Causes</h2>
+
+            <h3>1. DOM Element Selection</h3>
+            <div class="code-block">
+<pre><span class="comment">// ❌ These methods can return null</span>
+document.getElementById(<span class="string">'id'</span>);        <span class="comment">// HTMLElement | null</span>
+document.querySelector(<span class="string">'.class'</span>);     <span class="comment">// Element | null</span>
+element.parentElement;                 <span class="comment">// HTMLElement | null</span></pre>
+            </div>
+
+            <h3>2. Array.find()</h3>
+            <div class="code-block">
+<pre><span class="keyword">const</span> users = [{ id: 1, name: <span class="string">'John'</span> }];
+<span class="keyword">const</span> user = users.find(u => u.id === 2);
+console.log(user.name); <span class="error">// Error! user might be undefined</span></pre>
+            </div>
+
+            <h3>3. Object Properties</h3>
+            <div class="code-block">
+<pre><span class="keyword">interface</span> <span class="type">Config</span> {
+    database: {
+        host: <span class="type">string</span>;
+    } | <span class="type">null</span>;
+}
+
+<span class="keyword">const</span> config: <span class="type">Config</span> = { database: <span class="keyword">null</span> };
+console.log(config.database.host); <span class="error">// Error!</span></pre>
+            </div>
+
+            <h2>Solutions</h2>
+
+            <h3>1. Null Check (if statement)</h3>
+            <div class="code-block">
+<pre><span class="keyword">const</span> element = document.getElementById(<span class="string">'myElement'</span>);
+
+<span class="comment">// ✅ Check before using</span>
+<span class="keyword">if</span> (element !== <span class="keyword">null</span>) {
+    console.log(element.innerHTML); <span class="comment">// Safe!</span>
+}
+
+<span class="comment">// ✅ Or combine with truthy check</span>
+<span class="keyword">if</span> (element) {
+    console.log(element.innerHTML);
+}</pre>
+            </div>
+
+            <h3>2. Optional Chaining (?.)</h3>
+            <div class="code-block">
+<pre><span class="keyword">const</span> element = document.getElementById(<span class="string">'myElement'</span>);
+
+<span class="comment">// ✅ Returns undefined if element is null</span>
+console.log(element?.innerHTML);
+
+<span class="comment">// ✅ Chain multiple levels</span>
+<span class="keyword">const</span> text = document.querySelector(<span class="string">'.card'</span>)?.querySelector(<span class="string">'p'</span>)?.textContent;</pre>
+            </div>
+
+            <h3>3. Nullish Coalescing (??)</h3>
+            <div class="code-block">
+<pre><span class="keyword">const</span> element = document.getElementById(<span class="string">'myElement'</span>);
+
+<span class="comment">// ✅ Provide default value</span>
+<span class="keyword">const</span> content = element?.innerHTML ?? <span class="string">'Default content'</span>;
+
+<span class="comment">// ✅ Combined with optional chaining</span>
+<span class="keyword">const</span> user = users.find(u => u.id === 2);
+<span class="keyword">const</span> name = user?.name ?? <span class="string">'Unknown'</span>;</pre>
+            </div>
+
+            <h3>4. Non-null Assertion (!)</h3>
+            <div class="code-block">
+<pre><span class="comment">// ✅ Use only when you're 100% sure it's not null</span>
+<span class="keyword">const</span> element = document.getElementById(<span class="string">'myElement'</span>)!;
+console.log(element.innerHTML); <span class="comment">// No error, but risky!</span></pre>
+            </div>
+
+            <div class="tip-box warning">
+                <h4>⚠️ Warning</h4>
+                <p>The non-null assertion operator (!) tells TypeScript to trust you, but it doesn't add any runtime safety. If the value is actually null, your code will crash.</p>
+            </div>
+
+            <h3>5. Type Guard Function</h3>
+            <div class="code-block">
+<pre><span class="comment">// ✅ Reusable null check</span>
+<span class="keyword">function</span> assertNonNull&lt;<span class="type">T</span>&gt;(value: <span class="type">T</span> | <span class="type">null</span>, message: <span class="type">string</span>): <span class="type">T</span> {
+    <span class="keyword">if</span> (value === <span class="keyword">null</span>) {
+        <span class="keyword">throw new</span> Error(message);
+    }
+    <span class="keyword">return</span> value;
+}
+
+<span class="keyword">const</span> element = assertNonNull(
+    document.getElementById(<span class="string">'myElement'</span>),
+    <span class="string">'Element not found!'</span>
+);
+console.log(element.innerHTML); <span class="comment">// Safe, or throws</span></pre>
+            </div>
+
+            <h2>Real-World Examples</h2>
+
+            <h3>React Refs</h3>
+            <div class="code-block">
+<pre><span class="keyword">const</span> inputRef = useRef&lt;<span class="type">HTMLInputElement</span>&gt;(<span class="keyword">null</span>);
+
+<span class="comment">// ❌ ref.current can be null</span>
+inputRef.current.focus(); <span class="error">// Error!</span>
+
+<span class="comment">// ✅ Check first</span>
+inputRef.current?.focus();
+
+<span class="comment">// ✅ Or with if statement</span>
+<span class="keyword">if</span> (inputRef.current) {
+    inputRef.current.focus();
+}</pre>
+            </div>
+
+            <h3>API Responses</h3>
+            <div class="code-block">
+<pre><span class="keyword">interface</span> <span class="type">ApiResponse</span> {
+    user: <span class="type">User</span> | <span class="type">null</span>;
+}
+
+<span class="keyword">const</span> response: <span class="type">ApiResponse</span> = <span class="keyword">await</span> fetchUser();
+
+<span class="comment">// ❌ user might be null</span>
+console.log(response.user.name); <span class="error">// Error!</span>
+
+<span class="comment">// ✅ Handle null case</span>
+<span class="keyword">if</span> (response.user) {
+    console.log(response.user.name);
+} <span class="keyword">else</span> {
+    console.log(<span class="string">'User not found'</span>);
+}</pre>
+            </div>
+
+            <div class="tip-box">
+                <h4>💡 Pro Tip</h4>
+                <p>Enable <code>strictNullChecks</code> in your tsconfig.json. It catches these errors at compile time rather than causing crashes at runtime.</p>
+            </div>
+
+            <h2>Summary</h2>
+            <ul>
+                <li>TS2531 protects you from null reference errors</li>
+                <li>Always check for null before accessing properties</li>
+                <li>Use optional chaining (?.) for clean, safe access</li>
+                <li>Use nullish coalescing (??) for default values</li>
+                <li>Avoid non-null assertion (!) unless absolutely certain</li>
+                <li>Consider type guards for complex scenarios</li>
+            </ul>
+        </article>
+
+        <section class="cta-section">
+            <h3>Still Confused by Your Error?</h3>
+            <p>Paste your TypeScript error into our analyzer for instant, detailed explanations.</p>
+            <a href="../" class="cta-btn">Try Error Analyzer →</a>
+        </section>
+
+        <section class="related-guides">
+            <h3>Related Error Guides</h3>
+            <div class="related-list">
+                <a href="./ts2532-possibly-undefined.html" class="related-item">
+                    <span class="code">TS2532</span>
+                    <span class="title">Object is possibly 'undefined'</span>
+                </a>
+                <a href="./ts2322-type-not-assignable.html" class="related-item">
+                    <span class="code">TS2322</span>
+                    <span class="title">Type 'X' is not assignable to type 'Y'</span>
+                </a>
+                <a href="./ts2339-property-does-not-exist.html" class="related-item">
+                    <span class="code">TS2339</span>
+                    <span class="title">Property does not exist on type</span>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="guide-footer">
+        <p>© 2025 TypeScript Error Analyzer. <a href="../privacy.html">Privacy</a> · <a href="../terms.html">Terms</a></p>
+    </footer>
+</body>
+</html>

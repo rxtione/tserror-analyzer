@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- SEO -->
+    <title>TS7006: Parameter implicitly has 'any' type - Guide | TypeScript Error Analyzer</title>
+    <meta name="description" content="Fix TypeScript error TS7006: Parameter 'x' implicitly has an 'any' type. Learn about type annotations, function parameters, and noImplicitAny.">
+    <meta name="keywords" content="TS7006, TypeScript error, implicit any, parameter type, type annotation, noImplicitAny, TypeScript debugging">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://tserror-analyzer.me/guides/ts7006-implicit-any.html">
+    <meta property="og:title" content="TS7006: Parameter implicitly has 'any' type - Guide">
+    <meta property="og:description" content="Learn how to fix TypeScript error TS7006 with practical examples.">
+    <meta property="og:image" content="https://tserror-analyzer.me/og-image.svg">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://tserror-analyzer.me/guides/ts7006-implicit-any.html">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="./guide-styles.css">
+</head>
+<body>
+    <nav class="guide-nav">
+        <a href="../" class="logo">TS<span>Error</span> Analyzer</a>
+        <div class="nav-links">
+            <a href="../">Analyzer</a>
+            <a href="./index.html">Guides</a>
+            <a href="../about.html">About</a>
+        </div>
+    </nav>
+
+    <main class="guide-container">
+        <nav class="breadcrumb">
+            <a href="../">Home</a>
+            <span>›</span>
+            <a href="./index.html">Guides</a>
+            <span>›</span>
+            <span>TS7006</span>
+        </nav>
+
+        <header class="guide-header">
+            <span class="error-badge">TS7006</span>
+            <h1>Parameter 'x' implicitly has an 'any' type</h1>
+            <div class="guide-meta">
+                <span>📚 Difficulty: Beginner</span>
+                <span>⏱️ 4 min read</span>
+                <span>🔄 Updated: Feb 2025</span>
+            </div>
+        </header>
+
+        <article class="guide-content">
+            <h2>What is TS7006?</h2>
+            <p>
+                TS7006 occurs when TypeScript cannot infer the type of a function parameter and the <code>noImplicitAny</code> compiler option is enabled. This forces you to explicitly declare types, preventing accidental use of <code>any</code>.
+            </p>
+
+            <div class="code-block">
+<pre><span class="comment">// Example of TS7006 error</span>
+<span class="keyword">function</span> greet(name) { <span class="error">// Error: Parameter 'name' implicitly has an 'any' type</span>
+    console.log(<span class="string">`Hello, ${name}!`</span>);
+}</pre>
+            </div>
+
+            <h2>Why Does This Error Exist?</h2>
+            <p>
+                The <code>noImplicitAny</code> option (enabled by default with <code>strict: true</code>) ensures type safety by requiring explicit type annotations. Without this, TypeScript would silently treat untyped parameters as <code>any</code>, defeating the purpose of type checking.
+            </p>
+
+            <h2>Common Causes</h2>
+
+            <h3>1. Untyped Function Parameters</h3>
+            <div class="code-block">
+<pre><span class="comment">// ❌ No type annotation</span>
+<span class="keyword">function</span> add(a, b) { <span class="error">// Error on both 'a' and 'b'</span>
+    <span class="keyword">return</span> a + b;
+}
+
+<span class="comment">// ✅ Add type annotations</span>
+<span class="keyword">function</span> add(a: <span class="type">number</span>, b: <span class="type">number</span>): <span class="type">number</span> {
+    <span class="keyword">return</span> a + b;
+}</pre>
+            </div>
+
+            <h3>2. Arrow Functions</h3>
+            <div class="code-block">
+<pre><span class="comment">// ❌ Untyped arrow function</span>
+<span class="keyword">const</span> double = (n) => n * 2; <span class="error">// Error!</span>
+
+<span class="comment">// ✅ Add type annotation</span>
+<span class="keyword">const</span> double = (n: <span class="type">number</span>): <span class="type">number</span> => n * 2;</pre>
+            </div>
+
+            <h3>3. Callback Functions</h3>
+            <div class="code-block">
+<pre><span class="comment">// ❌ Callback without types</span>
+[1, 2, 3].forEach((item) => { <span class="error">// Usually OK due to inference</span>
+    console.log(item);
+});
+
+<span class="comment">// ❌ But standalone callbacks need types</span>
+<span class="keyword">const</span> callback = (item) => { <span class="error">// Error!</span>
+    console.log(item);
+};</pre>
+            </div>
+
+            <h3>4. Event Handlers</h3>
+            <div class="code-block">
+<pre><span class="comment">// ❌ Event handler without type</span>
+<span class="keyword">function</span> handleClick(event) { <span class="error">// Error!</span>
+    console.log(event.target);
+}
+
+<span class="comment">// ✅ Add proper event type</span>
+<span class="keyword">function</span> handleClick(event: <span class="type">MouseEvent</span>) {
+    console.log(event.target);
+}</pre>
+            </div>
+
+            <h2>Solutions</h2>
+
+            <h3>1. Add Type Annotations</h3>
+            <div class="code-block">
+<pre><span class="comment">// Basic types</span>
+<span class="keyword">function</span> greet(name: <span class="type">string</span>): <span class="type">void</span> {
+    console.log(<span class="string">`Hello, ${name}!`</span>);
+}
+
+<span class="comment">// Object types</span>
+<span class="keyword">function</span> processUser(user: { name: <span class="type">string</span>; age: <span class="type">number</span> }) {
+    console.log(user.name, user.age);
+}
+
+<span class="comment">// Array types</span>
+<span class="keyword">function</span> sumNumbers(numbers: <span class="type">number</span>[]): <span class="type">number</span> {
+    <span class="keyword">return</span> numbers.reduce((a, b) => a + b, 0);
+}</pre>
+            </div>
+
+            <h3>2. Use Interfaces or Type Aliases</h3>
+            <div class="code-block">
+<pre><span class="keyword">interface</span> <span class="type">User</span> {
+    name: <span class="type">string</span>;
+    email: <span class="type">string</span>;
+}
+
+<span class="keyword">function</span> sendEmail(user: <span class="type">User</span>, message: <span class="type">string</span>): <span class="type">void</span> {
+    <span class="comment">// Implementation</span>
+}
+
+<span class="comment">// Or with type alias</span>
+<span class="keyword">type</span> <span class="type">Callback</span> = (value: <span class="type">string</span>) => <span class="type">void</span>;
+
+<span class="keyword">function</span> processAsync(callback: <span class="type">Callback</span>): <span class="type">void</span> {
+    callback(<span class="string">'result'</span>);
+}</pre>
+            </div>
+
+            <h3>3. Use Generics</h3>
+            <div class="code-block">
+<pre><span class="comment">// ✅ Generic function</span>
+<span class="keyword">function</span> identity&lt;<span class="type">T</span>&gt;(value: <span class="type">T</span>): <span class="type">T</span> {
+    <span class="keyword">return</span> value;
+}
+
+<span class="comment">// ✅ Generic arrow function</span>
+<span class="keyword">const</span> toArray = &lt;<span class="type">T</span>&gt;(value: <span class="type">T</span>): <span class="type">T</span>[] => [value];</pre>
+            </div>
+
+            <h3>4. Explicit 'any' (Last Resort)</h3>
+            <div class="code-block">
+<pre><span class="comment">// ✅ If you truly need any, be explicit</span>
+<span class="keyword">function</span> logAnything(value: <span class="type">any</span>): <span class="type">void</span> {
+    console.log(value);
+}
+
+<span class="comment">// Better: use 'unknown' for safer any-like behavior</span>
+<span class="keyword">function</span> processUnknown(value: <span class="type">unknown</span>): <span class="type">void</span> {
+    <span class="keyword">if</span> (<span class="keyword">typeof</span> value === <span class="string">'string'</span>) {
+        console.log(value.toUpperCase());
+    }
+}</pre>
+            </div>
+
+            <div class="tip-box">
+                <h4>💡 Pro Tip</h4>
+                <p>Prefer <code>unknown</code> over <code>any</code> when you don't know the type. It provides type safety by requiring type checks before use.</p>
+            </div>
+
+            <h2>Real-World Examples</h2>
+
+            <h3>React Event Handlers</h3>
+            <div class="code-block">
+<pre><span class="comment">// ❌ Untyped event</span>
+<span class="keyword">const</span> handleChange = (e) => { <span class="error">// Error!</span>
+    console.log(e.target.value);
+};
+
+<span class="comment">// ✅ Properly typed</span>
+<span class="keyword">const</span> handleChange = (e: <span class="type">React.ChangeEvent</span>&lt;<span class="type">HTMLInputElement</span>&gt;) => {
+    console.log(e.target.value);
+};
+
+<span class="comment">// ✅ Alternative with inline annotation</span>
+&lt;input onChange={(e: <span class="type">React.ChangeEvent</span>&lt;<span class="type">HTMLInputElement</span>&gt;) => {
+    console.log(e.target.value);
+}} /&gt;</pre>
+            </div>
+
+            <h3>Express.js Route Handlers</h3>
+            <div class="code-block">
+<pre><span class="keyword">import</span> { <span class="type">Request</span>, <span class="type">Response</span> } <span class="keyword">from</span> <span class="string">'express'</span>;
+
+<span class="comment">// ❌ Untyped</span>
+app.get(<span class="string">'/users'</span>, (req, res) => { <span class="error">// Error!</span>
+    res.json({ users: [] });
+});
+
+<span class="comment">// ✅ Properly typed</span>
+app.get(<span class="string">'/users'</span>, (req: <span class="type">Request</span>, res: <span class="type">Response</span>) => {
+    res.json({ users: [] });
+});</pre>
+            </div>
+
+            <h3>Utility Functions</h3>
+            <div class="code-block">
+<pre><span class="comment">// ❌ Untyped utility</span>
+<span class="keyword">const</span> debounce = (fn, delay) => { <span class="error">// Error!</span>
+    <span class="keyword">let</span> timeoutId;
+    <span class="keyword">return</span> (...args) => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => fn(...args), delay);
+    };
+};
+
+<span class="comment">// ✅ Properly typed</span>
+<span class="keyword">const</span> debounce = &lt;<span class="type">T</span> <span class="keyword">extends</span> (...args: <span class="type">any</span>[]) => <span class="type">any</span>&gt;(
+    fn: <span class="type">T</span>,
+    delay: <span class="type">number</span>
+): ((...args: <span class="type">Parameters</span>&lt;<span class="type">T</span>&gt;) => <span class="type">void</span>) => {
+    <span class="keyword">let</span> timeoutId: <span class="type">ReturnType</span>&lt;<span class="keyword">typeof</span> setTimeout&gt;;
+    <span class="keyword">return</span> (...args) => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => fn(...args), delay);
+    };
+};</pre>
+            </div>
+
+            <div class="tip-box warning">
+                <h4>⚠️ Don't Disable noImplicitAny</h4>
+                <p>While you can disable this check in tsconfig.json, it's strongly recommended to keep it enabled. It catches many potential bugs at compile time.</p>
+            </div>
+
+            <h2>Summary</h2>
+            <ul>
+                <li>TS7006 requires explicit type annotations for parameters</li>
+                <li>Always type function parameters for better code quality</li>
+                <li>Use interfaces and type aliases for complex types</li>
+                <li>Prefer <code>unknown</code> over <code>any</code> when type is truly unknown</li>
+                <li>Keep <code>noImplicitAny</code> enabled for maximum type safety</li>
+            </ul>
+        </article>
+
+        <section class="cta-section">
+            <h3>Still Confused by Your Error?</h3>
+            <p>Paste your TypeScript error into our analyzer for instant, detailed explanations.</p>
+            <a href="../" class="cta-btn">Try Error Analyzer →</a>
+        </section>
+
+        <section class="related-guides">
+            <h3>Related Error Guides</h3>
+            <div class="related-list">
+                <a href="./ts2322-type-not-assignable.html" class="related-item">
+                    <span class="code">TS2322</span>
+                    <span class="title">Type 'X' is not assignable to type 'Y'</span>
+                </a>
+                <a href="./ts2345-argument-type.html" class="related-item">
+                    <span class="code">TS2345</span>
+                    <span class="title">Argument type mismatch</span>
+                </a>
+                <a href="./ts2304-cannot-find-name.html" class="related-item">
+                    <span class="code">TS2304</span>
+                    <span class="title">Cannot find name 'X'</span>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="guide-footer">
+        <p>© 2025 TypeScript Error Analyzer. <a href="../privacy.html">Privacy</a> · <a href="../terms.html">Terms</a></p>
+    </footer>
+</body>
+</html>

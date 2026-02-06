@@ -108,6 +108,54 @@
     <priority>0.8</priority>
   </url>
 
+  <!-- Guide: TS2531 -->
+  <url>
+    <loc>https://tserror-analyzer.me/guides/ts2531-possibly-null.html</loc>
+    <lastmod>2025-02-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Guide: TS2532 -->
+  <url>
+    <loc>https://tserror-analyzer.me/guides/ts2532-possibly-undefined.html</loc>
+    <lastmod>2025-02-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Guide: TS7006 -->
+  <url>
+    <loc>https://tserror-analyzer.me/guides/ts7006-implicit-any.html</loc>
+    <lastmod>2025-02-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Guide: TS2554 -->
+  <url>
+    <loc>https://tserror-analyzer.me/guides/ts2554-expected-arguments.html</loc>
+    <lastmod>2025-02-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Guide: TS2741 -->
+  <url>
+    <loc>https://tserror-analyzer.me/guides/ts2741-missing-property.html</loc>
+    <lastmod>2025-02-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Contact page -->
+  <url>
+    <loc>https://tserror-analyzer.me/contact.html</loc>
+    <lastmod>2025-02-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
   <!-- About page -->
   <url>
     <loc>https://tserror-analyzer.me/about.html</loc>

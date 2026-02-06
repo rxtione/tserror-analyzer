@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- SEO -->
+    <title>TS2741: Property is missing in type - Guide | TypeScript Error Analyzer</title>
+    <meta name="description" content="Fix TypeScript error TS2741: Property 'X' is missing in type 'Y' but required in type 'Z'. Learn about required properties, optional properties, and Partial.">
+    <meta name="keywords" content="TS2741, TypeScript error, missing property, required property, optional property, Partial, TypeScript debugging">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://tserror-analyzer.me/guides/ts2741-missing-property.html">
+    <meta property="og:title" content="TS2741: Property is missing in type - Guide">
+    <meta property="og:description" content="Learn how to fix TypeScript error TS2741 with practical examples.">
+    <meta property="og:image" content="https://tserror-analyzer.me/og-image.svg">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://tserror-analyzer.me/guides/ts2741-missing-property.html">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="./guide-styles.css">
+</head>
+<body>
+    <nav class="guide-nav">
+        <a href="../" class="logo">TS<span>Error</span> Analyzer</a>
+        <div class="nav-links">
+            <a href="../">Analyzer</a>
+            <a href="./index.html">Guides</a>
+            <a href="../about.html">About</a>
+        </div>
+    </nav>
+
+    <main class="guide-container">
+        <nav class="breadcrumb">
+            <a href="../">Home</a>
+            <span>›</span>
+            <a href="./index.html">Guides</a>
+            <span>›</span>
+            <span>TS2741</span>
+        </nav>
+
+        <header class="guide-header">
+            <span class="error-badge">TS2741</span>
+            <h1>Property 'X' is missing in type but required</h1>
+            <div class="guide-meta">
+                <span>📚 Difficulty: Beginner</span>
+                <span>⏱️ 5 min read</span>
+                <span>🔄 Updated: Feb 2025</span>
+            </div>
+        </header>
+
+        <article class="guide-content">
+            <h2>What is TS2741?</h2>
+            <p>
+                TS2741 occurs when you create an object that's missing a required property defined in its type. TypeScript ensures all required properties are provided to prevent runtime errors.
+            </p>
+
+            <div class="code-block">
+<pre><span class="comment">// Example of TS2741 error</span>
+<span class="keyword">interface</span> <span class="type">User</span> {
+    name: <span class="type">string</span>;
+    email: <span class="type">string</span>;
+    age: <span class="type">number</span>;
+}
+
+<span class="keyword">const</span> user: <span class="type">User</span> = {
+    name: <span class="string">'John'</span>,
+    email: <span class="string">'john@example.com'</span>
+}; <span class="error">// Error: Property 'age' is missing in type</span></pre>
+            </div>
+
+            <h2>Common Causes</h2>
+
+            <h3>1. Missing Required Property</h3>
+            <div class="code-block">
+<pre><span class="keyword">interface</span> <span class="type">Product</span> {
+    id: <span class="type">number</span>;
+    name: <span class="type">string</span>;
+    price: <span class="type">number</span>;
+    description: <span class="type">string</span>;
+}
+
+<span class="comment">// ❌ Missing 'description'</span>
+<span class="keyword">const</span> product: <span class="type">Product</span> = {
+    id: 1,
+    name: <span class="string">'Laptop'</span>,
+    price: 999
+}; <span class="error">// Error!</span></pre>
+            </div>
+
+            <h3>2. Typo in Property Name</h3>
+            <div class="code-block">
+<pre><span class="keyword">interface</span> <span class="type">Config</span> {
+    apiEndpoint: <span class="type">string</span>;
+    timeout: <span class="type">number</span>;
+}
+
+<span class="comment">// ❌ Typo: 'apiendpoint' vs 'apiEndpoint'</span>
+<span class="keyword">const</span> config: <span class="type">Config</span> = {
+    apiendpoint: <span class="string">'/api'</span>,  <span class="error">// Wrong!</span>
+    timeout: 5000
+};</pre>
+            </div>
+
+            <h3>3. Wrong Property Type</h3>
+            <div class="code-block">
+<pre><span class="keyword">interface</span> <span class="type">Settings</span> {
+    darkMode: <span class="type">boolean</span>;
+    fontSize: <span class="type">number</span>;
+}
+
+<span class="comment">// ❌ 'darkMode' is string instead of boolean</span>
+<span class="keyword">const</span> settings: <span class="type">Settings</span> = {
+    darkMode: <span class="string">'true'</span>,  <span class="error">// Wrong type!</span>
+    fontSize: 14
+};</pre>
+            </div>
+
+            <h2>Solutions</h2>
+
+            <h3>1. Add the Missing Property</h3>
+            <div class="code-block">
+<pre><span class="keyword">interface</span> <span class="type">User</span> {
+    name: <span class="type">string</span>;
+    email: <span class="type">string</span>;
+    age: <span class="type">number</span>;
+}
+
+<span class="comment">// ✅ All properties provided</span>
+<span class="keyword">const</span> user: <span class="type">User</span> = {
+    name: <span class="string">'John'</span>,
+    email: <span class="string">'john@example.com'</span>,
+    age: 25
+};</pre>
+            </div>
+
+            <h3>2. Make Property Optional</h3>
+            <div class="code-block">
+<pre><span class="keyword">interface</span> <span class="type">User</span> {
+    name: <span class="type">string</span>;
+    email: <span class="type">string</span>;
+    age?: <span class="type">number</span>; <span class="comment">// Optional with ?</span>
+}
+
+<span class="comment">// ✅ 'age' is now optional</span>
+<span class="keyword">const</span> user: <span class="type">User</span> = {
+    name: <span class="string">'John'</span>,
+    email: <span class="string">'john@example.com'</span>
+};</pre>
+            </div>
+
+            <h3>3. Use Partial&lt;T&gt;</h3>
+            <div class="code-block">
+<pre><span class="keyword">interface</span> <span class="type">User</span> {
+    name: <span class="type">string</span>;
+    email: <span class="type">string</span>;
+    age: <span class="type">number</span>;
+}
+
+<span class="comment">// ✅ All properties become optional</span>
+<span class="keyword">const</span> partialUser: <span class="type">Partial</span>&lt;<span class="type">User</span>&gt; = {
+    name: <span class="string">'John'</span>
+};
+
+<span class="comment">// ✅ Useful for update operations</span>
+<span class="keyword">function</span> updateUser(id: <span class="type">number</span>, updates: <span class="type">Partial</span>&lt;<span class="type">User</span>&gt;) {
+    <span class="comment">// Only update provided fields</span>
+}
+
+updateUser(1, { email: <span class="string">'new@example.com'</span> });</pre>
+            </div>
+
+            <h3>4. Use Pick&lt;T, K&gt;</h3>
+            <div class="code-block">
+<pre><span class="keyword">interface</span> <span class="type">User</span> {
+    id: <span class="type">number</span>;
+    name: <span class="type">string</span>;
+    email: <span class="type">string</span>;
+    password: <span class="type">string</span>;
+}
+
+<span class="comment">// ✅ Only pick specific properties</span>
+<span class="keyword">type</span> <span class="type">PublicUser</span> = <span class="type">Pick</span>&lt;<span class="type">User</span>, <span class="string">'id'</span> | <span class="string">'name'</span> | <span class="string">'email'</span>&gt;;
+
+<span class="keyword">const</span> publicUser: <span class="type">PublicUser</span> = {
+    id: 1,
+    name: <span class="string">'John'</span>,
+    email: <span class="string">'john@example.com'</span>
+}; <span class="comment">// No password needed!</span></pre>
+            </div>
+
+            <h3>5. Use Omit&lt;T, K&gt;</h3>
+            <div class="code-block">
+<pre><span class="keyword">interface</span> <span class="type">User</span> {
+    id: <span class="type">number</span>;
+    name: <span class="type">string</span>;
+    email: <span class="type">string</span>;
+    createdAt: <span class="type">Date</span>;
+}
+
+<span class="comment">// ✅ Exclude specific properties</span>
+<span class="keyword">type</span> <span class="type">CreateUserInput</span> = <span class="type">Omit</span>&lt;<span class="type">User</span>, <span class="string">'id'</span> | <span class="string">'createdAt'</span>&gt;;
+
+<span class="keyword">const</span> newUser: <span class="type">CreateUserInput</span> = {
+    name: <span class="string">'John'</span>,
+    email: <span class="string">'john@example.com'</span>
+}; <span class="comment">// No id or createdAt needed!</span></pre>
+            </div>
+
+            <h2>Real-World Examples</h2>
+
+            <h3>React Component Props</h3>
+            <div class="code-block">
+<pre><span class="keyword">interface</span> <span class="type">CardProps</span> {
+    title: <span class="type">string</span>;
+    description: <span class="type">string</span>;
+    imageUrl?: <span class="type">string</span>;  <span class="comment">// Optional</span>
+    onClick?: () => <span class="type">void</span>; <span class="comment">// Optional</span>
+}
+
+<span class="comment">// ✅ Only required props</span>
+&lt;Card title=<span class="string">"Hello"</span> description=<span class="string">"World"</span> /&gt;
+
+<span class="comment">// ✅ With optional props</span>
+&lt;Card
+    title=<span class="string">"Hello"</span>
+    description=<span class="string">"World"</span>
+    imageUrl=<span class="string">"/image.jpg"</span>
+    onClick={() => console.log(<span class="string">'clicked'</span>)}
+/&gt;</pre>
+            </div>
+
+            <h3>Form Data</h3>
+            <div class="code-block">
+<pre><span class="keyword">interface</span> <span class="type">FormData</span> {
+    username: <span class="type">string</span>;
+    email: <span class="type">string</span>;
+    password: <span class="type">string</span>;
+    confirmPassword: <span class="type">string</span>;
+}
+
+<span class="comment">// For initial empty state</span>
+<span class="keyword">const</span> initialState: <span class="type">Partial</span>&lt;<span class="type">FormData</span>&gt; = {};
+
+<span class="comment">// For submission, all fields required</span>
+<span class="keyword">function</span> submitForm(data: <span class="type">FormData</span>) {
+    <span class="comment">// All fields guaranteed to exist</span>
+}</pre>
+            </div>
+
+            <h3>API Response Mapping</h3>
+            <div class="code-block">
+<pre><span class="keyword">interface</span> <span class="type">ApiUser</span> {
+    id: <span class="type">number</span>;
+    first_name: <span class="type">string</span>;
+    last_name: <span class="type">string</span>;
+    email: <span class="type">string</span>;
+}
+
+<span class="keyword">interface</span> <span class="type">AppUser</span> {
+    id: <span class="type">number</span>;
+    fullName: <span class="type">string</span>;
+    email: <span class="type">string</span>;
+}
+
+<span class="comment">// ✅ Transform API response to app format</span>
+<span class="keyword">function</span> mapUser(apiUser: <span class="type">ApiUser</span>): <span class="type">AppUser</span> {
+    <span class="keyword">return</span> {
+        id: apiUser.id,
+        fullName: <span class="string">`${apiUser.first_name} ${apiUser.last_name}`</span>,
+        email: apiUser.email
+    };
+}</pre>
+            </div>
+
+            <div class="tip-box">
+                <h4>💡 Pro Tip</h4>
+                <p>Use TypeScript's utility types (<code>Partial</code>, <code>Pick</code>, <code>Omit</code>, <code>Required</code>) to create variations of your interfaces without duplicating code.</p>
+            </div>
+
+            <h2>Summary</h2>
+            <ul>
+                <li>TS2741 means a required property is missing from an object</li>
+                <li>Check for typos in property names</li>
+                <li>Use <code>?</code> to make properties optional when appropriate</li>
+                <li>Use <code>Partial&lt;T&gt;</code> for objects with all optional properties</li>
+                <li>Use <code>Pick</code> and <code>Omit</code> to create subsets of types</li>
+            </ul>
+        </article>
+
+        <section class="cta-section">
+            <h3>Still Confused by Your Error?</h3>
+            <p>Paste your TypeScript error into our analyzer for instant, detailed explanations.</p>
+            <a href="../" class="cta-btn">Try Error Analyzer →</a>
+        </section>
+
+        <section class="related-guides">
+            <h3>Related Error Guides</h3>
+            <div class="related-list">
+                <a href="./ts2322-type-not-assignable.html" class="related-item">
+                    <span class="code">TS2322</span>
+                    <span class="title">Type 'X' is not assignable to type 'Y'</span>
+                </a>
+                <a href="./ts2339-property-does-not-exist.html" class="related-item">
+                    <span class="code">TS2339</span>
+                    <span class="title">Property does not exist on type</span>
+                </a>
+                <a href="./ts2345-argument-type.html" class="related-item">
+                    <span class="code">TS2345</span>
+                    <span class="title">Argument type mismatch</span>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="guide-footer">
+        <p>© 2025 TypeScript Error Analyzer. <a href="../privacy.html">Privacy</a> · <a href="../terms.html">Terms</a></p>
+    </footer>
+</body>
+</html>
