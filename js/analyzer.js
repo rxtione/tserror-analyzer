@@ -1462,7 +1462,41 @@ function clearAll() {
 }
 
 function loadSample() {
-    var sample = "Type '{ id: number; name: string; email: string; profile: { avatar: string; bio: string; settings: { theme: string; notifications: boolean; language: number; }; }; posts: { title: string; content: string; createdAt: string; }[]; }' is not assignable to type 'User'.\n  Types of property 'profile' are incompatible.\n    Type '{ avatar: string; bio: string; settings: { theme: string; notifications: boolean; language: number; }; }' is not assignable to type '{ avatar: string; bio: string; settings: { theme: \"light\" | \"dark\"; notifications: boolean; language: string; }; }'.\n      Types of property 'settings' are incompatible.\n        Type '{ theme: string; notifications: boolean; language: number; }' is not assignable to type '{ theme: \"light\" | \"dark\"; notifications: boolean; language: string; }'.\n          Types of property 'theme' are incompatible.\n            Type 'string' is not assignable to type '\"light\" | \"dark\"'.\n          Types of property 'language' are incompatible.\n            Type 'number' is not assignable to type 'string'.";
+    // Complex sample with multiple error types:
+    // 1. TS2322 - Type mismatch with large nested object (20+ properties)
+    // 2. TS2741 - Missing properties
+    // 3. TS2339 - Property does not exist
+    // 4. TS2532 - Object is possibly undefined
+    // 5. TS2345 - Argument type mismatch
+    var sample = `error TS2322: Type '{ id: number; uuid: string; username: string; email: string; password: string; firstName: string; lastName: string; displayName: string; avatar: string; coverImage: string; bio: string; website: string; location: string; birthDate: string; phoneNumber: number; isVerified: boolean; isAdmin: boolean; isPremium: boolean; createdAt: string; updatedAt: string; lastLoginAt: string; settings: { theme: string; language: number; timezone: string; notifications: { email: boolean; push: boolean; sms: boolean; marketing: boolean; }; privacy: { profileVisible: boolean; showEmail: boolean; showPhone: boolean; allowDMs: boolean; }; }; posts: { id: number; title: string; content: string; }; followers: { id: number; name: string; }; }' is not assignable to type 'User'.
+  Types of property 'phoneNumber' are incompatible.
+    Type 'number' is not assignable to type 'string'.
+  Types of property 'settings' are incompatible.
+    Type '{ theme: string; language: number; timezone: string; notifications: { email: boolean; push: boolean; sms: boolean; marketing: boolean; }; privacy: { profileVisible: boolean; showEmail: boolean; showPhone: boolean; allowDMs: boolean; }; }' is not assignable to type '{ theme: "light" | "dark" | "system"; language: string; timezone: string; notifications: NotificationSettings; privacy: PrivacySettings; }'.
+      Types of property 'theme' are incompatible.
+        Type 'string' is not assignable to type '"light" | "dark" | "system"'.
+      Types of property 'language' are incompatible.
+        Type 'number' is not assignable to type 'string'.
+  Types of property 'posts' are incompatible.
+    Type '{ id: number; title: string; content: string; }' is not assignable to type 'Post[]'.
+  Types of property 'followers' are incompatible.
+    Type '{ id: number; name: string; }' is not assignable to type 'Follower[]'.
+
+error TS2741: Type '{ id: number; name: string; }' is missing the following properties from type 'Product': price, category, description, stock, images, ratings, reviews, createdAt, updatedAt, seller
+
+error TS2339: Property 'getFullName' does not exist on type 'User'. Did you mean 'firstName'?
+
+error TS2532: Object is possibly 'undefined'.
+  const user = users.find(u => u.id === id);
+  user.name; // Error here
+
+error TS2345: Argument of type '{ name: string; age: number; }' is not assignable to parameter of type 'CreateUserDTO'.
+  Property 'email' is missing in type '{ name: string; age: number; }' but required in type 'CreateUserDTO'.
+
+error TS2304: Cannot find name 'ApiResponse'. Did you mean 'Response'?
+
+error TS7006: Parameter 'data' implicitly has an 'any' type.`;
+
     document.getElementById('errorInput').value = sample;
 }
 
